@@ -7,15 +7,17 @@
       </div>
     </div><span class="text-uppercase text-gray-600 text-xs mx-3 px-2 heading mb-2">Main</span>
     <ul class="list-unstyled">
-          <li class="sidebar-item active"><a class="sidebar-link" href="{{ url('/admin/dashborad') }}">
+
+          <li class="sidebar-item {{ (request()->is('admin/dashborad')) ? 'active' : '' }}"><a class="sidebar-link" href="{{ url('/admin/dashborad') }}">
                   <svg class="svg-icon svg-icon-sm svg-icon-heavy">
                     <use xlink:href="#real-estate-1"> </use>
                   </svg><span>Home </span></a></li>
-          <li class="sidebar-item"><a class="sidebar-link" href="{{ url('/admin/packages') }}">
+
+          <li class="sidebar-item {{ (request()->is('admin/packages')) ? 'active' : '' }}"><a class="sidebar-link" href="{{ url('/admin/packages') }}">
                   <svg class="svg-icon svg-icon-sm svg-icon-heavy">
                     <use xlink:href="#portfolio-grid-1"></use>
                   </svg><span>Packages </span></a></li>
-          <li class="sidebar-item"><a class="sidebar-link" href="{{ url('/admin/package-request') }}">
+          <li class="sidebar-item {{ (request()->is('admin/package-request')) ? 'active' : '' }}"><a class="sidebar-link" href="{{ url('/admin/package-request') }}">
                   <svg class="svg-icon svg-icon-sm svg-icon-heavy">
                     <use xlink:href="#sales-up-1"> </use>
                   </svg><span>Pakcage Request </span></a></li>
