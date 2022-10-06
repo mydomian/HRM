@@ -21,10 +21,11 @@
                   <svg class="svg-icon svg-icon-sm svg-icon-heavy">
                     <use xlink:href="#sales-up-1"> </use>
                   </svg><span>Pakcage Request </span></a></li>
-          <li class="sidebar-item"><a class="sidebar-link" href="forms.html">
-                  <svg class="svg-icon svg-icon-sm svg-icon-heavy">
+          
+            <li class="sidebar-item {{ (request()->is('admin/role-permission')) ? 'active' : '' }}"><a class="sidebar-link" href="{{ url('/admin/role-permission') }}">
+                <svg class="svg-icon svg-icon-sm svg-icon-heavy">
                     <use xlink:href="#survey-1"> </use>
-                  </svg><span>Usages Packages</span></a></li>
+                </svg><span>Role Permission</span></a></li>
           <li class="sidebar-item"><a class="sidebar-link" href="#exampledropdownDropdown" data-bs-toggle="collapse">
                   <svg class="svg-icon svg-icon-sm svg-icon-heavy">
                     <use xlink:href="#browser-window-1"> </use>

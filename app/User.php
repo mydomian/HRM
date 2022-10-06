@@ -16,8 +16,11 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'package_id','company_name', 'payment_type', 'account_no','duration', 'start_date','end_date', 'database_name', 'date','remember_token','password'
     ];
+
+
+
 
     /**
      * The attributes that should be hidden for arrays.
@@ -25,7 +28,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+
     ];
 
     /**
@@ -35,5 +38,23 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'name' => 'string',
+        'email' => 'string',
+        'package_id' => 'integer',
+        'company_name' => 'string',
+        'payment_type' => 'string',
+        'account_no' => 'text',
+        'duration' => 'integer',
+        'start_date' => 'date',
+        'end_date' => 'date',
+        'database_name' => 'string',
+        'date' => 'date',
+        'password' => 'string',
     ];
+
+    //Eloquest Orm Relationship
+    //packages relation
+    public function packages(){
+        return $this->belongsTo(Package::class, 'package_id');
+    }
 }

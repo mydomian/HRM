@@ -21,4 +21,4 @@ use Illuminate\Support\Facades\Route;
 
 //packages
 Route::get('/packages',[ApiController::class,'Packages']);
-Route::post('/get-start',[ApiController::class,'GetStart']);
+Route::post('/package-buy',[ApiController::class,'PackageBuy']);

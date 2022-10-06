@@ -4,10 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Package;
-use App\UsagePackage;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use PhpParser\Node\Expr\FuncCall;
 
 class PackageController extends Controller
 {
@@ -62,7 +61,7 @@ class PackageController extends Controller
     }
     //PackageRequest
     public function PackageRequest(){
-        $package_requests = UsagePackage::where(['status'=>'deactive'])->get();
+        $package_requests = User::with('packages')->where(['status'=>'deactive'])->get();
         return view('admin.package_request',compact('package_requests'));
     }
     //PackageActivate

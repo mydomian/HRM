@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePackagesTable extends Migration
+class CreateCitiesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,14 @@ class CreatePackagesTable extends Migration
      */
     public function up()
     {
-        Schema::create('packages', function (Blueprint $table) {
+        Schema::create('cities', function (Blueprint $table) {
             $table->id()->autoIncrement();
-            $table->string('package_name');
-            $table->integer('package_price');
-            $table->text('package_feature');
-            $table->bigInteger('duration_days');
+            $table->bigInteger('purchase_owner_id')->unsigned();
+            $table->string('city_name');
             $table->enum('status',['active', 'deactive'])->default('active');
+            $table->bigInteger('view_id')->nullable();
             $table->timestamps();
+
         });
     }
 
@@ -32,7 +32,7 @@ class CreatePackagesTable extends Migration
     public function down()
     {
         Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('packages');
+        Schema::dropIfExists('cities');
         Schema::enableForeignKeyConstraints();
     }
 }

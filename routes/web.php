@@ -27,7 +27,6 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::prefix('/admin')->namespace('Admin')->group(function () {
     Route::match(['get','post'],'/login',[AdminController::class,'Login']);
     Route::group(['middleware'=>['admin']],function(){
-
         Route::get('dashborad',[AdminController::class,'Index']);
         //package
         Route::get('packages',[PackageController::class,'index']);
@@ -37,6 +36,10 @@ Route::prefix('/admin')->namespace('Admin')->group(function () {
         //users package request
         Route::get('package-request',[PackageController::class,'PackageRequest']);
         Route::get('package-activate/{package_id}',[PackageController::class,'PackageActivate']);
+        //role-permission
+        Route::get('role-permission',[AdminController::class,'RolePermission']);
+        Route::post('role-create',[AdminController::class,'RoleCreate']);
+        Route::get('role-edit/{role_id}',[AdminController::class,'RoleEdit']);
         //logout
         Route::get('logout',[AdminController::class,'Logout']);
     });

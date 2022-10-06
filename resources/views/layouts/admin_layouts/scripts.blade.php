@@ -1,11 +1,5 @@
 <!-- JavaScript files-->
-<script src="{{ url('admin/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-<script src="{{ url('admin/vendor/just-validate/js/just-validate.min.js') }}"></script>
-<script src="{{ url('admin/vendor/chart.js/Chart.min.js') }}"></script>
-<script src="{{ url('admin/vendor/choices.js/public/assets/scripts/choices.min.js') }}"></script>
-<script src="{{ url('admin/js/charts-home.js') }}"></script>
-<!-- Main File-->
-<script src="{{ url('admin/js/front.js') }}"></script>
+
 {{--  datatable  --}}
 <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
 <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
@@ -13,6 +7,15 @@
 <script src="https://cdn.datatables.net/fixedheader/3.2.4/js/dataTables.fixedHeader.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.3.0/js/dataTables.responsive.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.3.0/js/responsive.bootstrap4.min.js"></script>
+
+
+{{--  <script src="{{ url('admin/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>  --}}
+<script src="{{ url('admin/vendor/just-validate/js/just-validate.min.js') }}"></script>
+<script src="{{ url('admin/vendor/chart.js/Chart.min.js') }}"></script>
+<script src="{{ url('admin/vendor/choices.js/public/assets/scripts/choices.min.js') }}"></script>
+<script src="{{ url('admin/js/charts-home.js') }}"></script>
+<!-- Main File-->
+<script src="{{ url('admin/js/front.js') }}"></script>
 
 <script>
 function injectSvgSprite(path) {
@@ -77,7 +80,6 @@ injectSvgSprite('https://bootstraptemple.com/files/icons/orion-svg-sprite.svg');
             toastr.warning("{{ session('warning') }}");
     @endif
 
-    {{--  sweet alert  --}}
     {{--  package edit  --}}
     $('.package-edit').on('click', function () {
         var recordid = $(this).attr('recordid');
@@ -97,6 +99,7 @@ injectSvgSprite('https://bootstraptemple.com/files/icons/orion-svg-sprite.svg');
     //package_activation
     $('.package_activation').on('click', function () {
         var recordid = $(this).attr('recordid');
+        alert(recordid);
         swal({
         title: "Do you want to activate this package?",
         icon: 'warning',
@@ -110,8 +113,23 @@ injectSvgSprite('https://bootstraptemple.com/files/icons/orion-svg-sprite.svg');
             window.location.href="/admin/package-activate/"+recordid;
         }
         });
-        })
+        });
+        {{--  package edit  --}}
+        $('.role-edit').on('click', function () {
+            var recordid = $(this).attr('recordid');
+            $.ajax({
+                type: "GET",
+                url: "/admin/role-edit/"+recordid,
+                cache: false,
+                success: function(data){
+                    console.log(data);
+                    document.getElementById("role_id").value = data.id;
+                    document.getElementById("role_name").value = data.name;
+                    document.getElementById("role_email").value = data.email;
+                    document.getElementById("role_phone").value = data.phone;
 
+                }
+            });
+        });
 </script>
-
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>

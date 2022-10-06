@@ -15,10 +15,12 @@ class CreateAdminsTable extends Migration
     {
         Schema::create('admins', function (Blueprint $table) {
             $table->id()->autoIncrement();
+            $table->string('name');
             $table->string('email')->unique();
             $table->string('phone')->unique();
             $table->string('password');
-            $table->enum('role_as',['Admin', 'Moderator'])->default('Admin');
+            $table->enum('role_as',['Admin', 'Moderator'])->default('Moderator');
+            $table->enum('activation',['Enable', 'Disable'])->default('Enable');
             $table->timestamps();
         });
     }

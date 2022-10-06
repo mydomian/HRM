@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePackagesTable extends Migration
+class CreateIncomeExpenseAccTypesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,14 @@ class CreatePackagesTable extends Migration
      */
     public function up()
     {
-        Schema::create('packages', function (Blueprint $table) {
+        Schema::create('income_expense_acc_types', function (Blueprint $table) {
             $table->id()->autoIncrement();
-            $table->string('package_name');
-            $table->integer('package_price');
-            $table->text('package_feature');
-            $table->bigInteger('duration_days');
+            $table->bigInteger('purchase_owner_id')->unsigned();
+            $table->string('income_exp_acc_type');
             $table->enum('status',['active', 'deactive'])->default('active');
+            $table->bigInteger('view_id')->nullable();
             $table->timestamps();
+            $table->foreign('purchase_owner_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
         });
     }
 
@@ -31,8 +31,6 @@ class CreatePackagesTable extends Migration
      */
     public function down()
     {
-        Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('packages');
-        Schema::enableForeignKeyConstraints();
+        Schema::dropIfExists('income_expense_acc_types');
     }
 }

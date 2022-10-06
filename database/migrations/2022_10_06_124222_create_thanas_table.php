@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePackagesTable extends Migration
+class CreateThanasTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,16 @@ class CreatePackagesTable extends Migration
      */
     public function up()
     {
-        Schema::create('packages', function (Blueprint $table) {
+        Schema::create('thanas', function (Blueprint $table) {
             $table->id()->autoIncrement();
-            $table->string('package_name');
-            $table->integer('package_price');
-            $table->text('package_feature');
-            $table->bigInteger('duration_days');
+            $table->bigInteger('city_id')->unsigned();
+            $table->bigInteger('district_id')->unsigned();
+            $table->string('thana_name');
             $table->enum('status',['active', 'deactive'])->default('active');
+            $table->bigInteger('view_id')->nullable();
             $table->timestamps();
+            $table->foreign('city_id')->references('id')->on('cities')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('district_id')->references('id')->on('districts')->onUpdate('cascade')->onDelete('cascade');
         });
     }
 
@@ -32,7 +34,7 @@ class CreatePackagesTable extends Migration
     public function down()
     {
         Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('packages');
+        Schema::dropIfExists('thanas');
         Schema::enableForeignKeyConstraints();
     }
 }

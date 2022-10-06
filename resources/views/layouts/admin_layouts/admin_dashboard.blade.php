@@ -8,7 +8,6 @@
         {{--  sidebar part  --}}
         @include('layouts.admin_layouts.sidebar')
         <div class="page-content">
-        
         {{--  main content  --}}
         @yield('content')
         {{--  footer part  --}}
