@@ -11,7 +11,7 @@
                     <button class="btn btn-outline-success float-right" type="button" data-bs-toggle="modal" data-bs-target="#myModal"><i class="fas fa-plus"></i>ADD NEW</button>
                 </div>
                 <div class="card-body">
-                    <table id="example" class="table table-dark">
+                    <table id="example" class="table table-dark" style="width:100%">
                         <thead style="color:#b2b5bd">
                           <tr>
                             <th scope="col" class="text-center">SL</th>

@@ -21,7 +21,15 @@
                   <svg class="svg-icon svg-icon-sm svg-icon-heavy">
                     <use xlink:href="#sales-up-1"> </use>
                   </svg><span>Pakcage Request </span></a></li>
-          
+        <li class="sidebar-item {{ (request()->is('admin/package-activated-lists')) ? 'active' : '' }}"><a class="sidebar-link" href="{{ url('/admin/package-activated-lists') }}">
+        <svg class="svg-icon svg-icon-sm svg-icon-heavy">
+            <use xlink:href="#sales-up-1"> </use>
+        </svg><span>Pakcage Activated</span></a></li>
+        <li class="sidebar-item {{ (request()->is('admin/package-deactivated-lists')) ? 'active' : '' }}"><a class="sidebar-link" href="{{ url('/admin/package-deactivated-lists') }}">
+            <svg class="svg-icon svg-icon-sm svg-icon-heavy">
+                <use xlink:href="#sales-up-1"> </use>
+            </svg><span>Pakcage Deactivated</span></a></li>
+
             <li class="sidebar-item {{ (request()->is('admin/role-permission')) ? 'active' : '' }}"><a class="sidebar-link" href="{{ url('/admin/role-permission') }}">
                 <svg class="svg-icon svg-icon-sm svg-icon-heavy">
                     <use xlink:href="#survey-1"> </use>

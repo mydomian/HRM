@@ -35,7 +35,11 @@ Route::prefix('/admin')->namespace('Admin')->group(function () {
         Route::post('package-update',[PackageController::class,'update']);
         //users package request
         Route::get('package-request',[PackageController::class,'PackageRequest']);
+        Route::get('package-view/{package_buy_id}',[PackageController::class,'PackageView']);
         Route::get('package-activate/{package_id}',[PackageController::class,'PackageActivate']);
+        Route::get('package-deactivate/{package_id}',[PackageController::class,'PackageDeactivate']);
+        Route::get('package-activated-lists',[PackageController::class,'PackageActivatedList']);
+        Route::get('package-deactivated-lists',[PackageController::class,'PackagedeActivatedList']);
         //role-permission
         Route::get('role-permission',[AdminController::class,'RolePermission']);
         Route::post('role-create',[AdminController::class,'RoleCreate']);

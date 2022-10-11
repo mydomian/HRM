@@ -4,12 +4,10 @@
 <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
 <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.12.1/js/dataTables.bootstrap4.min.js"></script>
-<script src="https://cdn.datatables.net/fixedheader/3.2.4/js/dataTables.fixedHeader.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.3.0/js/dataTables.responsive.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.3.0/js/responsive.bootstrap4.min.js"></script>
 
-
-{{--  <script src="{{ url('admin/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>  --}}
+<script src="{{ url('admin/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ url('admin/vendor/just-validate/js/just-validate.min.js') }}"></script>
 <script src="{{ url('admin/vendor/chart.js/Chart.min.js') }}"></script>
 <script src="{{ url('admin/vendor/choices.js/public/assets/scripts/choices.min.js') }}"></script>
@@ -99,7 +97,6 @@ injectSvgSprite('https://bootstraptemple.com/files/icons/orion-svg-sprite.svg');
     //package_activation
     $('.package_activation').on('click', function () {
         var recordid = $(this).attr('recordid');
-        alert(recordid);
         swal({
         title: "Do you want to activate this package?",
         icon: 'warning',
@@ -114,6 +111,23 @@ injectSvgSprite('https://bootstraptemple.com/files/icons/orion-svg-sprite.svg');
         }
         });
         });
+        //package_deactivation
+        $('.package_deactivation').on('click', function () {
+            var recordid = $(this).attr('recordid');
+            swal({
+            title: "Do you want to deactivate this package?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, Deactivated it!'
+            })
+            .then((willDelete) => {
+                if (willDelete) {
+                    window.location.href="/admin/package-deactivate/"+recordid;
+                }
+            });
+            });
         {{--  package edit  --}}
         $('.role-edit').on('click', function () {
             var recordid = $(this).attr('recordid');
@@ -122,11 +136,28 @@ injectSvgSprite('https://bootstraptemple.com/files/icons/orion-svg-sprite.svg');
                 url: "/admin/role-edit/"+recordid,
                 cache: false,
                 success: function(data){
-                    console.log(data);
+
                     document.getElementById("role_id").value = data.id;
                     document.getElementById("role_name").value = data.name;
                     document.getElementById("role_email").value = data.email;
                     document.getElementById("role_phone").value = data.phone;
+
+                }
+            });
+        });
+        {{--  package edit  --}}
+        $('.package_view').on('click', function () {
+            var recordid = $(this).attr('recordid');
+            $.ajax({
+                type: "GET",
+                url: "/admin/package-view/"+recordid,
+                cache: false,
+                success: function(data){
+                    document.getElementById("company_name").value = data.company_name;
+                    document.getElementById("duration").value = data.duration;
+                    document.getElementById("start_date").value = data.start_date;
+                    document.getElementById("end_date").value = data.end_date;
+                    document.getElementById("database_name").value = data.database_name;
 
                 }
             });

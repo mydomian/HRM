@@ -6,7 +6,7 @@
 <!-- Page Header-->
         <div class="bg-dash-dark-2 py-4">
             <div class="container-fluid">
-            <h2 class="h5 mb-0">Packages Request</h2>
+            <h2 class="h5 mb-0">Packages Activated Lists</h2>
             </div>
         </div>
         <section>
@@ -37,29 +37,29 @@
                                   @php
                                       $i = 1;
                                   @endphp
-                                  @foreach ($package_requests as $package_request)
+                                  @foreach ($package_activated_lists as $package_activated_list)
                                       <tr>
-                                          <td class="text-center">{{ $package_request['id'] ?? ""}}</td>
-                                          <td class="text-center">{{ $package_request['name'] ?? ""}}</td>
-                                          <td class="text-center">{{ $package_request['email'] ?? ""}}</td>
-                                          <td class="text-center">{{ $package_request['password'] ?? ""}}</td>
-                                          <td class="text-center">{{ $package_request['packages']['package_name'] ?? ""}}</td>
-                                          <td class="text-center">{{ $package_request['payment_type'] ?? ""}}</td>
-                                          <td class="text-center">{{ $package_request['account_no'] ?? ""}}</td>
-                                          <td class="text-center">{{ $package_request['transaction_id'] ?? ""}}</td>
-                                          <td class="text-center">{{ $package_request['date']->format('Y-m-d') ?? ""}}</td>
-                                          <td class="text-center"><span class="badge badge-info">{{ $package_request['status'] ?? ""}}</span></td>
+                                          <td class="text-center">{{ $package_activated_list['id'] ?? ""}}</td>
+                                          <td class="text-center">{{ $package_activated_list['name'] ?? ""}}</td>
+                                          <td class="text-center">{{ $package_activated_list['email'] ?? ""}}</td>
+                                          <td class="text-center">{{ $package_activated_list['password'] ?? ""}}</td>
+                                          <td class="text-center">{{ $package_activated_list['packages']['package_name'] ?? ""}}</td>
+                                          <td class="text-center">{{ $package_activated_list['payment_type'] ?? ""}}</td>
+                                          <td class="text-center">{{ $package_activated_list['account_no'] ?? ""}}</td>
+                                          <td class="text-center">{{ $package_activated_list['transaction_id'] ?? ""}}</td>
+                                          <td class="text-center">{{ $package_activated_list['date']->format('Y-m-d') ?? ""}}</td>
+                                          <td class="text-center"><span class="badge badge-info">{{ $package_activated_list['status'] ?? ""}}</span></td>
                                           <td class="text-center">
                                               <div class="row">
                                                   <div class="col-sm-12 d-flex">
                                                     <div class="input-group">
                                                       <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Activation</button>
                                                       <ul class="dropdown-menu dropdown-menu-dark shadow-sm">
-                                                        <li><a class="dropdown-item package_activation" href="javascript:;" recordid="{{ $package_request['id'] }}">Activate</a></li>
-                                                        <li><a class="dropdown-item package_deactivation" href="javascript:;" recordid="{{ $package_request['id'] }}">Deactivate</a></li>
+                                                        <li><a class="dropdown-item package_activation" href="javascript:;" recordid="{{ $package_activated_list['id'] }}">Activate</a></li>
+                                                        <li><a class="dropdown-item package_deactivation" href="javascript:;" recordid="{{ $package_activated_list['id'] }}">Deactivate</a></li>
                                                       </ul>
                                                     </div>
-                                                    <a href="javascript:;" class="btn btn-primary text-white package_view" recordid="{{ $package_request['id'] }}" data-bs-toggle="modal" data-bs-target="#myModal"><i class="fa fa-eye">View</i></a>
+                                                    <a href="javascript:;" class="btn btn-primary text-white package_view" recordid="{{ $package_activated_list['id'] }}" data-bs-toggle="modal" data-bs-target="#myModal"><i class="fa fa-eye">View</i></a>
                                                   </div>
                                                 </div>
                                           </td>

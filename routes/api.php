@@ -15,10 +15,18 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::middleware('auth:api')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
-
+//login
+Route::post('/login',[ApiController::class,'UserLogin']);
 //packages
 Route::get('/packages',[ApiController::class,'Packages']);
 Route::post('/package-buy',[ApiController::class,'PackageBuy']);
+//brand
+Route::post('/create-brand',[ApiController::class,"CreateBrand"]);
+Route::post('/brand-lists',[ApiController::class,"BrandLists"]);
+Route::post('/update-brand',[ApiController::class,"UpdateBrand"]);
+Route::post('/delete-brand',[ApiController::class,"DeleteBrand"]);
+//category
+Route::post('/create-category',[ApiController::class,"CreateCategory"]);
+Route::post('/category-lists',[ApiController::class,"CategoryLists"]);
+Route::post('/update-category',[ApiController::class,"UpdateCategory"]);
+Route::post('/delete-category',[ApiController::class,"DeleteCategory"]);

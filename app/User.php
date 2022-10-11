@@ -5,10 +5,11 @@ namespace App;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use Notifiable;
+    use HasApiTokens, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -16,7 +17,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'package_id','company_name', 'payment_type', 'account_no','duration', 'start_date','end_date', 'database_name', 'date','remember_token','password'
+        'package_buy_id','name', 'email','role_as'
     ];
 
 
@@ -28,7 +29,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-
+        'password'
     ];
 
     /**
@@ -38,23 +39,17 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'package_buy_id' => 'biginteger',
         'name' => 'string',
         'email' => 'string',
-        'package_id' => 'integer',
-        'company_name' => 'string',
-        'payment_type' => 'string',
-        'account_no' => 'text',
-        'duration' => 'integer',
-        'start_date' => 'date',
-        'end_date' => 'date',
-        'database_name' => 'string',
-        'date' => 'date',
+        'role_as' => 'enum',
         'password' => 'string',
     ];
 
     //Eloquest Orm Relationship
-    //packages relation
-    public function packages(){
-        return $this->belongsTo(Package::class, 'package_id');
+    public function usepackage(){
+        return $this->belongsTo(PackageBuy::class,'package_buy_id','id');
+
     }
+
 }
