@@ -15,7 +15,8 @@ class CreateProductsTable extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id()->autoIncrement();
-            $table->bigInteger('purchase_owner_id')->unsigned();
+            $table->bigInteger('package_buy_id')->unsigned();
+            $table->bigInteger('acc_cus_sup_id')->unsigned();
             $table->bigInteger('brand_id')->unsigned();
             $table->bigInteger('categroy_id')->unsigned();
             $table->bigInteger('unit_id')->unsigned();
@@ -25,14 +26,19 @@ class CreateProductsTable extends Migration
             $table->string('product_image');
             $table->string('batch_no')->nullable();
             $table->string('serial_no')->nullable();
+            $table->bigInteger('khat_acc_id')->nullable();
+            $table->bigInteger('supplier_price');
+            $table->bigInteger('our_price');
             $table->enum('status',['active', 'deactive'])->default('active');
             $table->bigInteger('view_id')->nullable();
             $table->timestamps();
-            $table->foreign('purchase_owner_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('package_buy_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('acc_cus_sup_id')->references('id')->on('acc_customer_suppliers')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('brand_id')->references('id')->on('brands')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('categroy_id')->references('id')->on('categories')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('unit_id')->references('id')->on('units')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('lot_gallary_id')->references('id')->on('lot_gallaries')->onUpdate('cascade')->onDelete('cascade');
+
         });
     }
 

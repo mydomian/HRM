@@ -32,4 +32,5 @@ class AddColumnsToUsersTable extends Migration
         Schema::dropIfExists('users');
         Schema::enableForeignKeyConstraints();
     }
+
 }

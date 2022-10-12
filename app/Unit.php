@@ -7,10 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class Unit extends Model
 {
     protected $fillable = [
-        'purchase_owner_id', 'name', 'status'
+        'package_buy_id', 'name', 'status'
     ];
     protected $casts = [
-        'purchase_owner_id' => 'integer',
+        'package_buy_id' => 'integer',
         'name' => 'string',
         'status' => 'enum',
     ];
