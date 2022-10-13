@@ -42,6 +42,7 @@ class ApiController extends Controller
                         'status'=>true,
                         'message'=>'Successfully Login',
                         'rememberToken'=> $user['rememberToken'],
+                        'user_data'=>$user
                     ]);
                 }else{
                     return response()->json([
@@ -122,26 +123,59 @@ class ApiController extends Controller
     public function CreateBrand(Request $request){
         if($request->isMethod('post')){
             $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
-            if($user['usepackage']['status'] == 'active'){
-                $validator = Validator::make($request->all(), [
-                    'name'=>'required',
-                ]);
-                if ($validator->fails()) {
-                    return response()->json(['errors'=>$validator->errors()], 400);
+            if($user){
+                if($user['usepackage']['status'] == 'active'){
+                    $validator = Validator::make($request->all(), [
+                        'name'=>'required',
+                    ]);
+                    if ($validator->fails()) {
+                        return response()->json(['errors'=>$validator->errors()], 400);
+                    }
+                    $brand = new Brand;
+                    $brand->package_buy_id = $user['package_buy_id'];
+                    $brand->name = $request['name'];
+                    $brand->save();
+                    if($brand){
+                        return response()->json([
+                            'status'=>true,
+                            'message'=>"Brand Created Successfully",
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>"Something Is Wrong To Create Brand",
+                        ],200);
+                    }
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Package Not Activated",
+                    ],200);
                 }
-                $brand = new Brand;
-                $brand->package_buy_id = $user['package_buy_id'];
-                $brand->name = $request['name'];
-                $brand->save();
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Invalid Token",
+                ],200);
+            }
+        }
+    }
+    //BrandLists
+    public function BrandLists(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $brand = Brand::where('package_buy_id',$user['package_buy_id'])->orderBy('id','DESC')->get();
                 if($brand){
                     return response()->json([
                         'status'=>true,
-                        'message'=>"Brand Created Successfully",
+                        'lists'=> $brand,
                     ],200);
                 }else{
                     return response()->json([
                         'status'=>false,
-                        'message'=>"Something Is Wrong To Create Brand",
+                        'message'=>"Brand Lists Not Found",
                     ],200);
                 }
             }else{
@@ -150,28 +184,10 @@ class ApiController extends Controller
                     'message'=>"Package Not Activated",
                 ],200);
             }
-        }
-    }
-    //BrandLists
-    public function BrandLists(Request $request){
-        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
-        if($user['usepackage']['status'] == 'active'){
-            $brand = Brand::where('package_buy_id',$user['package_buy_id'])->orderBy('id','DESC')->get();
-            if($brand){
-                return response()->json([
-                    'status'=>true,
-                    'brand_lists'=> $brand,
-                ],200);
-            }else{
-                return response()->json([
-                    'status'=>false,
-                    'message'=>"Brand Lists Not Found",
-                ],200);
-            }
         }else{
             return response()->json([
                 'status'=>false,
-                'message'=>"Package Not Activated",
+                'message'=>"Invalid Token",
             ],200);
         }
     }
@@ -220,26 +236,58 @@ class ApiController extends Controller
     public function CreateCategory(Request $request){
         if($request->isMethod('post')){
             $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
-            if($user['usepackage']['status'] == 'active'){
-                $validator = Validator::make($request->all(), [
-                    'name'=>'required',
-                ]);
-                if ($validator->fails()) {
-                    return response()->json(['errors'=>$validator->errors()], 400);
+            if($user){
+                if($user['usepackage']['status'] == 'active'){
+                    $validator = Validator::make($request->all(), [
+                        'name'=>'required',
+                    ]);
+                    if ($validator->fails()) {
+                        return response()->json(['errors'=>$validator->errors()], 400);
+                    }
+                    $category = new Category;
+                    $category->package_buy_id = $user['package_buy_id'];
+                    $category->name = $request['name'];
+                    $category->save();
+                    if($category){
+                        return response()->json([
+                            'status'=>true,
+                            'message'=>"Category Created Successfully",
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>"Something Is Wrong To Create Category",
+                        ],200);
+                    }
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Package Not Activated",
+                    ],200);
                 }
-                $category = new Category;
-                $category->package_buy_id = $user['package_buy_id'];
-                $category->name = $request['name'];
-                $category->save();
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Invalid Token",
+                ],200);
+            }
+        }
+    }
+    //CategoryLists
+    public function CategoryLists(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $category = Category::where('package_buy_id',$user['package_buy_id'])->orderBy('id','DESC')->get();
                 if($category){
                     return response()->json([
                         'status'=>true,
-                        'message'=>"Category Created Successfully",
+                        'lists'=> $category,
                     ],200);
                 }else{
                     return response()->json([
                         'status'=>false,
-                        'message'=>"Something Is Wrong To Create Category",
+                        'message'=>"Category Lists Not Found",
                     ],200);
                 }
             }else{
@@ -248,28 +296,10 @@ class ApiController extends Controller
                     'message'=>"Package Not Activated",
                 ],200);
             }
-        }
-    }
-    //CategoryLists
-    public function CategoryLists(Request $request){
-        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
-        if($user['usepackage']['status'] == 'active'){
-            $category = Category::where('package_buy_id',$user['package_buy_id'])->orderBy('id','DESC')->get();
-            if($category){
-                return response()->json([
-                    'status'=>true,
-                    'category_lists'=> $category,
-                ],200);
-            }else{
-                return response()->json([
-                    'status'=>false,
-                    'message'=>"Category Lists Not Found",
-                ],200);
-            }
         }else{
             return response()->json([
                 'status'=>false,
-                'message'=>"Package Not Activated",
+                'message'=>"Invalid Token",
             ],200);
         }
     }
@@ -317,26 +347,58 @@ class ApiController extends Controller
     public function CreateUnit(Request $request){
         if($request->isMethod('post')){
             $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
-            if($user['usepackage']['status'] == 'active'){
-                $validator = Validator::make($request->all(), [
-                    'name'=>'required',
-                ]);
-                if ($validator->fails()) {
-                    return response()->json(['errors'=>$validator->errors()], 400);
+            if($user){
+                if($user['usepackage']['status'] == 'active'){
+                    $validator = Validator::make($request->all(), [
+                        'name'=>'required',
+                    ]);
+                    if ($validator->fails()) {
+                        return response()->json(['errors'=>$validator->errors()], 400);
+                    }
+                    $unit = new Unit;
+                    $unit->package_buy_id = $user['package_buy_id'];
+                    $unit->name = $request['name'];
+                    $unit->save();
+                    if($unit){
+                        return response()->json([
+                            'status'=>true,
+                            'message'=>"Unit Created Successfully",
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>"Something Is Wrong To Create Unit",
+                        ],200);
+                    }
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Package Not Activated",
+                    ],200);
                 }
-                $unit = new Unit;
-                $unit->package_buy_id = $user['package_buy_id'];
-                $unit->name = $request['name'];
-                $unit->save();
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Invalid Token",
+                ],200);
+            }
+        }
+    }
+    //UnitLists
+    public function UnitLists(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $unit = Unit::where('package_buy_id',$user['package_buy_id'])->orderBy('id','DESC')->get();
                 if($unit){
                     return response()->json([
                         'status'=>true,
-                        'message'=>"Unit Created Successfully",
+                        'unit_lists'=> $unit,
                     ],200);
                 }else{
                     return response()->json([
                         'status'=>false,
-                        'message'=>"Something Is Wrong To Create Unit",
+                        'message'=>"Unit Lists Not Found",
                     ],200);
                 }
             }else{
@@ -345,28 +407,10 @@ class ApiController extends Controller
                     'message'=>"Package Not Activated",
                 ],200);
             }
-        }
-    }
-    //UnitLists
-    public function UnitLists(Request $request){
-        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
-        if($user['usepackage']['status'] == 'active'){
-            $unit = Unit::where('package_buy_id',$user['package_buy_id'])->orderBy('id','DESC')->get();
-            if($unit){
-                return response()->json([
-                    'status'=>true,
-                    'unit_lists'=> $unit,
-                ],200);
-            }else{
-                return response()->json([
-                    'status'=>false,
-                    'message'=>"Unit Lists Not Found",
-                ],200);
-            }
         }else{
             return response()->json([
                 'status'=>false,
-                'message'=>"Package Not Activated",
+                'message'=>"Invalid Token",
             ],200);
         }
     }
@@ -414,26 +458,58 @@ class ApiController extends Controller
     public function CreateLotGallary(Request $request){
         if($request->isMethod('post')){
             $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
-            if($user['usepackage']['status'] == 'active'){
-                $validator = Validator::make($request->all(), [
-                    'name'=>'required',
-                ]);
-                if ($validator->fails()) {
-                    return response()->json(['errors'=>$validator->errors()], 400);
+            if($user){
+                if($user['usepackage']['status'] == 'active'){
+                    $validator = Validator::make($request->all(), [
+                        'name'=>'required',
+                    ]);
+                    if ($validator->fails()) {
+                        return response()->json(['errors'=>$validator->errors()], 400);
+                    }
+                    $lot_gallary = new LotGallary;
+                    $lot_gallary->package_buy_id = $user['package_buy_id'];
+                    $lot_gallary->name = $request['name'];
+                    $lot_gallary->save();
+                    if($lot_gallary){
+                        return response()->json([
+                            'status'=>true,
+                            'message'=>"Lot Gallary Created Successfully",
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>"Something Is Wrong To Create Lot Gallary",
+                        ],200);
+                    }
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Package Not Activated",
+                    ],200);
                 }
-                $lot_gallary = new LotGallary;
-                $lot_gallary->package_buy_id = $user['package_buy_id'];
-                $lot_gallary->name = $request['name'];
-                $lot_gallary->save();
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Invalid Token",
+                ],200);
+            }
+        }
+    }
+    //LotGallaryLists
+    public function LotGallaryLists(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $lot_gallary = LotGallary::where('package_buy_id',$user['package_buy_id'])->orderBy('id','DESC')->get();
                 if($lot_gallary){
                     return response()->json([
                         'status'=>true,
-                        'message'=>"Lot Gallary Created Successfully",
+                        'lists'=> $lot_gallary,
                     ],200);
                 }else{
                     return response()->json([
                         'status'=>false,
-                        'message'=>"Something Is Wrong To Create Lot Gallary",
+                        'message'=>"Lot Gallary Lists Not Found",
                     ],200);
                 }
             }else{
@@ -442,28 +518,10 @@ class ApiController extends Controller
                     'message'=>"Package Not Activated",
                 ],200);
             }
-        }
-    }
-    //LotGallaryLists
-    public function LotGallaryLists(Request $request){
-        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
-        if($user['usepackage']['status'] == 'active'){
-            $lot_gallary = LotGallary::where('package_buy_id',$user['package_buy_id'])->orderBy('id','DESC')->get();
-            if($lot_gallary){
-                return response()->json([
-                    'status'=>true,
-                    'lot_gallary_lists'=> $lot_gallary,
-                ],200);
-            }else{
-                return response()->json([
-                    'status'=>false,
-                    'message'=>"Lot Gallary Lists Not Found",
-                ],200);
-            }
         }else{
             return response()->json([
                 'status'=>false,
-                'message'=>"Package Not Activated",
+                'message'=>"Invalid Token",
             ],200);
         }
     }
@@ -511,55 +569,87 @@ class ApiController extends Controller
     public function CreateCusSupAcc(Request $request){
         if($request->isMethod('post')){
             $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
-            if($user['usepackage']['status'] == 'active'){
-                $validator = Validator::make($request->all(), [
-                    'acc_name'=>'required',
-                    'email'=>'required|email|unique:acc_customer_suppliers','email',
-                    'phone'=>'required|numeric|unique:acc_customer_suppliers','phone',
-                    'address'=>'required',
-                    'word'=>'required',
-                    'acc_area'=>'required',
-                    'acc_opening_balance'=>'required|numeric',
-                    'acc_hold_balance'=>'required|numeric',
-                    'profile_image'=>'required|file|mimes:jpeg,png,jpg,gif,svg|max:2048',
-                    'nid_image'=>'required|file',
-                ]);
-                if ($validator->fails()) {
-                    return response()->json(['errors'=>$validator->errors()], 400);
+            if($user){
+                if($user['usepackage']['status'] == 'active'){
+                    $validator = Validator::make($request->all(), [
+                        'acc_name'=>'required',
+                        'email'=>'required|email|unique:acc_customer_suppliers','email',
+                        'phone'=>'required|numeric|unique:acc_customer_suppliers','phone',
+                        'address'=>'required',
+                        'word'=>'required',
+                        'acc_area'=>'required',
+                        'acc_opening_balance'=>'required|numeric',
+                        'acc_hold_balance'=>'required|numeric',
+                        'profile_image'=>'required|file|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                        'nid_image'=>'required|file',
+                    ]);
+                    if ($validator->fails()) {
+                        return response()->json(['errors'=>$validator->errors()], 400);
+                    }
+
+                    $digits = 15;
+                    //profile image
+                    $profile = time().'.'.$request->profile_image->extension();
+                    $request->profile_image->move(public_path('images/profile_image'), $profile);
+                    //nid image
+                    $nid = time().'.'.$request->nid_image->extension();
+                    $request->nid_image->move(public_path('images/nid_image'), $nid);
+
+                    $acc_cus_sup = new AccCustomerSupplier;
+                    $acc_cus_sup->package_buy_id = $user['package_buy_id'];
+                    $acc_cus_sup->acc_name = $request['acc_name'];
+                    $acc_cus_sup->acc_no = rand(pow(10, $digits-1), pow(10, $digits)-1);
+                    $acc_cus_sup->email = $request['email'];
+                    $acc_cus_sup->phone = $request['phone'];
+                    $acc_cus_sup->address = $request['address'];
+                    $acc_cus_sup->word = $request['word'];
+                    $acc_cus_sup->acc_area = $request['acc_area'];
+                    $acc_cus_sup->acc_opening_balance = $request['acc_opening_balance'];
+                    $acc_cus_sup->acc_hold_balance = $request['acc_hold_balance'];
+                    $acc_cus_sup->profile_image = $_SERVER['HTTP_HOST'].'/images/profile_image/'.$profile;
+                    $acc_cus_sup->nid_image = $_SERVER['HTTP_HOST'].'/images/nid_image/'.$nid;
+                    $acc_cus_sup->date = date('Y-m-d');
+                    $acc_cus_sup->save();
+                    if($acc_cus_sup){
+                        return response()->json([
+                            'status'=>true,
+                            'message'=>"Customer & Supplier Account Created Successfully",
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>"Something Is Wrong To Create Account",
+                        ],200);
+                    }
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Package Not Activated",
+                    ],200);
                 }
-
-                $digits = 15;
-                //profile image
-                $profile = time().'.'.$request->profile_image->extension();
-                $request->profile_image->move(public_path('images/profile_image'), $profile);
-                //nid image
-                $nid = time().'.'.$request->nid_image->extension();
-                $request->nid_image->move(public_path('images/nid_image'), $nid);
-
-                $acc_cus_sup = new AccCustomerSupplier;
-                $acc_cus_sup->package_buy_id = $user['package_buy_id'];
-                $acc_cus_sup->acc_name = $request['acc_name'];
-                $acc_cus_sup->acc_no = rand(pow(10, $digits-1), pow(10, $digits)-1);
-                $acc_cus_sup->email = $request['email'];
-                $acc_cus_sup->phone = $request['phone'];
-                $acc_cus_sup->address = $request['address'];
-                $acc_cus_sup->word = $request['word'];
-                $acc_cus_sup->acc_area = $request['acc_area'];
-                $acc_cus_sup->acc_opening_balance = $request['acc_opening_balance'];
-                $acc_cus_sup->acc_hold_balance = $request['acc_hold_balance'];
-                $acc_cus_sup->profile_image = $_SERVER['HTTP_HOST'].'/images/profile_image/'.$profile;
-                $acc_cus_sup->nid_image = $_SERVER['HTTP_HOST'].'/images/nid_image/'.$nid;
-                $acc_cus_sup->date = date('Y-m-d');
-                $acc_cus_sup->save();
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Invalid Token",
+                ],200);
+            }
+        }
+    }
+    //CusSupAccLists
+    public function CusSupAccLists(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $acc_cus_sup = AccCustomerSupplier::where('package_buy_id',$user['package_buy_id'])->orderBy('id','DESC')->get();
                 if($acc_cus_sup){
                     return response()->json([
                         'status'=>true,
-                        'message'=>"Customer & Supplier Account Created Successfully",
+                        'lists'=> $acc_cus_sup,
                     ],200);
                 }else{
                     return response()->json([
                         'status'=>false,
-                        'message'=>"Something Is Wrong To Create Account",
+                        'message'=>"Customer & Supplier Account Lists Not Found",
                     ],200);
                 }
             }else{
@@ -568,28 +658,10 @@ class ApiController extends Controller
                     'message'=>"Package Not Activated",
                 ],200);
             }
-        }
-    }
-    //CusSupAccLists
-    public function CusSupAccLists(Request $request){
-        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
-        if($user['usepackage']['status'] == 'active'){
-            $acc_cus_sup = AccCustomerSupplier::where('package_buy_id',$user['package_buy_id'])->orderBy('id','DESC')->get();
-            if($acc_cus_sup){
-                return response()->json([
-                    'status'=>true,
-                    'cus_supp_acc_lists'=> $acc_cus_sup,
-                ],200);
-            }else{
-                return response()->json([
-                    'status'=>false,
-                    'message'=>"Customer & Supplier Account Lists Not Found",
-                ],200);
-            }
         }else{
             return response()->json([
                 'status'=>false,
-                'message'=>"Package Not Activated",
+                'message'=>"Invalid Token",
             ],200);
         }
     }
@@ -661,55 +733,87 @@ class ApiController extends Controller
     public function CreateProduct(Request $request){
         if($request->isMethod('post')){
             $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
-            if($user['usepackage']['status'] == 'active'){
-                $validator = Validator::make($request->all(), [
-                    'brand_id'=>'required',
-                    'categroy_id'=>'required',
-                    'unit_id'=>'required',
-                    'acc_cus_sup_id'=>'required',
-                    'lot_gallary_id'=>'required',
-                    'product_name'=>'required',
-                    'product_model'=>'required',
-                    'product_image'=>'required|file|mimes:jpeg,png,jpg,gif,svg|max:2048',
-                    'serial_no'=>'required',
-                    'supplier_price'=>'required|numeric',
-                    'our_price'=>'required|numeric',
-                    'khat_acc_id'=>'required',
-                ]);
-                if ($validator->fails()) {
-                    return response()->json(['errors'=>$validator->errors()], 400);
+            if($user){
+                if($user['usepackage']['status'] == 'active'){
+                    $validator = Validator::make($request->all(), [
+                        'brand_id'=>'required',
+                        'categroy_id'=>'required',
+                        'unit_id'=>'required',
+                        'acc_cus_sup_id'=>'required',
+                        'lot_gallary_id'=>'required',
+                        'product_name'=>'required',
+                        'product_model'=>'required',
+                        'product_image'=>'required|file|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                        'serial_no'=>'required',
+                        'supplier_price'=>'required|numeric',
+                        'our_price'=>'required|numeric',
+                        'khat_acc_id'=>'required',
+                    ]);
+                    if ($validator->fails()) {
+                        return response()->json(['errors'=>$validator->errors()], 400);
+                    }
+
+
+                    //product image
+                    $product_image = time().'.'.$request->product_image->extension();
+                    $request->product_image->move(public_path('images/product_image'), $product_image);
+                    $digits = 15;
+                    $product = new Product;
+                    $product->package_buy_id = $user['package_buy_id'];
+                    $product->brand_id = $request['brand_id'];
+                    $product->categroy_id = $request['categroy_id'];
+                    $product->unit_id = $request['unit_id'];
+                    $product->acc_cus_sup_id = $request['acc_cus_sup_id'];
+                    $product->lot_gallary_id = $request['lot_gallary_id'];
+                    $product->product_name = $request['product_name'];
+                    $product->product_model = $request['product_model'];
+                    $product->product_image = $_SERVER['HTTP_HOST'].'/images/product_image/'.$product_image;
+                    $product->batch_no = rand(pow(10, $digits-1), pow(10, $digits)-1);
+                    $product->serial_no = $request['serial_no'];
+                    $product->supplier_price = $request['supplier_price'];
+                    $product->our_price = $request['our_price'];
+                    // $product->khat_acc_id = $request['khat_acc_id'];
+                    $product->save();
+                    if($product){
+                        return response()->json([
+                            'status'=>true,
+                            'message'=>"Product Added Successfully",
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>"Something Is Wrong To Add Product",
+                        ],200);
+                    }
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Package Not Activated",
+                    ],200);
                 }
-
-
-                //profile image
-                $product_image = time().'.'.$request->product_image->extension();
-                $request->product_image->move(public_path('images/product_image'), $product_image);
-                $digits = 15;
-                $product = new Product;
-                $product->package_buy_id = $user['package_buy_id'];
-                $product->brand_id = $request['brand_id'];
-                $product->categroy_id = $request['categroy_id'];
-                $product->unit_id = $request['unit_id'];
-                $product->acc_cus_sup_id = $request['acc_cus_sup_id'];
-                $product->lot_gallary_id = $request['lot_gallary_id'];
-                $product->product_name = $request['product_name'];
-                $product->product_model = $request['product_model'];
-                $product->product_image = $_SERVER['HTTP_HOST'].'/images/product_image/'.$product_image;
-                $product->batch_no = rand(pow(10, $digits-1), pow(10, $digits)-1);
-                $product->serial_no = $request['serial_no'];
-                $product->supplier_price = $request['supplier_price'];
-                $product->our_price = $request['our_price'];
-                // $product->khat_acc_id = $request['khat_acc_id'];
-                $product->save();
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Invalid Token",
+                ],200);
+            }
+        }
+    }
+    //ProductLists
+    public function ProductLists(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $product = Product::where('package_buy_id',$user['package_buy_id'])->orderBy('id','DESC')->paginate(15);
                 if($product){
                     return response()->json([
                         'status'=>true,
-                        'message'=>"Product Added Successfully",
+                        'lists'=> $product,
                     ],200);
                 }else{
                     return response()->json([
                         'status'=>false,
-                        'message'=>"Something Is Wrong To Add Product",
+                        'message'=>"Product Lists Not Found",
                     ],200);
                 }
             }else{
@@ -718,28 +822,104 @@ class ApiController extends Controller
                     'message'=>"Package Not Activated",
                 ],200);
             }
-        }
-    }
-    //ProductLists
-    public function ProductLists(Request $request){
-        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
-        if($user['usepackage']['status'] == 'active'){
-            $product = Product::where('package_buy_id',$user['package_buy_id'])->orderBy('id','DESC')->paginate(15);
-            if($product){
-                return response()->json([
-                    'status'=>true,
-                    'product_lists'=> $product,
-                ],200);
-            }else{
-                return response()->json([
-                    'status'=>false,
-                    'message'=>"Product Lists Not Found",
-                ],200);
-            }
         }else{
             return response()->json([
                 'status'=>false,
-                'message'=>"Package Not Activated",
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //UpdateProduct
+    public function UpdateProduct(Request $request){
+        if($request->isMethod('post')){
+                $validator = Validator::make($request->all(), [
+                    'brand_id'=>'required',
+                    'categroy_id'=>'required',
+                    'unit_id'=>'required',
+                    'acc_cus_sup_id'=>'required',
+                    'lot_gallary_id'=>'required',
+                    'product_name'=>'required',
+                    'product_model'=>'required',
+                    'product_image'=>'file|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                    'serial_no'=>'required',
+                    'supplier_price'=>'required|numeric',
+                    'our_price'=>'required|numeric',
+                    'khat_acc_id'=>'required',
+                    'product_id'=>'required',
+                ]);
+                if ($validator->fails()) {
+                    return response()->json(['errors'=>$validator->errors()], 400);
+                }
+
+                $product = Product::where('id',$request['product_id'])->first();
+                //product image
+                if($request->hasFile('product_image')){
+                    $image_name = basename($product['product_image']);
+                    File::delete(public_path("images/product_image/".$image_name));
+
+                    $product_image = time().'.'.$request->product_image->extension();
+                    $request->product_image->move(public_path('images/product_image'), $product_image);
+                }
+
+                $product->brand_id = $request['brand_id'];
+                $product->categroy_id = $request['categroy_id'];
+                $product->unit_id = $request['unit_id'];
+                $product->acc_cus_sup_id = $request['acc_cus_sup_id'];
+                $product->lot_gallary_id = $request['lot_gallary_id'];
+                $product->product_name = $request['product_name'];
+                $product->product_model = $request['product_model'];
+                if(isset($product_image)){
+                    $product->product_image = $_SERVER['HTTP_HOST'].'/images/product_image/'.$product_image;
+                }
+                $product->serial_no = $request['serial_no'];
+                $product->supplier_price = $request['supplier_price'];
+                $product->our_price = $request['our_price'];
+                // $product->khat_acc_id = $request['khat_acc_id'];
+                $product->save();
+                if($product){
+                    return response()->json([
+                        'status'=>true,
+                        'message'=>"Product Updated Successfully",
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Something Is Wrong To Update Product",
+                    ],200);
+                }
+        }
+    }
+    //EnableProduct
+    public function EnableProduct(Request $request){
+        $product = Product::findOrFail($request['product_id']);
+        $product->status = 'active';
+        $product->save();
+        if($product){
+            return response()->json([
+                'status'=>true,
+                'message'=>"Product Enabled Successfully",
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Something Is Wrong To Enable Product",
+            ],200);
+        }
+    }
+    //DisableProduct
+    public function DisableProduct(Request $request){
+        $product = Product::findOrFail($request['product_id']);
+        $product->status = 'deactive';
+        $product->save();
+        if($product){
+            return response()->json([
+                'status'=>true,
+                'message'=>"Product Disabled Successfully",
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Something Is Wrong To Disable Product",
             ],200);
         }
     }

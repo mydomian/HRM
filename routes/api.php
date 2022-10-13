@@ -47,3 +47,7 @@ Route::post('update-customer-supplier-account',[ApiController::class,"UpdateCusS
 //product
 Route::post('create-product',[ApiController::class,"CreateProduct"]);
 Route::post('product-lists',[ApiController::class,"ProductLists"]);
+Route::post('update-product',[ApiController::class,"UpdateProduct"]);
+Route::post('disable-product',[ApiController::class,"DisableProduct"]);
+Route::post('enable-product',[ApiController::class,"EnableProduct"]);
+Route::post('disable-product',[ApiController::class,"DisableProduct"]);
