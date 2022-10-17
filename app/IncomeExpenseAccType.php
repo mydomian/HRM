@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 class IncomeExpenseAccType extends Model
 {
     protected $fillable = [
-        'purchase_owner_id', 'income_exp_acc_type', 'status'
+        'package_buy_id', 'name', 'status'
     ];
     protected $casts = [
-        'purchase_owner_id' => 'integer',
-        'income_exp_acc_type' => 'string',
+        'package_buy_id' => 'integer',
+        'name' => 'string',
         'status' => 'enum',
     ];
 }

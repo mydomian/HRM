@@ -15,6 +15,7 @@ class CreateDriversTable extends Migration
     {
         Schema::create('drivers', function (Blueprint $table) {
             $table->id()->autoIncrement();
+            $table->unsignedBigInteger('package_buy_id');
             $table->unsignedBigInteger('vehicle_id');
             $table->unsignedBigInteger('city_id');
             $table->unsignedBigInteger('district_id');
@@ -24,6 +25,7 @@ class CreateDriversTable extends Migration
             $table->string('father_name');
             $table->text('post_office');
             $table->text('village');
+            $table->foreign('package_buy_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('vehicle_id')->references('id')->on('vehicales')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('city_id')->references('id')->on('cities')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('district_id')->references('id')->on('districts')->onUpdate('cascade')->onDelete('cascade');

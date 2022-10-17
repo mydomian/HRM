@@ -7,12 +7,17 @@ use Illuminate\Database\Eloquent\Model;
 class District extends Model
 {
     protected $fillable = [
-        'purchase_owner_id','city_id', 'district_name', 'status'
+        'package_buy_id','city_id', 'name', 'status'
     ];
     protected $casts = [
-        'purchase_owner_id' => 'integer',
+        'package_buy_id' => 'integer',
         'city_id' => 'integer',
-        'district_name' => 'string',
+        'name' => 'string',
         'status' => 'enum',
     ];
+
+    //city relation
+    public function city(){
+        return $this->belongsTo(City::class, 'city_id')->select('id','name');
+    }
 }

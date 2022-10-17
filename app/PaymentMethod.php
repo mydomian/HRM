@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 class PaymentMethod extends Model
 {
     protected $fillable = [
-        'purchase_owner_id', 'payment_method', 'status'
+        'package_buy_id', 'name', 'status'
     ];
     protected $casts = [
-        'purchase_owner_id' => 'integer',
-        'payment_method' => 'string',
+        'package_buy_id' => 'integer',
+        'name' => 'string',
         'status' => 'enum',
     ];
 }

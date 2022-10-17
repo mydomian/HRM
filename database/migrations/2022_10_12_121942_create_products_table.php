@@ -18,7 +18,7 @@ class CreateProductsTable extends Migration
             $table->bigInteger('package_buy_id')->unsigned();
             $table->bigInteger('acc_cus_sup_id')->unsigned();
             $table->bigInteger('brand_id')->unsigned();
-            $table->bigInteger('categroy_id')->unsigned();
+            $table->bigInteger('category_id')->unsigned();
             $table->bigInteger('unit_id')->unsigned();
             $table->bigInteger('lot_gallary_id')->unsigned();
             $table->string('product_name');
@@ -35,7 +35,7 @@ class CreateProductsTable extends Migration
             $table->foreign('package_buy_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('acc_cus_sup_id')->references('id')->on('acc_customer_suppliers')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('brand_id')->references('id')->on('brands')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreign('categroy_id')->references('id')->on('categories')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('category_id')->references('id')->on('categories')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('unit_id')->references('id')->on('units')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('lot_gallary_id')->references('id')->on('lot_gallaries')->onUpdate('cascade')->onDelete('cascade');
 

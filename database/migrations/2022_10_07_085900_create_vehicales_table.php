@@ -15,6 +15,7 @@ class CreateVehicalesTable extends Migration
     {
         Schema::create('vehicales', function (Blueprint $table) {
             $table->id()->autoIncrement();
+            $table->unsignedBigInteger('package_buy_id');
             $table->unsignedBigInteger('city_id');
             $table->unsignedBigInteger('district_id');
             $table->unsignedBigInteger('thana_id');
@@ -29,6 +30,7 @@ class CreateVehicalesTable extends Migration
             $table->enum('status',['active', 'deactive'])->default('active');
             $table->timestamps();
 
+            $table->foreign('package_buy_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('city_id')->references('id')->on('cities')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('district_id')->references('id')->on('districts')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('thana_id')->references('id')->on('thanas')->onUpdate('cascade')->onDelete('cascade');

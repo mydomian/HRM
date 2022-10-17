@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 class City extends Model
 {
     protected $fillable = [
-        'purchase_owner_id', 'city_name', 'status'
+        'package_buy_id', 'name', 'status'
     ];
     protected $casts = [
-        'purchase_owner_id' => 'integer',
-        'city_name' => 'string',
+        'package_buy_id' => 'integer',
+        'name' => 'string',
         'status' => 'enum',
     ];
 }
