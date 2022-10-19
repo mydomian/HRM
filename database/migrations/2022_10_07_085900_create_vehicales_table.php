@@ -19,12 +19,14 @@ class CreateVehicalesTable extends Migration
             $table->unsignedBigInteger('city_id');
             $table->unsignedBigInteger('district_id');
             $table->unsignedBigInteger('thana_id');
+            $table->unsignedBigInteger('union_id');
             $table->string('vehicle_name');
             $table->string('vehicle_type');
-            $table->string('vehicle_no');
-            $table->string('vehicle_reg_no');
+            $table->string('vehicle_no')->unique();
+            $table->string('vehicle_reg_no')->unique();
             $table->string('owner_name');
-            $table->string('owner_phone');
+            $table->string('father_name');
+            $table->bigInteger('owner_phone')->unique();
             $table->string('owner_post_office');
             $table->string('owner_village');
             $table->enum('status',['active', 'deactive'])->default('active');
@@ -34,6 +36,7 @@ class CreateVehicalesTable extends Migration
             $table->foreign('city_id')->references('id')->on('cities')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('district_id')->references('id')->on('districts')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('thana_id')->references('id')->on('thanas')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('union_id')->references('id')->on('unions')->onUpdate('cascade')->onDelete('cascade');
         });
     }
 

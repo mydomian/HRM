@@ -40,6 +40,6 @@ class Product extends Model
         return $this->belongsTo(LotGallary::class,'lot_gallary_id','id')->select('id','name');
     }
     public function customer_supplier(){
-        return $this->belongsTo(AccCustomerSupplier::class,'acc_cus_sup_id','id');
+        return $this->belongsTo(AccCustomerSupplier::class,'acc_cus_sup_id','id')->select('id','acc_name');
     }
 }

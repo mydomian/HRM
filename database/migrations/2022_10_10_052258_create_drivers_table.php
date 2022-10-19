@@ -20,16 +20,18 @@ class CreateDriversTable extends Migration
             $table->unsignedBigInteger('city_id');
             $table->unsignedBigInteger('district_id');
             $table->unsignedBigInteger('thana_id');
-            $table->string('name');
-            $table->bigInteger('phone');
+            $table->unsignedBigInteger('union_id');
+            $table->string('driver_name');
+            $table->bigInteger('driver_phone')->unique();
             $table->string('father_name');
-            $table->text('post_office');
-            $table->text('village');
+            $table->text('driver_post_office');
+            $table->text('driver_village');
             $table->foreign('package_buy_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('vehicle_id')->references('id')->on('vehicales')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('city_id')->references('id')->on('cities')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('district_id')->references('id')->on('districts')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('thana_id')->references('id')->on('thanas')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('union_id')->references('id')->on('unions')->onUpdate('cascade')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -41,6 +43,8 @@ class CreateDriversTable extends Migration
      */
     public function down()
     {
+        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('drivers');
+        Schema::enableForeignKeyConstraints();
     }
 }

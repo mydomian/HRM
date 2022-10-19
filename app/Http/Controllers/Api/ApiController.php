@@ -2,11 +2,17 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\AccArea;
+use App\AccCategory;
 use App\AccCustomerSupplier;
+use App\AccType;
+use App\BankAccCategory;
 use App\Brand;
+use App\CashCounter;
 use App\Category;
 use App\City;
 use App\District;
+use App\Driver;
 use App\Http\Controllers\Controller;
 use App\IncomeExpenseAccType;
 use App\IncomeExpensePaymentMethodType;
@@ -20,6 +26,7 @@ use App\Thana;
 use App\Union;
 use App\Unit;
 use App\User;
+use App\Vehicale;
 use App\WareHouse;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -175,7 +182,7 @@ class ApiController extends Controller
 
         if($user){
             if($user['usepackage']['status'] == 'active'){
-                $brand = Brand::where('package_buy_id',$user['package_buy_id'])->orderBy('id','DESC')->paginate(15);
+                $brand = Brand::where('package_buy_id',$user['package_buy_id'])->select('id','name')->orderBy('id','DESC')->paginate(15);
                 if($brand){
                     return response()->json([
                         'status'=>true,
@@ -272,6 +279,21 @@ class ApiController extends Controller
             ],200);
         }
     }
+    //SingelBrand
+    public function SingelBrand($brand_id){
+        $brand = Brand::where('id',$brand_id)->select('id','name')->first();
+        if($brand){
+            return response()->json([
+                'status'=>true,
+                'lists'=> $brand,
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Not Found",
+            ],200);
+        }
+    }
     //CreateCategory
     public function CreateCategory(Request $request){
         if($request->isMethod('post')){
@@ -318,7 +340,7 @@ class ApiController extends Controller
         $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
         if($user){
             if($user['usepackage']['status'] == 'active'){
-                $category = Category::where('package_buy_id',$user['package_buy_id'])->orderBy('id','DESC')->paginate(15);
+                $category = Category::where('package_buy_id',$user['package_buy_id'])->select('id','name')->orderBy('id','DESC')->paginate(15);
                 if($category){
                     return response()->json([
                         'status'=>true,
@@ -413,6 +435,21 @@ class ApiController extends Controller
             ],200);
         }
     }
+    //SingelCategory
+    public function SingelCategory($category_id){
+        $category = Category::where('id',$category_id)->select('id','name')->first();
+        if($category){
+            return response()->json([
+                'status'=>true,
+                'lists'=> $category,
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Not Found",
+            ],200);
+        }
+    }
     //CreateUnit
     public function CreateUnit(Request $request){
         if($request->isMethod('post')){
@@ -459,7 +496,7 @@ class ApiController extends Controller
         $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
         if($user){
             if($user['usepackage']['status'] == 'active'){
-                $unit = Unit::where('package_buy_id',$user['package_buy_id'])->orderBy('id','DESC')->paginate(15);
+                $unit = Unit::where('package_buy_id',$user['package_buy_id'])->select('id','name')->orderBy('id','DESC')->paginate(15);
                 if($unit){
                     return response()->json([
                         'status'=>true,
@@ -554,6 +591,21 @@ class ApiController extends Controller
             ],200);
         }
     }
+    //SingelUnit
+    public function SingelUnit($unit_id){
+        $unit = Unit::where('id',$unit_id)->select('id','name')->first();
+        if($unit){
+            return response()->json([
+                'status'=>true,
+                'lists'=> $unit,
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Not Found",
+            ],200);
+        }
+    }
     //CreateLotGallary
     public function CreateLotGallary(Request $request){
         if($request->isMethod('post')){
@@ -600,7 +652,7 @@ class ApiController extends Controller
         $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
         if($user){
             if($user['usepackage']['status'] == 'active'){
-                $lot_gallary = LotGallary::where('package_buy_id',$user['package_buy_id'])->orderBy('id','DESC')->paginate(15);
+                $lot_gallary = LotGallary::where('package_buy_id',$user['package_buy_id'])->select('id','name')->orderBy('id','DESC')->paginate(15);
                 if($lot_gallary){
                     return response()->json([
                         'status'=>true,
@@ -695,6 +747,21 @@ class ApiController extends Controller
             ],200);
         }
     }
+     //SingleLotGallary
+     public function SingleLotGallary($lot_gallary_id){
+        $lot_gallary = LotGallary::where('id',$lot_gallary_id)->select('id','name')->first();
+        if($lot_gallary){
+            return response()->json([
+                'status'=>true,
+                'lists'=> $lot_gallary,
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Not Found",
+            ],200);
+        }
+    }
     //CreateCusSupAcc
     public function CreateCusSupAcc(Request $request){
         if($request->isMethod('post')){
@@ -736,8 +803,8 @@ class ApiController extends Controller
                     $acc_cus_sup->acc_area = $request['acc_area'];
                     $acc_cus_sup->acc_opening_balance = $request['acc_opening_balance'];
                     $acc_cus_sup->acc_hold_balance = $request['acc_hold_balance'];
-                    $acc_cus_sup->profile_image = $_SERVER['HTTP_HOST'].'/images/profile_image/'.$profile;
-                    $acc_cus_sup->nid_image = $_SERVER['HTTP_HOST'].'/images/nid_image/'.$nid;
+                    $acc_cus_sup->profile_image = $_SERVER['HTTP_HOST'].'/public/images/profile_image/'.$profile;
+                    $acc_cus_sup->nid_image = $_SERVER['HTTP_HOST'].'/public/images/nid_image/'.$nid;
                     $acc_cus_sup->date = date('Y-m-d');
                     $acc_cus_sup->save();
                     if($acc_cus_sup){
@@ -870,10 +937,10 @@ class ApiController extends Controller
                 $acc_cus_sup->acc_opening_balance = $request['acc_opening_balance'];
                 $acc_cus_sup->acc_hold_balance = $request['acc_hold_balance'];
                 if(isset($profile)){
-                    $acc_cus_sup->profile_image = $_SERVER['HTTP_HOST'].'/images/profile_image/'.$profile;
+                    $acc_cus_sup->profile_image = $_SERVER['HTTP_HOST'].'/public/images/profile_image/'.$profile;
                 }
                 if(isset($nid)){
-                    $acc_cus_sup->nid_image = $_SERVER['HTTP_HOST'].'/images/nid_image/'.$nid;
+                    $acc_cus_sup->nid_image = $_SERVER['HTTP_HOST'].'/public/images/nid_image/'.$nid;
                 }
                 $acc_cus_sup->save();
                 if($acc_cus_sup){
@@ -887,6 +954,21 @@ class ApiController extends Controller
                         'message'=>"Something Is Wrong To Update Account",
                     ],200);
                 }
+        }
+    }
+    //SingleCusSupAcc
+    public function SingleCusSupAcc($cus_sup_acc_id){
+        $cus_sup_acc = AccCustomerSupplier::where('id',$cus_sup_acc_id)->select('id','acc_name')->first();
+        if($cus_sup_acc){
+            return response()->json([
+                'status'=>true,
+                'lists'=> $cus_sup_acc,
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Not Found",
+            ],200);
         }
     }
     //CreateProduct
@@ -929,7 +1011,7 @@ class ApiController extends Controller
                     $product->lot_gallary_id = $request['lot_gallary_id'];
                     $product->product_name = $request['product_name'];
                     $product->product_model = $request['product_model'];
-                    $product->product_image = $_SERVER['HTTP_HOST'].'/images/product_image/'.$product_image;
+                    $product->product_image = $_SERVER['HTTP_HOST'].'/public/images/product_image/'.$product_image;
                     $product->batch_no = rand(pow(10, $digits-1), pow(10, $digits)-1);
                     $product->serial_no = $request['serial_no'];
                     $product->supplier_price = $request['supplier_price'];
@@ -1031,7 +1113,7 @@ class ApiController extends Controller
                 $product->product_name = $request['product_name'];
                 $product->product_model = $request['product_model'];
                 if(isset($product_image)){
-                    $product->product_image = $_SERVER['HTTP_HOST'].'/images/product_image/'.$product_image;
+                    $product->product_image = $_SERVER['HTTP_HOST'].'/public/images/product_image/'.$product_image;
                 }
                 $product->serial_no = $request['serial_no'];
                 $product->supplier_price = $request['supplier_price'];
@@ -1085,6 +1167,21 @@ class ApiController extends Controller
             ],200);
         }
     }
+    //SingleProduct
+    public function SingleProduct($product_id){
+        $product = Product::with('brand','category','unit','lot_gallary','customer_supplier')->where('id',$product_id)->first();
+        if($product){
+            return response()->json([
+                'status'=>true,
+                'lists'=> $product,
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Not Found",
+            ],200);
+        }
+    }
     //CreateWareHouse
     public function CreateWareHouse(Request $request){
         if($request->isMethod('post')){
@@ -1132,7 +1229,7 @@ class ApiController extends Controller
 
         if($user){
             if($user['usepackage']['status'] == 'active'){
-                $warehouse = WareHouse::where('package_buy_id',$user['package_buy_id'])->orderBy('id','DESC')->paginate(15);
+                $warehouse = WareHouse::where('package_buy_id',$user['package_buy_id'])->select('id','name')->orderBy('id','DESC')->paginate(15);
                 if($warehouse){
                     return response()->json([
                         'status'=>true,
@@ -1229,6 +1326,21 @@ class ApiController extends Controller
             ],200);
         }
     }
+    //SingleWareHouse
+    public function SingleWareHouse($ware_house_id){
+        $warehouse = WareHouse::where('id',$ware_house_id)->select('id','name')->first();
+        if($warehouse){
+            return response()->json([
+                'status'=>true,
+                'lists'=> $warehouse,
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Not Found",
+            ],200);
+        }
+    }
     //CreateThana
     public function CreateThana(Request $request){
 
@@ -1282,8 +1394,8 @@ class ApiController extends Controller
         $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
         if($user){
             if($user['usepackage']['status'] == 'active'){
-                $thana = Thana::with('city','district')->where('package_buy_id',$user['package_buy_id'])->orderBy('id','DESC')->paginate(15);
-                return $thana;
+                $thana = Thana::with('city','district')->where('package_buy_id',$user['package_buy_id'])->select('id','name')->orderBy('id','DESC')->paginate(15);
+
                 if($thana){
                     return response()->json([
                         'status'=>true,
@@ -1314,7 +1426,7 @@ class ApiController extends Controller
 
         if($user){
             if($user['usepackage']['status'] == 'active'){
-                $thana = Thana::where('package_buy_id',$user['package_buy_id'])->select('id','name')->orderBy('id','DESC')->get();
+                $thana = Thana::with('city','district')->where('package_buy_id',$user['package_buy_id'])->select('id','city_id','district_id','name')->orderBy('id','DESC')->get();
                 if($thana){
                     return response()->json([
                         'status'=>true,
@@ -1382,6 +1494,21 @@ class ApiController extends Controller
             ],200);
         }
     }
+     //SingleThana
+     public function SingleThana($thana_id){
+        $thana = Thana::with('city','district')->where('id',$thana_id)->first();
+        if($thana){
+            return response()->json([
+                'status'=>true,
+                'lists'=> $thana,
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Not Found",
+            ],200);
+        }
+    }
      //CreateCity
      public function CreateCity(Request $request){
 
@@ -1430,7 +1557,7 @@ class ApiController extends Controller
 
         if($user){
             if($user['usepackage']['status'] == 'active'){
-                $city = City::where('package_buy_id',$user['package_buy_id'])->orderBy('id','DESC')->paginate(15);
+                $city = City::where('package_buy_id',$user['package_buy_id'])->select('id','name')->orderBy('id','DESC')->paginate(15);
                 if($city){
                     return response()->json([
                         'status'=>true,
@@ -1527,6 +1654,21 @@ class ApiController extends Controller
             ],200);
         }
     }
+    //SingleCity
+    public function SingleCity($city_id){
+        $city = City::where('id',$city_id)->select('id','name')->first();
+        if($city){
+            return response()->json([
+                'status'=>true,
+                'lists'=> $city,
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Not Found",
+            ],200);
+        }
+    }
     //CreateDistrict
     public function CreateDistrict(Request $request){
 
@@ -1577,7 +1719,7 @@ class ApiController extends Controller
 
         if($user){
             if($user['usepackage']['status'] == 'active'){
-                $district = District::with('city')->where('package_buy_id',$user['package_buy_id'])->orderBy('id','DESC')->paginate(15);
+                $district = District::with('city')->where('package_buy_id',$user['package_buy_id'])->select('id','city_id','name')->orderBy('id','DESC')->paginate(15);
                 if($district){
                     return response()->json([
                         'status'=>true,
@@ -1608,7 +1750,7 @@ class ApiController extends Controller
 
         if($user){
             if($user['usepackage']['status'] == 'active'){
-                $district = District::where('package_buy_id',$user['package_buy_id'])->select('id','name')->orderBy('id','DESC')->get();
+                $district = District::with('city')->where('package_buy_id',$user['package_buy_id'])->select('id','name')->orderBy('id','DESC')->get();
                 if($district){
                     return response()->json([
                         'status'=>true,
@@ -1676,6 +1818,21 @@ class ApiController extends Controller
             ],200);
         }
     }
+    //SingleDistrict
+    public function SingleDistrict($distict_id){
+        $district = District::with('city')->where('id',$distict_id)->select('id','city_id','name')->first();
+        if($district){
+            return response()->json([
+                'status'=>true,
+                'lists'=> $district,
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Not Found",
+            ],200);
+        }
+    }
     //CreateUnion
     public function CreateUnion(Request $request){
 
@@ -1730,7 +1887,7 @@ class ApiController extends Controller
 
         if($user){
             if($user['usepackage']['status'] == 'active'){
-                $union = Union::with('city','district','thana')->where('package_buy_id',$user['package_buy_id'])->orderBy('id','DESC')->paginate(15);
+                $union = Union::with('city','district','thana')->where('package_buy_id',$user['package_buy_id'])->select('id','city_id','district_id','thana_id','name')->orderBy('id','DESC')->paginate(15);
                 if($union){
                     return response()->json([
                         'status'=>true,
@@ -1761,7 +1918,7 @@ class ApiController extends Controller
 
         if($user){
             if($user['usepackage']['status'] == 'active'){
-                $union = Union::where('package_buy_id',$user['package_buy_id'])->select('id','name')->orderBy('id','DESC')->get();
+                $union = Union::with('city','district','thana')->where('package_buy_id',$user['package_buy_id'])->select('id','name')->orderBy('id','DESC')->get();
                 if($union){
                     return response()->json([
                         'status'=>true,
@@ -1834,6 +1991,21 @@ class ApiController extends Controller
             ],200);
         }
     }
+     //SingleUnion
+     public function SingleUnion($union_id){
+        $union = Union::with('city','district','thana')->where('id',$union_id)->select('id','city_id','district_id','thana_id','name')->first();
+        if($union){
+            return response()->json([
+                'status'=>true,
+                'lists'=> $union,
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Not Found",
+            ],200);
+        }
+    }
     //CreateIncExpAccType
     public function CreateIncExpAccType(Request $request){
 
@@ -1882,7 +2054,7 @@ class ApiController extends Controller
 
         if($user){
             if($user['usepackage']['status'] == 'active'){
-                $inc_exp_acc_type = IncomeExpenseAccType::where('package_buy_id',$user['package_buy_id'])->orderBy('id','DESC')->paginate(15);
+                $inc_exp_acc_type = IncomeExpenseAccType::where('package_buy_id',$user['package_buy_id'])->select('id','name')->orderBy('id','DESC')->paginate(15);
                 if($inc_exp_acc_type){
                     return response()->json([
                         'status'=>true,
@@ -1964,6 +2136,7 @@ class ApiController extends Controller
             ],200);
         }
     }
+
     //DeleteIncExpAccType
     public function DeleteIncExpAccType(Request $request){
         $inc_exp_acc_id = IncomeExpenseAccType::findOrFail($request['inc_exp_acc_id']);
@@ -1977,6 +2150,21 @@ class ApiController extends Controller
             return response()->json([
                 'status'=>false,
                 'message'=>"Something Is Worng To Delete",
+            ],200);
+        }
+    }
+    //SingleIncExpAccType
+    public function SingleIncExpAccType($inc_exp_acc_id){
+        $inc_exp_acc_type = IncomeExpenseAccType::where('id',$inc_exp_acc_id)->select('id','name')->first();
+        if($inc_exp_acc_type){
+            return response()->json([
+                'status'=>true,
+                'lists'=> $inc_exp_acc_type,
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Not Found",
             ],200);
         }
     }
@@ -2175,7 +2363,7 @@ class ApiController extends Controller
 
         if($user){
             if($user['usepackage']['status'] == 'active'){
-                $production_type = ProductionType::where('package_buy_id',$user['package_buy_id'])->orderBy('id','DESC')->paginate(15);
+                $production_type = ProductionType::where('package_buy_id',$user['package_buy_id'])->select('id','name')->orderBy('id','DESC')->paginate(15);
                 if($production_type){
                     return response()->json([
                         'status'=>true,
@@ -2274,6 +2462,21 @@ class ApiController extends Controller
             ],200);
         }
     }
+    //SingleProductionType
+    public function SingleProductionType($production_type_id){
+        $production_type = ProductionType::where('id',$production_type_id)->select('id','name')->first();
+        if($production_type){
+            return response()->json([
+                'status'=>true,
+                'lists'=> $production_type,
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Not Found",
+            ],200);
+        }
+    }
     //CreatePaymentMethod
     public function CreatePaymentMethod(Request $request){
 
@@ -2322,7 +2525,7 @@ class ApiController extends Controller
 
         if($user){
             if($user['usepackage']['status'] == 'active'){
-                $payment_method = PaymentMethod::where('package_buy_id',$user['package_buy_id'])->orderBy('id','DESC')->paginate(15);
+                $payment_method = PaymentMethod::where('package_buy_id',$user['package_buy_id'])->select('id','name')->orderBy('id','DESC')->paginate(15);
                 if($payment_method){
                     return response()->json([
                         'status'=>true,
@@ -2418,6 +2621,1206 @@ class ApiController extends Controller
             return response()->json([
                 'status'=>false,
                 'message'=>"Something Is Worng To Delete",
+            ],200);
+        }
+    }
+    //SinglePaymentMethod
+    public function SinglePaymentMethod($payment_method_id){
+        $payment_method = PaymentMethod::where('id',$payment_method_id)->select('id','name')->first();
+        if($payment_method){
+            return response()->json([
+                'status'=>true,
+                'lists'=> $payment_method,
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Not Found",
+            ],200);
+        }
+    }
+    //CreateAccArea
+    public function CreateAccArea(Request $request){
+        if($request->isMethod('post')){
+            $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+            if($user){
+                if($user['usepackage']['status'] == 'active'){
+                    $validator = Validator::make($request->all(), [
+                        'name'=>'required',
+                    ]);
+                    if ($validator->fails()) {
+                        return response()->json(['errors'=>$validator->errors()], 400);
+                    }
+                    $acc_area = new AccArea;
+                    $acc_area->package_buy_id = $user['package_buy_id'];
+                    $acc_area->name = $request['name'];
+                    $acc_area->save();
+                    if($acc_area){
+                        return response()->json([
+                            'status'=>true,
+                            'message'=>"Account Area Created Successfully",
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>"Something Is Wrong To Create Account Area",
+                        ],200);
+                    }
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Package Not Activated",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Invalid Token",
+                ],200);
+            }
+        }
+    }
+    //AccAreaLists
+    public function AccAreaLists(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $acc_area = AccArea::where('package_buy_id',$user['package_buy_id'])->select('id','name')->orderBy('id','DESC')->paginate(15);
+                if($acc_area){
+                    return response()->json([
+                        'status'=>true,
+                        'lists'=> $acc_area,
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Account Area Lists Not Found",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //AccArea
+    public function AccArea(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $acc_area = AccArea::where('package_buy_id',$user['package_buy_id'])->select('id','name')->orderBy('id','DESC')->get();
+                if($acc_area){
+                    return response()->json([
+                        'status'=>true,
+                        'lists'=> $acc_area,
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Account Area Lists Not Found",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //UpdateAccArea
+    public function UpdateAccArea(Request $request){
+        $validator = Validator::make($request->all(), [
+            'acc_area_id'=>'required',
+            'name'=>'required',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['errors'=>$validator->errors()], 400);
+        }
+        $acc_area = AccArea::findOrFail($request['acc_area_id']);
+        $acc_area->name = $request['name'];
+        $acc_area->save();
+        if($acc_area){
+            return response()->json([
+                'status'=>true,
+                'message'=> "Account Area Updated Successfully",
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Something Is Worng To Update",
+            ],200);
+        }
+    }
+    //DeleteAccArea
+    public function DeleteAccArea(Request $request){
+        $acc_area = AccArea::findOrFail($request['acc_area_id']);
+        $acc_area->delete();
+        if($acc_area){
+            return response()->json([
+                'status'=>true,
+                'message'=> "Account Area Deleted Successfully",
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Something Is Worng To Delete",
+            ],200);
+        }
+    }
+     //SingleAccArea
+     public function SingleAccArea($acc_area_id){
+        $acc_area = AccArea::where('id',$acc_area_id)->select('id','name')->first();
+        if($acc_area){
+            return response()->json([
+                'status'=>true,
+                'lists'=> $acc_area,
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Not Found",
+            ],200);
+        }
+    }
+     //CreateAccCategory
+     public function CreateAccCategory(Request $request){
+        if($request->isMethod('post')){
+            $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+            if($user){
+                if($user['usepackage']['status'] == 'active'){
+                    $validator = Validator::make($request->all(), [
+                        'name'=>'required',
+                    ]);
+                    if ($validator->fails()) {
+                        return response()->json(['errors'=>$validator->errors()], 400);
+                    }
+                    $acc_category = new AccCategory;
+                    $acc_category->package_buy_id = $user['package_buy_id'];
+                    $acc_category->name = $request['name'];
+                    $acc_category->save();
+                    if($acc_category){
+                        return response()->json([
+                            'status'=>true,
+                            'message'=>"Account Category Created Successfully",
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>"Something Is Wrong To Create Account Category",
+                        ],200);
+                    }
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Package Not Activated",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Invalid Token",
+                ],200);
+            }
+        }
+    }
+    //AccCategoryLists
+    public function AccCategoryLists(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $acc_category = AccCategory::where('package_buy_id',$user['package_buy_id'])->select('id','name')->orderBy('id','DESC')->paginate(15);
+                if($acc_category){
+                    return response()->json([
+                        'status'=>true,
+                        'lists'=> $acc_category,
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Account Category Lists Not Found",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //AccCategory
+    public function AccCategory(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $acc_category = AccCategory::where('package_buy_id',$user['package_buy_id'])->select('id','name')->orderBy('id','DESC')->get();
+                if($acc_category){
+                    return response()->json([
+                        'status'=>true,
+                        'lists'=> $acc_category,
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Account Category Lists Not Found",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //UpdateAccCategory
+    public function UpdateAccCategory(Request $request){
+
+        $validator = Validator::make($request->all(), [
+            'acc_category_id'=>'required',
+            'name'=>'required',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['errors'=>$validator->errors()], 400);
+        }
+        $acc_category = AccCategory::findOrFail($request['acc_category_id']);
+        $acc_category->name = $request['name'];
+        $acc_category->save();
+        if($acc_category){
+            return response()->json([
+                'status'=>true,
+                'message'=> "Account Category Updated Successfully",
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Something Is Worng To Update",
+            ],200);
+        }
+    }
+    //DeleteAccCategory
+    public function DeleteAccCategory(Request $request){
+        $acc_category = AccCategory::findOrFail($request['acc_category_id']);
+        $acc_category->delete();
+        if($acc_category){
+            return response()->json([
+                'status'=>true,
+                'message'=> "Account Category Deleted Successfully",
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Something Is Worng To Delete",
+            ],200);
+        }
+    }
+     //SingleAccCategory
+     public function SingleAccCategory($acc_category_id){
+        $acc_category = AccCategory::where('id',$acc_category_id)->select('id','name')->first();
+        if($acc_category){
+            return response()->json([
+                'status'=>true,
+                'lists'=> $acc_category,
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Not Found",
+            ],200);
+        }
+    }
+    //CreateAccType
+    public function CreateAccType(Request $request){
+        if($request->isMethod('post')){
+            $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+            if($user){
+                if($user['usepackage']['status'] == 'active'){
+                    $validator = Validator::make($request->all(), [
+                        'name'=>'required',
+                    ]);
+                    if ($validator->fails()) {
+                        return response()->json(['errors'=>$validator->errors()], 400);
+                    }
+                    $acc_type = new AccType;
+                    $acc_type->package_buy_id = $user['package_buy_id'];
+                    $acc_type->name = $request['name'];
+                    $acc_type->save();
+                    if($acc_type){
+                        return response()->json([
+                            'status'=>true,
+                            'message'=>"Account Type Created Successfully",
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>"Something Is Wrong To Create Account Type",
+                        ],200);
+                    }
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Package Not Activated",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Invalid Token",
+                ],200);
+            }
+        }
+    }
+    //AccTypeLists
+    public function AccTypeLists(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $acc_type = AccType::where('package_buy_id',$user['package_buy_id'])->select('id','name')->orderBy('id','DESC')->paginate(15);
+                if($acc_type){
+                    return response()->json([
+                        'status'=>true,
+                        'lists'=> $acc_type,
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Account Type Lists Not Found",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //Acctype
+    public function AccType(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $acc_type = AccType::where('package_buy_id',$user['package_buy_id'])->select('id','name')->orderBy('id','DESC')->get();
+                if($acc_type){
+                    return response()->json([
+                        'status'=>true,
+                        'lists'=> $acc_type,
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Account Type Lists Not Found",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //UpdateAccType
+    public function UpdateAccType(Request $request){
+
+        $validator = Validator::make($request->all(), [
+            'acc_type_id'=>'required',
+            'name'=>'required',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['errors'=>$validator->errors()], 400);
+        }
+        $acc_type = AccType::findOrFail($request['acc_type_id']);
+        $acc_type->name = $request['name'];
+        $acc_type->save();
+        if($acc_type){
+            return response()->json([
+                'status'=>true,
+                'message'=> "Account Type Updated Successfully",
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Something Is Worng To Update",
+            ],200);
+        }
+    }
+    //DeleteAccType
+    public function DeleteAccType(Request $request){
+        $acc_type = AccType::findOrFail($request['acc_type_id']);
+        $acc_type->delete();
+        if($acc_type){
+            return response()->json([
+                'status'=>true,
+                'message'=> "Account Type Deleted Successfully",
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Something Is Worng To Delete",
+            ],200);
+        }
+    }
+     //SingleAccType
+     public function SingleAccType($acc_type_id){
+        $acc_type = AccType::where('id',$acc_type_id)->select('id','name')->first();
+        if($acc_type){
+            return response()->json([
+                'status'=>true,
+                'lists'=> $acc_type,
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Not Found",
+            ],200);
+        }
+    }
+    //CreateBankAccCategory
+    public function CreateBankAccCategory(Request $request){
+        if($request->isMethod('post')){
+            $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+            if($user){
+                if($user['usepackage']['status'] == 'active'){
+                    $validator = Validator::make($request->all(), [
+                        'name'=>'required',
+                    ]);
+                    if ($validator->fails()) {
+                        return response()->json(['errors'=>$validator->errors()], 400);
+                    }
+                    $bank_acc_cat = new BankAccCategory;
+                    $bank_acc_cat->package_buy_id = $user['package_buy_id'];
+                    $bank_acc_cat->name = $request['name'];
+                    $bank_acc_cat->save();
+                    if($bank_acc_cat){
+                        return response()->json([
+                            'status'=>true,
+                            'message'=>"Bank Account Category Created Successfully",
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>"Something Is Wrong To Create Bank Account Category",
+                        ],200);
+                    }
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Package Not Activated",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Invalid Token",
+                ],200);
+            }
+        }
+    }
+    //BankAccCategoryLists
+    public function BankAccCategoryLists(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $bank_acc_cat = BankAccCategory::where('package_buy_id',$user['package_buy_id'])->select('id','name')->orderBy('id','DESC')->paginate(15);
+                if($bank_acc_cat){
+                    return response()->json([
+                        'status'=>true,
+                        'lists'=> $bank_acc_cat,
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Bank Account Category Lists Not Found",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //BankAccCategory
+    public function BankAccCategory(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $bank_acc_cat = BankAccCategory::where('package_buy_id',$user['package_buy_id'])->select('id','name')->orderBy('id','DESC')->get();
+                if($bank_acc_cat){
+                    return response()->json([
+                        'status'=>true,
+                        'lists'=> $bank_acc_cat,
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Bank Account Category Lists Not Found",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //UpdateBankAccCategory
+    public function UpdateBankAccCategory(Request $request){
+
+        $validator = Validator::make($request->all(), [
+            'bank_acc_category_id'=>'required',
+            'name'=>'required',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['errors'=>$validator->errors()], 400);
+        }
+        $bank_acc_cat = BankAccCategory::findOrFail($request['bank_acc_category_id']);
+        $bank_acc_cat->name = $request['name'];
+        $bank_acc_cat->save();
+        if($bank_acc_cat){
+            return response()->json([
+                'status'=>true,
+                'message'=> "Bank Account Category Updated Successfully",
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Something Is Worng To Update",
+            ],200);
+        }
+    }
+    //DeleteBankAccCategory
+    public function DeleteBankAccCategory(Request $request){
+        $bank_acc_category = BankAccCategory::findOrFail($request['bank_acc_category_id']);
+        $bank_acc_category->delete();
+        if($bank_acc_category){
+            return response()->json([
+                'status'=>true,
+                'message'=> "Bank Account Category Deleted Successfully",
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Something Is Worng To Delete",
+            ],200);
+        }
+    }
+     //SingleBankAccCategory
+     public function SingleBankAccCategory($bank_acc_category_id){
+        $bank_acc_category = BankAccCategory::where('id',$bank_acc_category_id)->select('id','name')->first();
+        return $bank_acc_category;
+        if($bank_acc_category){
+            return response()->json([
+                'status'=>true,
+                'lists'=> $bank_acc_category,
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Not Found",
+            ],200);
+        }
+    }
+    //CreateCashCounter
+    public function CreateCashCounter(Request $request){
+
+        if($request->isMethod('post')){
+            $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+            if($user){
+                if($user['usepackage']['status'] == 'active'){
+                    $validator = Validator::make($request->all(), [
+                        'name'=>'required',
+                    ]);
+                    if ($validator->fails()) {
+                        return response()->json(['errors'=>$validator->errors()], 400);
+                    }
+                    $cash_counter = new CashCounter;
+                    $cash_counter->package_buy_id = $user['package_buy_id'];
+                    $cash_counter->name = $request['name'];
+                    $cash_counter->save();
+                    if($cash_counter){
+                        return response()->json([
+                            'status'=>true,
+                            'message'=>"Cash Counter Created Successfully",
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>"Something Is Wrong To Create Cash Counter",
+                        ],200);
+                    }
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Package Not Activated",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Invalid Token",
+                ],200);
+            }
+        }
+    }
+    //CashCounterLists
+    public function CashCounterLists(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $cash_counter = CashCounter::where('package_buy_id',$user['package_buy_id'])->select('id','name')->orderBy('id','DESC')->paginate(15);
+                if($cash_counter){
+                    return response()->json([
+                        'status'=>true,
+                        'lists'=> $cash_counter,
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Cash Counter Lists Not Found",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //CashCounter
+    public function CashCounter(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $cash_counter = CashCounter::where('package_buy_id',$user['package_buy_id'])->select('id','name')->orderBy('id','DESC')->get();
+                if($cash_counter){
+                    return response()->json([
+                        'status'=>true,
+                        'lists'=> $cash_counter,
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Cash Counter Lists Not Found",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //UpdateCashCounter
+    public function UpdateCashCounter(Request $request){
+
+        $validator = Validator::make($request->all(), [
+            'cash_counter_id'=>'required',
+            'name'=>'required',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['errors'=>$validator->errors()], 400);
+        }
+        $bank_acc_cat = CashCounter::findOrFail($request['cash_counter_id']);
+        $bank_acc_cat->name = $request['name'];
+        $bank_acc_cat->save();
+        if($bank_acc_cat){
+            return response()->json([
+                'status'=>true,
+                'message'=> "Cash Counter Updated Successfully",
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Something Is Worng To Update",
+            ],200);
+        }
+    }
+    //DeleteCashCounter
+    public function DeleteCashCounter(Request $request){
+        $bank_acc_category = CashCounter::findOrFail($request['cash_counter_id']);
+        $bank_acc_category->delete();
+        if($bank_acc_category){
+            return response()->json([
+                'status'=>true,
+                'message'=> "Cash Counter Deleted Successfully",
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Something Is Worng To Delete",
+            ],200);
+        }
+    }
+     //SingleCashCounter
+     public function SingleCashCounter($cash_counter_id){
+        $cash_counter = CashCounter::where('id',$cash_counter_id)->select('id','name')->first();
+        return $cash_counter;
+        if($cash_counter){
+            return response()->json([
+                'status'=>true,
+                'lists'=> $cash_counter,
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Not Found",
+            ],200);
+        }
+    }
+    //CreateVehicale
+    public function CreateVehicale(Request $request){
+
+        if($request->isMethod('post')){
+            $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+            if($user){
+                if($user['usepackage']['status'] == 'active'){
+                    $validator = Validator::make($request->all(), [
+                        'city_id'=>'required',
+                        'district_id'=>'required',
+                        'thana_id'=>'required',
+                        'union_id'=>'required',
+                        'vehicle_name'=>'required',
+                        'vehicle_type'=>'required',
+                        'vehicle_no'=>'required|unique:vehicales','vehicle_no',
+                        'vehicle_reg_no'=>'required|unique:vehicales','vehicle_reg_no',
+                        'owner_name'=>'required',
+                        'father_name'=>'required',
+                        'owner_phone'=>'required|numeric',
+                        'owner_post_office'=>'required',
+                        'owner_village'=>'required',
+                    ]);
+                    if ($validator->fails()) {
+                        return response()->json(['errors'=>$validator->errors()], 400);
+                    }
+                    $vehicale = new Vehicale;
+                    $vehicale->package_buy_id = $user['package_buy_id'];
+                    $vehicale->city_id = $request['city_id'];
+                    $vehicale->district_id = $request['district_id'];
+                    $vehicale->thana_id = $request['thana_id'];
+                    $vehicale->union_id = $request['union_id'];
+                    $vehicale->vehicle_name = $request['vehicle_name'];
+                    $vehicale->vehicle_type = $request['vehicle_type'];
+                    $vehicale->vehicle_no = $request['vehicle_no'];
+                    $vehicale->vehicle_reg_no = $request['vehicle_reg_no'];
+                    $vehicale->owner_name = $request['owner_name'];
+                    $vehicale->father_name = $request['father_name'];
+                    $vehicale->owner_phone = $request['owner_phone'];
+                    $vehicale->owner_post_office = $request['owner_post_office'];
+                    $vehicale->owner_village = $request['owner_village'];
+                    $vehicale->save();
+                    if($vehicale){
+                        return response()->json([
+                            'status'=>true,
+                            'message'=>"Vehicale Created Successfully",
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>"Something Is Wrong To Create Vehicale",
+                        ],200);
+                    }
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Package Not Activated",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Invalid Token",
+                ],200);
+            }
+        }
+    }
+    //VehicaleLists
+    public function VehicaleLists(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $vehicale = Vehicale::with('city','district','thana','union')->where('package_buy_id',$user['package_buy_id'])->orderBy('id','DESC')->paginate(15);
+                if($vehicale){
+                    return response()->json([
+                        'status'=>true,
+                        'lists'=> $vehicale,
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Vehicales Lists Not Found",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //Vehicale
+    public function Vehicale(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $vehicale = Vehicale::with('city','district','thana','union')->where('package_buy_id',$user['package_buy_id'])->orderBy('id','DESC')->get();
+                if($vehicale){
+                    return response()->json([
+                        'status'=>true,
+                        'lists'=> $vehicale,
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Vehicales Lists Not Found",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //UpdateVehicale
+    public function UpdateVehicale(Request $request){
+
+        $validator = Validator::make($request->all(), [
+            'city_id'=>'required',
+            'district_id'=>'required',
+            'thana_id'=>'required',
+            'union_id'=>'required',
+            'vehicle_name'=>'required',
+            'vehicle_type'=>'required',
+            'vehicle_no'=>'required',
+            'vehicle_reg_no'=>'required',
+            'owner_name'=>'required',
+            'father_name'=>'required',
+            'owner_phone'=>'required|numeric',
+            'owner_post_office'=>'required',
+            'owner_village'=>'required',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['errors'=>$validator->errors()], 400);
+        }
+        $vehicale = Vehicale::findOrFail($request['vehicale_id']);
+        $vehicale->city_id = $request['city_id'];
+        $vehicale->district_id = $request['district_id'];
+        $vehicale->thana_id = $request['thana_id'];
+        $vehicale->union_id = $request['union_id'];
+        $vehicale->vehicle_name = $request['vehicle_name'];
+        $vehicale->vehicle_type = $request['vehicle_type'];
+        $vehicale->vehicle_no = $request['vehicle_no'];
+        $vehicale->vehicle_reg_no = $request['vehicle_reg_no'];
+        $vehicale->owner_name = $request['owner_name'];
+        $vehicale->father_name = $request['father_name'];
+        $vehicale->owner_phone = $request['owner_phone'];
+        $vehicale->owner_post_office = $request['owner_post_office'];
+        $vehicale->owner_village = $request['owner_village'];
+        $vehicale->save();
+        if($vehicale){
+            return response()->json([
+                'status'=>true,
+                'message'=> "Vehicale Updated Successfully",
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Something Is Worng To Update",
+            ],200);
+        }
+    }
+    //DeleteVehicale
+    public function DeleteVehicale(Request $request){
+        $vehicale = Vehicale::findOrFail($request['vehicale_id']);
+        $vehicale->delete();
+        if($vehicale){
+            return response()->json([
+                'status'=>true,
+                'message'=> "Vehicale Deleted Successfully",
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Something Is Worng To Delete",
+            ],200);
+        }
+    }
+     //SingleVehicale
+     public function SingleVehicale($vehicale_id){
+        $vehicale = Vehicale::where('id',$vehicale_id)->first();
+        if($vehicale){
+            return response()->json([
+                'status'=>true,
+                'lists'=> $vehicale,
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Not Found",
+            ],200);
+        }
+    }
+    //CreateDriver
+    public function CreateDriver(Request $request){
+
+        if($request->isMethod('post')){
+            $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+            if($user){
+                if($user['usepackage']['status'] == 'active'){
+                    $validator = Validator::make($request->all(), [
+                        'city_id'=>'required',
+                        'district_id'=>'required',
+                        'thana_id'=>'required',
+                        'union_id'=>'required',
+                        'vehicle_id'=>'required',
+                        'driver_name'=>'required',
+                        'driver_phone'=>'required|numeric|unique:drivers','driver_phone',
+                        'father_name'=>'required',
+                        'driver_post_office'=>'required',
+                        'driver_village'=>'required',
+                    ]);
+                    if ($validator->fails()) {
+                        return response()->json(['errors'=>$validator->errors()], 400);
+                    }
+                    $driver = new Driver;
+                    $driver->package_buy_id = $user['package_buy_id'];
+                    $driver->vehicle_id = $request['vehicle_id'];
+                    $driver->city_id = $request['city_id'];
+                    $driver->district_id = $request['district_id'];
+                    $driver->thana_id = $request['thana_id'];
+                    $driver->union_id = $request['union_id'];
+                    $driver->driver_name = $request['driver_name'];
+                    $driver->driver_phone = $request['driver_phone'];
+                    $driver->father_name = $request['father_name'];
+                    $driver->driver_post_office = $request['driver_post_office'];
+                    $driver->driver_village = $request['driver_village'];
+                    $driver->save();
+                    if($driver){
+                        return response()->json([
+                            'status'=>true,
+                            'message'=>"Driver Created Successfully",
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>"Something Is Wrong To Create Driver",
+                        ],200);
+                    }
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Package Not Activated",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Invalid Token",
+                ],200);
+            }
+        }
+    }
+    //DriverLists
+    public function DriverLists(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $driver = Driver::with('city','district','thana','union')->where('package_buy_id',$user['package_buy_id'])->orderBy('id','DESC')->paginate(15);
+                if($driver){
+                    return response()->json([
+                        'status'=>true,
+                        'lists'=> $driver,
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Driver Lists Not Found",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //Driver
+    public function Driver(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $driver = Driver::with('city','district','thana','union')->where('package_buy_id',$user['package_buy_id'])->orderBy('id','DESC')->get();
+                if($driver){
+                    return response()->json([
+                        'status'=>true,
+                        'lists'=> $driver,
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Driver Lists Not Found",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //UpdateDriver
+    public function UpdateDriver(Request $request){
+
+        $validator = Validator::make($request->all(), [
+            'city_id'=>'required',
+            'district_id'=>'required',
+            'thana_id'=>'required',
+            'union_id'=>'required',
+            'vehicle_id'=>'required',
+            'driver_name'=>'required',
+            'driver_phone'=>'required|numeric',
+            'father_name'=>'required',
+            'driver_post_office'=>'required',
+            'driver_village'=>'required',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['errors'=>$validator->errors()], 400);
+        }
+        $driver = Driver::findOrFail($request['driver_id']);
+        $driver->vehicle_id = $request['vehicle_id'];
+        $driver->city_id = $request['city_id'];
+        $driver->district_id = $request['district_id'];
+        $driver->thana_id = $request['thana_id'];
+        $driver->union_id = $request['union_id'];
+        $driver->driver_name = $request['driver_name'];
+        $driver->driver_phone = $request['driver_phone'];
+        $driver->father_name = $request['father_name'];
+        $driver->driver_post_office = $request['driver_post_office'];
+        $driver->driver_village = $request['driver_village'];
+        $driver->save();
+        if($driver){
+            return response()->json([
+                'status'=>true,
+                'message'=> "Driver Updated Successfully",
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Something Is Worng To Update",
+            ],200);
+        }
+    }
+    //DeleteDriver
+    public function DeleteDriver(Request $request){
+        $driver = Driver::findOrFail($request['driver_id']);
+        $driver->delete();
+        if($driver){
+            return response()->json([
+                'status'=>true,
+                'message'=> "Driver Deleted Successfully",
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Something Is Worng To Delete",
+            ],200);
+        }
+    }
+     //SingleDriver
+     public function SingleDriver($driver_id){
+        $driver = Driver::where('id',$driver_id)->first();
+        if($driver){
+            return response()->json([
+                'status'=>true,
+                'lists'=> $driver,
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Not Found",
             ],200);
         }
     }

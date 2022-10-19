@@ -37,6 +37,8 @@ class CreateUnionsTable extends Migration
      */
     public function down()
     {
+        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('unions');
+        Schema::enableForeignKeyConstraints();
     }
 }
