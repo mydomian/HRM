@@ -24,6 +24,7 @@ class CreateProductsTable extends Migration
             $table->string('product_name');
             $table->string('product_model');
             $table->string('product_image');
+            $table->bigInteger('product_qty')->default(0);
             $table->string('batch_no')->nullable();
             $table->string('serial_no')->nullable();
             $table->bigInteger('khat_acc_id')->nullable();

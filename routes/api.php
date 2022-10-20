@@ -208,3 +208,5 @@ Route::post('/bank-acc-type',[ApiController::class,"BankAccountType"]);
 Route::post('/update-bank-acc-type',[ApiController::class,"UpdateBankAccountType"]);
 Route::post('/delete-bank-acc-type',[ApiController::class,"DeleteBankAccountType"]);
 Route::get('/single-bank-acc-type/{bank_acc_type_id}',[ApiController::class,"SingleBankAccountType"]);
+//sale quotation
+Route::post('/sale-quotation',[ApiController::class,"SaleQuotation"]);

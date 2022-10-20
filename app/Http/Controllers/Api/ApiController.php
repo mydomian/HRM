@@ -4623,5 +4623,56 @@ class ApiController extends Controller
             ],200);
         }
     }
+    //=============================================Multiple Database Work Form Below=======================================================================
+    public function SaleQuotation(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $database_name = $user['usepackage']['database_name'];
+                $server_name = "localhost";
+                $user_name = "root";
+                $password = "";
+                $connection = mysqli_connect($server_name, $user_name, $password,$database_name);
+                // Check connection
+                if($connection === false){
+                    die("ERROR: Could not connect. " . mysqli_connect_error());
+                }else{
+
+                    //sale quotation code is here
+
+
+
+
+
+
+
+
+
+
+                }
+
+
+
+                // // Close connection
+                // mysqli_close($link);
+
+
+
+
+
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+
+    }
 }
 

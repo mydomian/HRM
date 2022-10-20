@@ -78,7 +78,6 @@ class PackageController extends Controller
         //user package admin role create
         $exits = User::where('email',$package_activate['email'])->first();
         if($exits){
-            //nothing code is here
             $exits->password = Hash::make($pass);
             $exits->save();
         }else{
@@ -90,6 +89,72 @@ class PackageController extends Controller
             $user->password = Hash::make($pass);
             $user->save();
         }
+
+
+        //database create with table
+        $database_name = $package_activate['database_name'];
+        $server_name = "localhost";
+        $user_name = "root";
+        $password = "";
+        DB::statement("CREATE DATABASE IF NOT EXISTS $database_name CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
+        $connection = mysqli_connect($server_name, $user_name, $password,$database_name);
+        //sql query tables for sale_quotations
+        $sale_quotations = "CREATE TABLE  sale_quotations(
+            id int(20) NULL AUTO_INCREMENT,
+            acc_cus_sup_id bigint(20) NULL,
+            quotation_invoice_no varchar(255) NULL,
+            product_order_by bigint(20) NULL,
+            quotation_date date NULL,
+            quotation_sale_details text(1000) NULL,
+            total_sale_amount bigint(20) NULL,
+            total_tax_amount bigint(20) NULL,
+            service_charge bigint(20) NULL,
+            shipping_cost bigint(20) NULL,
+            grand_total bigint(20) NULL,
+            paid_amount bigint(20) NULL,
+            due_amount bigint(20) NULL,
+            document text(500) NULL,
+            created_at timestamp DEFAULT CURRENT_TIMESTAMP ,
+            updated_at timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (id)
+        )";
+        if (mysqli_query($connection,$sale_quotations)) {
+            //nothing code is here
+        } else {
+            echo "Error:" . mysqli_error($connection);
+        }
+        //sql query tables for sale_quotations_items
+        $sale_quotations_items = "CREATE TABLE  sale_quotations_items(
+            id int(20) NULL AUTO_INCREMENT,
+            sale_quotation_id bigint(20) NULL,
+            quotation_invoice_no varchar(255) NULL,
+            product_id bigint(20) NULL,
+            avg_qty bigint(20) NULL,
+            bag varchar(255) NULL,
+            qty bigint(20) NULL,
+            unit_id bigint(20) NULL,
+            rate varchar(255) NULL,
+            amount bigint(20) NULL,
+            created_at timestamp DEFAULT CURRENT_TIMESTAMP ,
+            updated_at timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (id)
+        )";
+
+        if (mysqli_query($connection,$sale_quotations_items)) {
+            //nothing code is here
+        } else {
+            echo "Error:" . mysqli_error($connection);
+        }
+
+
+
+
+
+
+
+
+
+
 
 
         return redirect('/admin/package-request')->with('message','User Package Activated Successfully');
