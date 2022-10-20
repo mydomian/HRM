@@ -8,9 +8,13 @@ use App\AccCustomerSupplier;
 use App\AccType;
 use App\BankAccCategory;
 use App\Brand;
+use App\Bank;
+use App\BankAccType;
+use App\BankBranch;
 use App\CashCounter;
 use App\Category;
 use App\City;
+use App\Designation;
 use App\District;
 use App\Driver;
 use App\Http\Controllers\Controller;
@@ -27,6 +31,7 @@ use App\Union;
 use App\Unit;
 use App\User;
 use App\Vehicale;
+use App\VehicaleType;
 use App\WareHouse;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -1394,7 +1399,7 @@ class ApiController extends Controller
         $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
         if($user){
             if($user['usepackage']['status'] == 'active'){
-                $thana = Thana::with('city','district')->where('package_buy_id',$user['package_buy_id'])->select('id','name')->orderBy('id','DESC')->paginate(15);
+                $thana = Thana::with('city','district')->where('package_buy_id',$user['package_buy_id'])->select('id','city_id','district_id','name')->orderBy('id','DESC')->paginate(15);
 
                 if($thana){
                     return response()->json([
@@ -3497,7 +3502,7 @@ class ApiController extends Controller
         $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
         if($user){
             if($user['usepackage']['status'] == 'active'){
-                $vehicale = Vehicale::with('city','district','thana','union')->where('package_buy_id',$user['package_buy_id'])->orderBy('id','DESC')->paginate(15);
+                $vehicale = Vehicale::with('city','district','thana','union','driver')->where('package_buy_id',$user['package_buy_id'])->orderBy('id','DESC')->paginate(15);
                 if($vehicale){
                     return response()->json([
                         'status'=>true,
@@ -3527,7 +3532,7 @@ class ApiController extends Controller
         $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
         if($user){
             if($user['usepackage']['status'] == 'active'){
-                $vehicale = Vehicale::with('city','district','thana','union')->where('package_buy_id',$user['package_buy_id'])->orderBy('id','DESC')->get();
+                $vehicale = Vehicale::with('city','district','thana','union','driver')->where('package_buy_id',$user['package_buy_id'])->orderBy('id','DESC')->get();
                 if($vehicale){
                     return response()->json([
                         'status'=>true,
@@ -3696,7 +3701,7 @@ class ApiController extends Controller
         $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
         if($user){
             if($user['usepackage']['status'] == 'active'){
-                $driver = Driver::with('city','district','thana','union')->where('package_buy_id',$user['package_buy_id'])->orderBy('id','DESC')->paginate(15);
+                $driver = Driver::with('city','district','thana','union','vehicale')->where('package_buy_id',$user['package_buy_id'])->orderBy('id','DESC')->paginate(15);
                 if($driver){
                     return response()->json([
                         'status'=>true,
@@ -3726,7 +3731,7 @@ class ApiController extends Controller
         $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
         if($user){
             if($user['usepackage']['status'] == 'active'){
-                $driver = Driver::with('city','district','thana','union')->where('package_buy_id',$user['package_buy_id'])->orderBy('id','DESC')->get();
+                $driver = Driver::with('city','district','thana','union','vehicale')->where('package_buy_id',$user['package_buy_id'])->orderBy('id','DESC')->get();
                 if($driver){
                     return response()->json([
                         'status'=>true,
@@ -3816,6 +3821,800 @@ class ApiController extends Controller
             return response()->json([
                 'status'=>true,
                 'lists'=> $driver,
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Not Found",
+            ],200);
+        }
+    }
+    //CreateVehicaleType
+    public function CreateVehicaleType(Request $request){
+
+        if($request->isMethod('post')){
+            $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+            if($user){
+                if($user['usepackage']['status'] == 'active'){
+                    $validator = Validator::make($request->all(), [
+                        'name'=>'required',
+                    ]);
+                    if ($validator->fails()) {
+                        return response()->json(['errors'=>$validator->errors()], 400);
+                    }
+                    $vehicale_type = new VehicaleType;
+                    $vehicale_type->package_buy_id = $user['package_buy_id'];
+                    $vehicale_type->name = $request['name'];
+                    $vehicale_type->save();
+                    if($vehicale_type){
+                        return response()->json([
+                            'status'=>true,
+                            'message'=>"Vehicale Type Created Successfully",
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>"Something Is Wrong To Create Vehicale Type",
+                        ],200);
+                    }
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Package Not Activated",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Invalid Token",
+                ],200);
+            }
+        }
+    }
+    //VehicaleTypeLists
+    public function VehicaleTypeLists(Request $request){
+
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $vehicale_type = VehicaleType::where('package_buy_id',$user['package_buy_id'])->select('id','name')->orderBy('id','DESC')->paginate(15);
+                if($vehicale_type){
+                    return response()->json([
+                        'status'=>true,
+                        'lists'=> $vehicale_type,
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Vehicale Type Lists Not Found",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //VehicaleType
+    public function VehicaleType(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $vehicale_type = VehicaleType::where('package_buy_id',$user['package_buy_id'])->select('id','name')->orderBy('id','DESC')->get();
+                if($vehicale_type){
+                    return response()->json([
+                        'status'=>true,
+                        'lists'=> $vehicale_type,
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Vehicale Type Lists Not Found",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //UpdateVehicaleType
+    public function UpdateVehicaleType(Request $request){
+
+        $validator = Validator::make($request->all(), [
+            'vehicale_type_id'=>'required',
+            'name'=>'required',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['errors'=>$validator->errors()], 400);
+        }
+        $vehicale_type = VehicaleType::findOrFail($request['vehicale_type_id']);
+        $vehicale_type->name = $request['name'];
+        $vehicale_type->save();
+        if($vehicale_type){
+            return response()->json([
+                'status'=>true,
+                'message'=> "Vehicale Type Updated Successfully",
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Something Is Worng To Update",
+            ],200);
+        }
+    }
+    //DeleteVehicaleType
+    public function DeleteVehicaleType(Request $request){
+        $vehicale_type = VehicaleType::findOrFail($request['vehicale_type_id']);
+        $vehicale_type->delete();
+        if($vehicale_type){
+            return response()->json([
+                'status'=>true,
+                'message'=> "Vehicale Type Deleted Successfully",
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Something Is Worng To Delete",
+            ],200);
+        }
+    }
+    //SingelVehicaleType
+    public function SingelVehicaleType($vehicale_type_id){
+        $vehicale_type = VehicaleType::where('id',$vehicale_type_id)->select('id','name')->first();
+        if($vehicale_type){
+            return response()->json([
+                'status'=>true,
+                'lists'=> $vehicale_type,
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Not Found",
+            ],200);
+        }
+    }
+    //CreateBank
+    public function CreateBank(Request $request){
+        if($request->isMethod('post')){
+            $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+            if($user){
+                if($user['usepackage']['status'] == 'active'){
+                    $validator = Validator::make($request->all(), [
+                        'name'=>'required',
+                    ]);
+                    if ($validator->fails()) {
+                        return response()->json(['errors'=>$validator->errors()], 400);
+                    }
+                    $bank = new Bank;
+                    $bank->package_buy_id = $user['package_buy_id'];
+                    $bank->name = $request['name'];
+                    $bank->save();
+                    if($bank){
+                        return response()->json([
+                            'status'=>true,
+                            'message'=>"Bank Created Successfully",
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>"Something Is Wrong To Create Bank",
+                        ],200);
+                    }
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Package Not Activated",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Invalid Token",
+                ],200);
+            }
+        }
+    }
+    //BankLists
+    public function BankLists(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $bank = Bank::where('package_buy_id',$user['package_buy_id'])->select('id','name')->orderBy('id','DESC')->paginate(15);
+                if($bank){
+                    return response()->json([
+                        'status'=>true,
+                        'lists'=> $bank,
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Bank Lists Not Found",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //Bank
+    public function Bank(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $bank = Bank::where('package_buy_id',$user['package_buy_id'])->select('id','name')->orderBy('id','DESC')->get();
+                if($bank){
+                    return response()->json([
+                        'status'=>true,
+                        'lists'=> $bank,
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Bank Lists Not Found",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //UpdateBank
+    public function UpdateBank(Request $request){
+
+        $validator = Validator::make($request->all(), [
+            'bank_id'=>'required',
+            'name'=>'required',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['errors'=>$validator->errors()], 400);
+        }
+        $bank = Bank::findOrFail($request['bank_id']);
+        $bank->name = $request['name'];
+        $bank->save();
+        if($bank){
+            return response()->json([
+                'status'=>true,
+                'message'=> "Bank Updated Successfully",
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Something Is Worng To Update",
+            ],200);
+        }
+    }
+    //DeleteBank
+    public function DeleteBank(Request $request){
+        $bank = Bank::findOrFail($request['bank_id']);
+        $bank->delete();
+        if($bank){
+            return response()->json([
+                'status'=>true,
+                'message'=> "Bank Deleted Successfully",
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Something Is Worng To Delete",
+            ],200);
+        }
+    }
+     //SingleBankAccCategory
+     public function SingleBank($bank_id){
+        $bank = Bank::where('id',$bank_id)->select('id','name')->first();
+
+        if($bank){
+            return response()->json([
+                'status'=>true,
+                'lists'=> $bank,
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Not Found",
+            ],200);
+        }
+    }
+    //CreateBankBranch
+    public function CreateBankBranch(Request $request){
+        if($request->isMethod('post')){
+            $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+            if($user){
+                if($user['usepackage']['status'] == 'active'){
+                    $validator = Validator::make($request->all(), [
+                        'name'=>'required',
+                        'bank_id'=>'required',
+                    ]);
+                    if ($validator->fails()) {
+                        return response()->json(['errors'=>$validator->errors()], 400);
+                    }
+                    $bank_branch = new BankBranch;
+                    $bank_branch->package_buy_id = $user['package_buy_id'];
+                    $bank_branch->name = $request['name'];
+                    $bank_branch->bank_id = $request['bank_id'];
+                    $bank_branch->save();
+                    if($bank_branch){
+                        return response()->json([
+                            'status'=>true,
+                            'message'=>"Bank Branch Created Successfully",
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>"Something Is Wrong To Create Bank Branch",
+                        ],200);
+                    }
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Package Not Activated",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Invalid Token",
+                ],200);
+            }
+        }
+    }
+    //BankBranchLists
+    public function BankBranchLists(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $bank_branch = BankBranch::where('package_buy_id',$user['package_buy_id'])->select('id','bank_id','name')->orderBy('id','DESC')->paginate(15);
+                if($bank_branch){
+                    return response()->json([
+                        'status'=>true,
+                        'lists'=> $bank_branch,
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Bank Branch Lists Not Found",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //BankBranch
+    public function BankBranch(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $bank_branch = BankBranch::where('package_buy_id',$user['package_buy_id'])->select('id','bank_id','name')->orderBy('id','DESC')->get();
+                if($bank_branch){
+                    return response()->json([
+                        'status'=>true,
+                        'lists'=> $bank_branch,
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Bank Branch Lists Not Found",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //UpdateBankBranch
+    public function UpdateBankBranch(Request $request){
+
+        $validator = Validator::make($request->all(), [
+            'bank_branch_id'=>'required',
+            'bank_id'=>'required',
+            'name'=>'required',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['errors'=>$validator->errors()], 400);
+        }
+        $bank_branch = BankBranch::findOrFail($request['bank_branch_id']);
+        $bank_branch->name = $request['name'];
+        $bank_branch->bank_id = $request['bank_id'];
+        $bank_branch->save();
+        if($bank_branch){
+            return response()->json([
+                'status'=>true,
+                'message'=> "Bank Branch Updated Successfully",
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Something Is Worng To Update",
+            ],200);
+        }
+    }
+    //DeleteBankBranch
+    public function DeleteBankBranch(Request $request){
+        $bank_branch = BankBranch::findOrFail($request['bank_branch_id']);
+        $bank_branch->delete();
+        if($bank_branch){
+            return response()->json([
+                'status'=>true,
+                'message'=> "Bank Branch Deleted Successfully",
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Something Is Worng To Delete",
+            ],200);
+        }
+    }
+     //SingleBankBranch
+     public function SingleBankBranch($bank_branch_id){
+        $bank_branch = BankBranch::where('id',$bank_branch_id)->select('id','bank_id','name')->first();
+
+        if($bank_branch){
+            return response()->json([
+                'status'=>true,
+                'lists'=> $bank_branch,
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Not Found",
+            ],200);
+        }
+    }
+    //CreateDesignation
+    public function CreateDesignation(Request $request){
+        if($request->isMethod('post')){
+            $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+            if($user){
+                if($user['usepackage']['status'] == 'active'){
+                    $validator = Validator::make($request->all(), [
+                        'name'=>'required',
+                    ]);
+                    if ($validator->fails()) {
+                        return response()->json(['errors'=>$validator->errors()], 400);
+                    }
+                    $designation = new Designation;
+                    $designation->package_buy_id = $user['package_buy_id'];
+                    $designation->name = $request['name'];
+                    $designation->save();
+                    if($designation){
+                        return response()->json([
+                            'status'=>true,
+                            'message'=>"Designation Created Successfully",
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>"Something Is Wrong To Create Designation",
+                        ],200);
+                    }
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Package Not Activated",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Invalid Token",
+                ],200);
+            }
+        }
+    }
+    //DesignationLists
+    public function DesignationLists(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $designation = Designation::where('package_buy_id',$user['package_buy_id'])->select('id','name')->orderBy('id','DESC')->paginate(15);
+                if($designation){
+                    return response()->json([
+                        'status'=>true,
+                        'lists'=> $designation,
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Designation Lists Not Found",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //Designation
+    public function Designation(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $designation = Designation::where('package_buy_id',$user['package_buy_id'])->select('id','name')->orderBy('id','DESC')->get();
+                if($designation){
+                    return response()->json([
+                        'status'=>true,
+                        'lists'=> $designation,
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Designation Lists Not Found",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //UpdateDesignation
+    public function UpdateDesignation(Request $request){
+
+        $validator = Validator::make($request->all(), [
+            'designation_id'=>'required',
+            'name'=>'required',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['errors'=>$validator->errors()], 400);
+        }
+        $designation = Designation::findOrFail($request['designation_id']);
+        $designation->name = $request['name'];
+        $designation->save();
+        if($designation){
+            return response()->json([
+                'status'=>true,
+                'message'=> "Designation Updated Successfully",
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Something Is Worng To Update",
+            ],200);
+        }
+    }
+    //DeleteDesignation
+    public function DeleteDesignation(Request $request){
+        $designation = Designation::findOrFail($request['designation_id']);
+        $designation->delete();
+        if($designation){
+            return response()->json([
+                'status'=>true,
+                'message'=> "Designation Deleted Successfully",
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Something Is Worng To Delete",
+            ],200);
+        }
+    }
+     //SingleDesignation
+     public function SingleDesignation($designation_id){
+        $designation = Designation::where('id',$designation_id)->select('id','name')->first();
+
+        if($designation){
+            return response()->json([
+                'status'=>true,
+                'lists'=> $designation,
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Not Found",
+            ],200);
+        }
+    }
+    //CreateBankAccountType
+    public function CreateBankAccountType(Request $request){
+        if($request->isMethod('post')){
+            $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+            if($user){
+                if($user['usepackage']['status'] == 'active'){
+                    $validator = Validator::make($request->all(), [
+                        'name'=>'required',
+                    ]);
+                    if ($validator->fails()) {
+                        return response()->json(['errors'=>$validator->errors()], 400);
+                    }
+                    $ban_acc_type = new BankAccType;
+                    $ban_acc_type->package_buy_id = $user['package_buy_id'];
+                    $ban_acc_type->name = $request['name'];
+                    $ban_acc_type->save();
+                    if($ban_acc_type){
+                        return response()->json([
+                            'status'=>true,
+                            'message'=>"Bank Account Type Created Successfully",
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>"Something Is Wrong To Create Bank Account Type",
+                        ],200);
+                    }
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Package Not Activated",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Invalid Token",
+                ],200);
+            }
+        }
+    }
+    //BankAccountTypeLists
+    public function BankAccountTypeLists(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $bank_acc_type = BankAccType::where('package_buy_id',$user['package_buy_id'])->select('id','name')->orderBy('id','DESC')->paginate(15);
+                if($bank_acc_type){
+                    return response()->json([
+                        'status'=>true,
+                        'lists'=> $bank_acc_type,
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Bank Account Type Lists Not Found",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //BankAccountType
+    public function BankAccountType(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $bank_acc_type = BankAccType::where('package_buy_id',$user['package_buy_id'])->select('id','name')->orderBy('id','DESC')->get();
+                if($bank_acc_type){
+                    return response()->json([
+                        'status'=>true,
+                        'lists'=> $bank_acc_type,
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Bank Account Type Lists Not Found",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //UpdateBankAccountType
+    public function UpdateBankAccountType(Request $request){
+
+        $validator = Validator::make($request->all(), [
+            'bank_acc_type_id'=>'required',
+            'name'=>'required',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['errors'=>$validator->errors()], 400);
+        }
+        $bank_acc_type = BankAccType::findOrFail($request['bank_acc_type_id']);
+        $bank_acc_type->name = $request['name'];
+        $bank_acc_type->save();
+        if($bank_acc_type){
+            return response()->json([
+                'status'=>true,
+                'message'=> "Bank Account Type Updated Successfully",
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Something Is Worng To Update",
+            ],200);
+        }
+    }
+    //DeleteBankAccountType
+    public function DeleteBankAccountType(Request $request){
+        $bank_acc_type = BankAccType::findOrFail($request['bank_acc_type_id']);
+        $bank_acc_type->delete();
+        if($bank_acc_type){
+            return response()->json([
+                'status'=>true,
+                'message'=> "Bank Account Type Deleted Successfully",
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Something Is Worng To Delete",
+            ],200);
+        }
+    }
+     //SingleBankAccountType
+     public function SingleBankAccountType($bank_acc_type_id){
+        $bank_acc_type = BankAccType::where('id',$bank_acc_type_id)->select('id','name')->first();
+        if($bank_acc_type){
+            return response()->json([
+                'status'=>true,
+                'lists'=> $bank_acc_type,
             ],200);
         }else{
             return response()->json([

@@ -166,6 +166,13 @@ Route::post('/vehicale',[ApiController::class,"Vehicale"]);
 Route::post('/update-vehicale',[ApiController::class,"UpdateVehicale"]);
 Route::post('/delete-vehicale',[ApiController::class,"DeleteVehicale"]);
 Route::get('/single-vehicale/{vehicale_id}',[ApiController::class,"SingleVehicale"]);
+//vehicaletype
+Route::post('/create-vehicale-type',[ApiController::class,"CreateVehicaleType"]);
+Route::post('/vehicale-type-lists',[ApiController::class,"VehicaleTypeLists"]);
+Route::post('/vehicale-type',[ApiController::class,"VehicaleType"]);
+Route::post('/update-vehicale-type',[ApiController::class,"UpdateVehicaleType"]);
+Route::post('/delete-vehicale-type',[ApiController::class,"DeleteVehicaleType"]);
+Route::get('/single-vehicale-type/{vehicale_type_id}',[ApiController::class,"SingelVehicaleType"]);
 //driver
 Route::post('/create-driver',[ApiController::class,"CreateDriver"]);
 Route::post('/driver-lists',[ApiController::class,"DriverLists"]);
@@ -173,3 +180,31 @@ Route::post('/driver',[ApiController::class,"Driver"]);
 Route::post('/update-driver',[ApiController::class,"UpdateDriver"]);
 Route::post('/delete-driver',[ApiController::class,"DeleteDriver"]);
 Route::get('/single-driver/{driver_id}',[ApiController::class,"SingleDriver"]);
+//bank account category
+Route::post('/create-bank',[ApiController::class,"CreateBank"]);
+Route::post('/bank-lists',[ApiController::class,"BankLists"]);
+Route::post('/bank',[ApiController::class,"Bank"]);
+Route::post('/update-bank',[ApiController::class,"UpdateBank"]);
+Route::post('/delete-bank',[ApiController::class,"DeleteBank"]);
+Route::get('/single-bank/{bank_id}',[ApiController::class,"SingleBank"]);
+//bank branch
+Route::post('/create-bank-branch',[ApiController::class,"CreateBankBranch"]);
+Route::post('/bank-branch-lists',[ApiController::class,"BankBranchLists"]);
+Route::post('/bank-branch',[ApiController::class,"BankBranch"]);
+Route::post('/update-bank-branch',[ApiController::class,"UpdateBankBranch"]);
+Route::post('/delete-bank-branch',[ApiController::class,"DeleteBankBranch"]);
+Route::get('/single-bank-branch/{bank_branch_id}',[ApiController::class,"SingleBankBranch"]);
+//bank branch
+Route::post('/create-designation',[ApiController::class,"CreateDesignation"]);
+Route::post('/designation-lists',[ApiController::class,"DesignationLists"]);
+Route::post('/designation',[ApiController::class,"Designation"]);
+Route::post('/update-designation',[ApiController::class,"UpdateDesignation"]);
+Route::post('/delete-designation',[ApiController::class,"DeleteDesignation"]);
+Route::get('/single-designation/{designation_id}',[ApiController::class,"SingleDesignation"]);
+//bank account type
+Route::post('/create-bank-acc-type',[ApiController::class,"CreateBankAccountType"]);
+Route::post('/bank-acc-type-lists',[ApiController::class,"BankAccountTypeLists"]);
+Route::post('/bank-acc-type',[ApiController::class,"BankAccountType"]);
+Route::post('/update-bank-acc-type',[ApiController::class,"UpdateBankAccountType"]);
+Route::post('/delete-bank-acc-type',[ApiController::class,"DeleteBankAccountType"]);
+Route::get('/single-bank-acc-type/{bank_acc_type_id}',[ApiController::class,"SingleBankAccountType"]);

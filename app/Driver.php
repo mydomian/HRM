@@ -38,5 +38,9 @@ class Driver extends Model
     public function union(){
         return $this->belongsTo(Union::class, 'union_id')->select('id','city_id','district_id','thana_id','name');
     }
+    //vehicale
+    public function vehicale(){
+        return $this->belongsTo(Vehicale::class, 'vehicle_id')->select('id','vehicle_name');
+    }
 }
 

@@ -42,5 +42,9 @@ class Vehicale extends Model
     public function union(){
         return $this->belongsTo(Union::class, 'union_id')->select('id','city_id','district_id','thana_id','name');
     }
+    //driver
+    public function driver(){
+        return $this->hasMany(Driver::class,'vehicle_id')->select('id','vehicle_id','driver_name');
+    }
 }
 
