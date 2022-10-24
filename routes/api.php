@@ -214,3 +214,9 @@ Route::post('/update-sale-quotation',[ApiController::class,"UpdateSaleQuotation"
 Route::post('/sale-quotation-lists',[ApiController::class,"SaleQuotationLists"]);
 Route::get('/sale-quotation-details/{sale_quotation_id}',[ApiController::class,"SaleQuotationDetails"]);
 Route::get('/delete-sale-quotation/{sale_quotation_id}',[ApiController::class,"SaleQuotationDelete"]);
+//purchase quotation
+Route::post('/create-purchase-quotation',[ApiController::class,"PurchaseQuotation"]);
+Route::post('/update-purchase-quotation',[ApiController::class,"UpdatePurchaseQuotation"]);
+Route::post('/purchase-quotation-lists',[ApiController::class,"PurchaseQuotationLists"]);
+Route::get('/purchase-quotation-details/{purchase_quotation_id}',[ApiController::class,"PurchaseQuotationDetails"]);
+Route::get('/delete-purchase-quotation/{purchase_quotation_id}',[ApiController::class,"PurchaseQuotationDelete"]);

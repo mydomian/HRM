@@ -26,6 +26,8 @@ use App\PackageBuy;
 use App\PaymentMethod;
 use App\Product;
 use App\ProductionType;
+use App\PurchaseQuotation;
+use App\PurchaseQuotationItem;
 use App\SaleQuotation;
 use App\SaleQuotationItem;
 use App\Thana;
@@ -44,6 +46,7 @@ use Str;
 use Illuminate\Support\Facades\File;
 use Auth;
 use Illuminate\Support\Facades\DB as FacadesDB;
+use JetBrains\PhpStorm\Pure;
 use mysqli;
 
 class ApiController extends Controller
@@ -4629,7 +4632,7 @@ class ApiController extends Controller
             ],200);
         }
     }
-    //=============================================Multiple Database Work Form Below=======================================================================
+    //sale quotation
     public function SaleQuotation(Request $request){
         $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
         if($user){
@@ -4714,7 +4717,6 @@ class ApiController extends Controller
                         'message'=>"Something Is Wrong To Create Sale Quotation",
                     ],200);
                 }
-
             }else{
                 return response()->json([
                     'status'=>false,
@@ -4727,7 +4729,6 @@ class ApiController extends Controller
                 'message'=>"Invalid Token",
             ],200);
         }
-
     }
     //SaleQuotationLists
     public function SaleQuotationLists(Request $request){
@@ -4761,7 +4762,7 @@ class ApiController extends Controller
     }
     //SaleQuotationDetails
     public function SaleQuotationDetails($id){
-        $sale_quotation = SaleQuotation::where('id',$id)->select('id','acc_cus_sup_id','quotation_invoice_no','product_order_by_id','quotation_date','quotation_sale_details','total_sale_amount','total_tax_amount','service_charge','shipping_cost','grand_total','paid_amount','due_amount','document')->first();
+        $sale_quotation = SaleQuotation::with('acc_cus_sup')->where('id',$id)->select('id','acc_cus_sup_id','quotation_invoice_no','product_order_by_id','quotation_date','quotation_sale_details','total_sale_amount','total_tax_amount','service_charge','shipping_cost','grand_total','paid_amount','due_amount','document')->first();
         $sale_quotation_items = SaleQuotationItem::with('product','unit')->where('sale_quotation_id',$id)->select('id','sale_quotation_id','unit_id','quotation_invoice_no','product_id','avg_qty','bag','qty','rate','amount')->get();
         if($sale_quotation && $sale_quotation_items){
             return response()->json([
@@ -4881,6 +4882,262 @@ class ApiController extends Controller
             return response()->json([
                 'status'=>false,
                 'message'=>"Something Is Wrong To Delete Sale Quotation",
+            ],200);
+        }
+    }
+    //purchase quotation
+    public function PurchaseQuotation(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $validator = Validator::make($request->all(), [
+                    'acc_cus_sup_id'=>'required',
+                    'product_order_by_id'=>'required',
+                    'quotation_purchase_details'=>'required',
+                    'document'=>'required',
+                    'tax_amount'=>'required',
+                    'service_charge'=>'required',
+                    'shipping_cost'=>'required',
+                    'paid_amount'=>'required',
+                    'items'=>'required',
+                ]);
+                if ($validator->fails()) {
+                    return response()->json(['errors'=>$validator->errors()], 400);
+                }
+
+                //document
+                $image = array();
+                foreach ($request->file('document') as $imagefile) {
+                    $sale_quotation = mt_rand().'.'.$imagefile->extension();
+                    $imagefile->move(public_path('images/purchase_quotation'), $sale_quotation);
+                    $image[] = $_SERVER['HTTP_HOST'].'/public/images/purchase_quotation/'.$sale_quotation;
+                }
+                $doc = json_encode($image);
+                $items = json_decode($request->items);
+                $service_charge = $request->service_charge;
+                $shipping_cost = $request->shipping_cost;
+                $paid_amount = $request->paid_amount;
+                $sub_total = array_sum(array_column($items, 'amount'));
+                $tax_amount = ($request->tax_amount / 100) * $sub_total;
+                $total_purchase_amount = $sub_total + $tax_amount + $service_charge + $shipping_cost;
+                $invoice = date('y').date('m').date('d').date('i').date('s');
+                $pur_quotation = new PurchaseQuotation;
+                $pur_quotation->package_buy_id = $user['package_buy_id'];
+                $pur_quotation->acc_cus_sup_id = $request['acc_cus_sup_id'];
+                $pur_quotation->quotation_invoice_no = $invoice;
+                $pur_quotation->product_order_by_id = $request->product_order_by_id;
+                $pur_quotation->quotation_date = date('Y-m-d');
+                $pur_quotation->total_purchase_amount =  $sub_total;
+                $pur_quotation->quotation_purchase_details = $request['quotation_purchase_details'];
+                $pur_quotation->total_tax_amount = $tax_amount;
+                $pur_quotation->service_charge = $service_charge;
+                $pur_quotation->shipping_cost = $shipping_cost;
+                $pur_quotation->grand_total = $total_purchase_amount;
+                $pur_quotation->paid_amount = $paid_amount;
+                $pur_quotation->due_amount = $total_purchase_amount - $paid_amount;
+                $pur_quotation->document = $doc;
+                $pur_quotation->save();
+
+                //purchase quotation items
+                foreach($items as $item){
+                    $product_id = $item->product_id;
+                    $unit_id = $item->unit_id;
+                    $avg_qty = $item->avg_qty;
+                    $bag = $item->bag;
+                    $qty = $item->qty;
+                    $rate = $item->rate;
+                    $amount = $item->amount;
+                    $pur_items = new PurchaseQuotationItem;
+                    $pur_items->package_buy_id  = $user['package_buy_id'];
+                    $pur_items->purchase_quotation_id = $pur_quotation->id;
+                    $pur_items->quotation_invoice_no = $invoice;
+                    $pur_items->product_id = $product_id;
+                    $pur_items->unit_id = $unit_id;
+                    $pur_items->avg_qty = $avg_qty;
+                    $pur_items->bag = $bag;
+                    $pur_items->qty = $qty;
+                    $pur_items->rate = $rate;
+                    $pur_items->amount = $amount;
+                    $pur_items->save();
+                }
+                if($pur_quotation && $pur_items){
+                    return response()->json([
+                        'status'=>true,
+                        'message'=>"Purchase Quotation Created Successfully",
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Something Is Wrong To Create Purchase Quotation",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //PurchaseQuotationLists
+    public function PurchaseQuotationLists(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $purchase_quotation = PurchaseQuotation::where('package_buy_id',$user['package_buy_id'])->select('id','quotation_invoice_no','quotation_date','grand_total','paid_amount','due_amount')->orderBy('id','DESC')->paginate(15);
+                if($purchase_quotation){
+                    return response()->json([
+                        'status'=>true,
+                        'lists'=>$purchase_quotation,
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Purchase Quotation Lists Not Found",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //PurchaseQuotationDetails
+    public function PurchaseQuotationDetails($id){
+
+        $purchase_quotation = PurchaseQuotation::with('acc_cus_sup')->where('id',$id)->select('id','acc_cus_sup_id','quotation_invoice_no','product_order_by_id','quotation_date','quotation_purchase_details','total_purchase_amount','total_tax_amount','service_charge','shipping_cost','grand_total','paid_amount','due_amount','document')->first();
+
+        $purchase_quotation_items = PurchaseQuotationItem::with('product','unit')->where('purchase_quotation_id',$id)->select('id','purchase_quotation_id','unit_id','quotation_invoice_no','product_id','avg_qty','bag','qty','rate','amount')->get();
+        if($purchase_quotation && $purchase_quotation_items){
+            return response()->json([
+                'status'=>true,
+                'lists'=>$purchase_quotation,
+                'items'=>$purchase_quotation_items
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Purchase Quotation Lists Not Found",
+            ],200);
+        }
+    }
+    //UpdatePurchaseQuotation
+    public function UpdatePurchaseQuotation(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $validator = Validator::make($request->all(), [
+                    'acc_cus_sup_id'=>'required',
+                    'product_order_by_id'=>'required',
+                    'quotation_purchase_details'=>'required',
+                    'document'=>'required',
+                    'tax_amount'=>'required',
+                    'service_charge'=>'required',
+                    'shipping_cost'=>'required',
+                    'paid_amount'=>'required',
+                    'items'=>'required',
+                ]);
+                if ($validator->fails()) {
+                    return response()->json(['errors'=>$validator->errors()], 400);
+                }
+
+
+                //document
+                $image = array();
+                foreach ($request->file('document') as $imagefile) {
+                    $sale_quotation = mt_rand().'.'.$imagefile->extension();
+                    $imagefile->move(public_path('images/purchase_quotation'), $sale_quotation);
+                    $image[] = $_SERVER['HTTP_HOST'].'/public/images/purchase_quotation/'.$sale_quotation;
+                }
+                $doc = json_encode($image);
+                $items = json_decode($request->items);
+                $service_charge = $request->service_charge;
+                $shipping_cost = $request->shipping_cost;
+                $paid_amount = $request->paid_amount;
+                $sub_total = array_sum(array_column($items, 'amount'));
+                $tax_amount = ($request->tax_amount / 100) * $sub_total;
+                $total_purchase_amount = $sub_total + $tax_amount + $service_charge + $shipping_cost;
+                $invoice = date('y').date('m').date('d').date('i').date('s');
+                $pur_quotation = PurchaseQuotation::where('id',$request['purchase_quotation_id'])->first();
+                $pur_quotation->acc_cus_sup_id = $request['acc_cus_sup_id'];
+                $pur_quotation->product_order_by_id = $request->product_order_by_id;
+                $pur_quotation->total_purchase_amount =  $sub_total;
+                $pur_quotation->quotation_purchase_details = $request['quotation_purchase_details'];
+                $pur_quotation->total_tax_amount = $tax_amount;
+                $pur_quotation->service_charge = $service_charge;
+                $pur_quotation->shipping_cost = $shipping_cost;
+                $pur_quotation->grand_total = $total_purchase_amount;
+                $pur_quotation->paid_amount = $paid_amount;
+                $pur_quotation->due_amount = $total_purchase_amount - $paid_amount;
+                $pur_quotation->document = $doc;
+                // $pur_quotation->save();
+                //purchase quotation items
+                foreach($items as $value){
+                    $product_id = $value->product_id;
+                    $unit_id = $value->unit_id;
+                    $avg_qty = $value->avg_qty;
+                    $bag = $value->bag;
+                    $qty = $value->qty;
+                    $rate = $value->rate;
+                    $amount = $value->amount;
+                    $pur_itmes = PurchaseQuotationItem::where('id',$value->purchase_quotation_item_id)->first();
+                    $pur_itmes->product_id = $product_id;
+                    $pur_itmes->unit_id = $unit_id;
+                    $pur_itmes->avg_qty = $avg_qty;
+                    $pur_itmes->bag = $bag;
+                    $pur_itmes->qty = $qty;
+                    $pur_itmes->rate = $rate;
+                    $pur_itmes->amount = $amount;
+                    $pur_itmes->save();
+                }
+                if($pur_quotation && $pur_itmes){
+                    return response()->json([
+                        'status'=>true,
+                        'message'=>"Purchase Quotation Updated Successfully",
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Something Is Wrong To Updated Purchase Quotation",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //PurchaseQuotationDelete
+    public function PurchaseQuotationDelete($id){
+        $pur_quotation = PurchaseQuotation::where('id',$id)->delete();
+        if($pur_quotation){
+            return response()->json([
+                'status'=>true,
+                'message'=>"Purchase Quotation Deleted Successfully",
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Something Is Wrong To Delete Purchase Quotation",
             ],200);
         }
     }
