@@ -209,4 +209,8 @@ Route::post('/update-bank-acc-type',[ApiController::class,"UpdateBankAccountType
 Route::post('/delete-bank-acc-type',[ApiController::class,"DeleteBankAccountType"]);
 Route::get('/single-bank-acc-type/{bank_acc_type_id}',[ApiController::class,"SingleBankAccountType"]);
 //sale quotation
-Route::post('/sale-quotation',[ApiController::class,"SaleQuotation"]);
+Route::post('/create-sale-quotation',[ApiController::class,"SaleQuotation"]);
+Route::post('/update-sale-quotation',[ApiController::class,"UpdateSaleQuotation"]);
+Route::post('/sale-quotation-lists',[ApiController::class,"SaleQuotationLists"]);
+Route::get('/sale-quotation-details/{sale_quotation_id}',[ApiController::class,"SaleQuotationDetails"]);
+Route::get('/delete-sale-quotation/{sale_quotation_id}',[ApiController::class,"SaleQuotationDelete"]);

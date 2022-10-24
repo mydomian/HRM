@@ -15,4 +15,9 @@ class BankBranch extends Model
         'name' => 'string',
         'status' => 'enum',
     ];
+
+     //city relation
+     public function bank(){
+        return $this->belongsTo(Bank::class, 'bank_id')->select('id','name');
+    }
 }
