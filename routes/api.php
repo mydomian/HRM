@@ -48,6 +48,13 @@ Route::post('/lot-gallary',[ApiController::class,"LotGallary"]);
 Route::post('/update-lot-gallary',[ApiController::class,"UpdateLotGallary"]);
 Route::post('/delete-lot-gallary',[ApiController::class,"DeleteLotGallary"]);
 Route::get('/single-lot-gallary/{lot_gallary_id}',[ApiController::class,"SingleLotGallary"]);
+//product order by
+Route::post('/create-product-order-by',[ApiController::class,"CreateProductOrderBy"]);
+Route::post('/product-order-by-lists',[ApiController::class,"ProductOrderByLists"]);
+Route::post('/product-order-by',[ApiController::class,"ProductOrderBy"]);
+Route::post('/update-product-order-by',[ApiController::class,"UpdateProductOrderBy"]);
+Route::post('/delete-product-order-by',[ApiController::class,"DeleteProductOrderBy"]);
+Route::get('/single-product-order-by/{product_order_by_id}',[ApiController::class,"SingleProductOrderBy"]);
 //customer & supplier account
 Route::post('create-customer-supplier-account',[ApiController::class,"CreateCusSupAcc"]);
 Route::post('customer-supplier-account-lists',[ApiController::class,"CusSupAccLists"]);
@@ -57,6 +64,7 @@ Route::get('/single-cus-sup-acc/{cus_sup_acc_id}',[ApiController::class,"SingleC
 //product
 Route::post('create-product',[ApiController::class,"CreateProduct"]);
 Route::post('product-lists',[ApiController::class,"ProductLists"]);
+Route::post('product',[ApiController::class,"Product"]);
 Route::post('update-product',[ApiController::class,"UpdateProduct"]);
 Route::post('disable-product',[ApiController::class,"DisableProduct"]);
 Route::post('enable-product',[ApiController::class,"EnableProduct"]);
@@ -213,10 +221,22 @@ Route::post('/create-sale-quotation',[ApiController::class,"SaleQuotation"]);
 Route::post('/update-sale-quotation',[ApiController::class,"UpdateSaleQuotation"]);
 Route::post('/sale-quotation-lists',[ApiController::class,"SaleQuotationLists"]);
 Route::get('/sale-quotation-details/{sale_quotation_id}',[ApiController::class,"SaleQuotationDetails"]);
-Route::get('/delete-sale-quotation/{sale_quotation_id}',[ApiController::class,"SaleQuotationDelete"]);
+Route::post('/delete-sale-quotation',[ApiController::class,"SaleQuotationDelete"]);
 //purchase quotation
 Route::post('/create-purchase-quotation',[ApiController::class,"PurchaseQuotation"]);
 Route::post('/update-purchase-quotation',[ApiController::class,"UpdatePurchaseQuotation"]);
 Route::post('/purchase-quotation-lists',[ApiController::class,"PurchaseQuotationLists"]);
 Route::get('/purchase-quotation-details/{purchase_quotation_id}',[ApiController::class,"PurchaseQuotationDetails"]);
-Route::get('/delete-purchase-quotation/{purchase_quotation_id}',[ApiController::class,"PurchaseQuotationDelete"]);
+Route::post('/delete-purchase-quotation',[ApiController::class,"PurchaseQuotationDelete"]);
+//purchase
+Route::post('/create-purchase',[ApiController::class,"Purchase"]);
+Route::post('/update-purchase',[ApiController::class,"UpdatePurchase"]);
+Route::post('/purchase-lists',[ApiController::class,"PurchaseLists"]);
+Route::get('/purchase-details/{purchase_id}',[ApiController::class,"PurchaseDetails"]);
+Route::post('/delete-purchase',[ApiController::class,"PurchaseDelete"]);
+//sale
+Route::post('/create-sale',[ApiController::class,"Sale"]);
+Route::post('/update-sale',[ApiController::class,"UpdateSale"]);
+Route::post('/sale-lists',[ApiController::class,"SaleLists"]);
+Route::get('/sale-details/{sale_id}',[ApiController::class,"SaleDetails"]);
+Route::post('/delete-sale',[ApiController::class,"SaleDelete"]);

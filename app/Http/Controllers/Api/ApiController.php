@@ -26,8 +26,13 @@ use App\PackageBuy;
 use App\PaymentMethod;
 use App\Product;
 use App\ProductionType;
+use App\ProductOrderBy;
+use App\Purchase;
+use App\PurchaseItem;
 use App\PurchaseQuotation;
 use App\PurchaseQuotationItem;
+use App\Sale;
+use App\SaleItem;
 use App\SaleQuotation;
 use App\SaleQuotationItem;
 use App\Thana;
@@ -776,6 +781,164 @@ class ApiController extends Controller
             ],200);
         }
     }
+
+    //CreateProductOrderBy
+    public function CreateProductOrderBy(Request $request){
+        if($request->isMethod('post')){
+            $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+            if($user){
+                if($user['usepackage']['status'] == 'active'){
+                    $validator = Validator::make($request->all(), [
+                        'name'=>'required',
+                    ]);
+                    if ($validator->fails()) {
+                        return response()->json(['errors'=>$validator->errors()], 400);
+                    }
+                    $product_order_by = new ProductOrderBy;
+                    $product_order_by->package_buy_id = $user['package_buy_id'];
+                    $product_order_by->name = $request['name'];
+                    $product_order_by->save();
+                    if($product_order_by){
+                        return response()->json([
+                            'status'=>true,
+                            'message'=>"Product Order By Created Successfully",
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>"Something Is Wrong To Create Product Order By",
+                        ],200);
+                    }
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Package Not Activated",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Invalid Token",
+                ],200);
+            }
+        }
+    }
+    //ProductOrderByLists
+    public function ProductOrderByLists(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $product_order_by = ProductOrderBy::where('package_buy_id',$user['package_buy_id'])->select('id','name')->orderBy('id','DESC')->paginate(15);
+                if($product_order_by){
+                    return response()->json([
+                        'status'=>true,
+                        'lists'=> $product_order_by,
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Product Order BY Lists Not Found",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //ProductOrderBy
+    public function ProductOrderBy(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $product_order_by = ProductOrderBy::where('package_buy_id',$user['package_buy_id'])->select('id','name')->orderBy('id','DESC')->get();
+                if($product_order_by){
+                    return response()->json([
+                        'status'=>true,
+                        'lists'=> $product_order_by,
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Product Order BY Lists Not Found",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //UpdateProductOrderBy
+    public function UpdateProductOrderBy(Request $request){
+        $validator = Validator::make($request->all(), [
+            'product_order_by_id'=>'required',
+            'name'=>'required',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['errors'=>$validator->errors()], 400);
+        }
+        $product_order_by = ProductOrderBy::findOrFail($request['product_order_by_id']);
+        $product_order_by->name = $request['name'];
+        $product_order_by->save();
+        if($product_order_by){
+            return response()->json([
+                'status'=>true,
+                'message'=> "Product Order BY Updated Successfully",
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Something Is Worng To Update",
+            ],200);
+        }
+    }
+    //DeleteProductOrderBy
+    public function DeleteProductOrderBy(Request $request){
+        $product_order_by = ProductOrderBy::findOrFail($request['product_order_by_id']);
+        $product_order_by->delete();
+        if($product_order_by){
+            return response()->json([
+                'status'=>true,
+                'message'=> "Product Order By Deleted Successfully",
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Something Is Worng To Delete",
+            ],200);
+        }
+    }
+    //SingleProductOrderBy
+    public function SingleProductOrderBy($product_order_by_id){
+        $product_order_by = ProductOrderBy::where('id',$product_order_by_id)->select('id','name')->first();
+        if($product_order_by){
+            return response()->json([
+                'status'=>true,
+                'lists'=> $product_order_by,
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Not Found",
+            ],200);
+        }
+    }
+
     //CreateCusSupAcc
     public function CreateCusSupAcc(Request $request){
         if($request->isMethod('post')){
@@ -1063,6 +1226,36 @@ class ApiController extends Controller
         if($user){
             if($user['usepackage']['status'] == 'active'){
                 $product = Product::with('brand','category','unit','lot_gallary','customer_supplier')->where('package_buy_id',$user['package_buy_id'])->orderBy('id','DESC')->paginate(15);
+                if($product){
+                    return response()->json([
+                        'status'=>true,
+                        'lists'=> $product,
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Product Lists Not Found",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //product
+    public function Product(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $product = Product::where('package_buy_id',$user['package_buy_id'])->select('id','product_name')->orderBy('id','DESC')->get();
                 if($product){
                     return response()->json([
                         'status'=>true,
@@ -4786,7 +4979,6 @@ class ApiController extends Controller
                     'acc_cus_sup_id'=>'required',
                     'product_order_by_id'=>'required',
                     'quotation_sale_details'=>'required',
-                    'document'=>'required',
                     'tax_amount'=>'required',
                     'service_charge'=>'required',
                     'shipping_cost'=>'required',
@@ -4800,10 +4992,12 @@ class ApiController extends Controller
 
                 //document
                 $image = array();
-                foreach ($request->file('document') as $imagefile) {
-                    $sale_quotation = mt_rand().'.'.$imagefile->extension();
-                    $imagefile->move(public_path('images/sale_quotation'), $sale_quotation);
-                    $image[] = $_SERVER['HTTP_HOST'].'/public/images/sale_quotation/'.$sale_quotation;
+                if(!empty($request->file('document'))){
+                    foreach ($request->file('document') as $imagefile) {
+                        $sale_quotation = mt_rand().'.'.$imagefile->extension();
+                        $imagefile->move(public_path('images/sale_quotation'), $sale_quotation);
+                        $image[] = $_SERVER['HTTP_HOST'].'/public/images/sale_quotation/'.$sale_quotation;
+                    }
                 }
                 $doc = json_encode($image);
                 $items = json_decode($request->items);
@@ -4825,7 +5019,9 @@ class ApiController extends Controller
                 $sale_quotation->grand_total = $total_sale_amount;
                 $sale_quotation->paid_amount = $paid_amount;
                 $sale_quotation->due_amount = $total_sale_amount - $paid_amount;
-                $sale_quotation->document = $doc;
+                if(isset($doc)){
+                    $sale_quotation->document = $doc;
+                }
                 $sale_quotation->save();
                 //sale quotation items
                 foreach($items as $value){
@@ -4871,8 +5067,8 @@ class ApiController extends Controller
         }
     }
     //SaleQuotationDelete
-    public function SaleQuotationDelete($id){
-        $sale_quotation = SaleQuotation::where('id',$id)->delete();
+    public function SaleQuotationDelete(Request $request){
+        $sale_quotation = SaleQuotation::where('id',$request['sale_quotation_id'])->delete();
         if($sale_quotation){
             return response()->json([
                 'status'=>true,
@@ -5016,9 +5212,7 @@ class ApiController extends Controller
     }
     //PurchaseQuotationDetails
     public function PurchaseQuotationDetails($id){
-
         $purchase_quotation = PurchaseQuotation::with('acc_cus_sup')->where('id',$id)->select('id','acc_cus_sup_id','quotation_invoice_no','product_order_by_id','quotation_date','quotation_purchase_details','total_purchase_amount','total_tax_amount','service_charge','shipping_cost','grand_total','paid_amount','due_amount','document')->first();
-
         $purchase_quotation_items = PurchaseQuotationItem::with('product','unit')->where('purchase_quotation_id',$id)->select('id','purchase_quotation_id','unit_id','quotation_invoice_no','product_id','avg_qty','bag','qty','rate','amount')->get();
         if($purchase_quotation && $purchase_quotation_items){
             return response()->json([
@@ -5042,7 +5236,6 @@ class ApiController extends Controller
                     'acc_cus_sup_id'=>'required',
                     'product_order_by_id'=>'required',
                     'quotation_purchase_details'=>'required',
-                    'document'=>'required',
                     'tax_amount'=>'required',
                     'service_charge'=>'required',
                     'shipping_cost'=>'required',
@@ -5056,10 +5249,12 @@ class ApiController extends Controller
 
                 //document
                 $image = array();
-                foreach ($request->file('document') as $imagefile) {
-                    $sale_quotation = mt_rand().'.'.$imagefile->extension();
-                    $imagefile->move(public_path('images/purchase_quotation'), $sale_quotation);
-                    $image[] = $_SERVER['HTTP_HOST'].'/public/images/purchase_quotation/'.$sale_quotation;
+                if(!empty($request->file('document'))){
+                    foreach ($request->file('document') as $imagefile) {
+                        $sale_quotation = mt_rand().'.'.$imagefile->extension();
+                        $imagefile->move(public_path('images/purchase_quotation'), $sale_quotation);
+                        $image[] = $_SERVER['HTTP_HOST'].'/public/images/purchase_quotation/'.$sale_quotation;
+                    }
                 }
                 $doc = json_encode($image);
                 $items = json_decode($request->items);
@@ -5069,7 +5264,6 @@ class ApiController extends Controller
                 $sub_total = array_sum(array_column($items, 'amount'));
                 $tax_amount = ($request->tax_amount / 100) * $sub_total;
                 $total_purchase_amount = $sub_total + $tax_amount + $service_charge + $shipping_cost;
-                $invoice = date('y').date('m').date('d').date('i').date('s');
                 $pur_quotation = PurchaseQuotation::where('id',$request['purchase_quotation_id'])->first();
                 $pur_quotation->acc_cus_sup_id = $request['acc_cus_sup_id'];
                 $pur_quotation->product_order_by_id = $request->product_order_by_id;
@@ -5081,8 +5275,10 @@ class ApiController extends Controller
                 $pur_quotation->grand_total = $total_purchase_amount;
                 $pur_quotation->paid_amount = $paid_amount;
                 $pur_quotation->due_amount = $total_purchase_amount - $paid_amount;
-                $pur_quotation->document = $doc;
-                // $pur_quotation->save();
+                if(isset($doc)){
+                    $pur_quotation->document = $doc;
+                }
+                $pur_quotation->save();
                 //purchase quotation items
                 foreach($items as $value){
                     $product_id = $value->product_id;
@@ -5127,8 +5323,8 @@ class ApiController extends Controller
         }
     }
     //PurchaseQuotationDelete
-    public function PurchaseQuotationDelete($id){
-        $pur_quotation = PurchaseQuotation::where('id',$id)->delete();
+    public function PurchaseQuotationDelete(Request $request){
+        $pur_quotation = PurchaseQuotation::where('id',$request['purchase_quotation_id'])->delete();
         if($pur_quotation){
             return response()->json([
                 'status'=>true,
@@ -5141,7 +5337,524 @@ class ApiController extends Controller
             ],200);
         }
     }
+    //purchase
+    public function Purchase(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $validator = Validator::make($request->all(), [
+                    'acc_cus_sup_id'=>'required',
+                    'product_order_by_id'=>'required',
+                    'purchase_details'=>'required',
+                    'document'=>'required',
+                    'tax_amount'=>'required',
+                    'service_charge'=>'required',
+                    'shipping_cost'=>'required',
+                    'paid_amount'=>'required',
+                    'items'=>'required',
+                    'payment_method_id'=>'required',
+                ]);
+                if ($validator->fails()) {
+                    return response()->json(['errors'=>$validator->errors()], 400);
+                }
 
+                //document
+                $image = array();
+                foreach ($request->file('document') as $imagefile) {
+                    $purchase = mt_rand().'.'.$imagefile->extension();
+                    $imagefile->move(public_path('images/purchase'), $purchase);
+                    $image[] = $_SERVER['HTTP_HOST'].'/public/images/purchase/'.$purchase;
+                }
+                $doc = json_encode($image);
+                $items = json_decode($request->items);
+                $service_charge = $request->service_charge;
+                $shipping_cost = $request->shipping_cost;
+                $paid_amount = $request->paid_amount;
+                $sub_total = array_sum(array_column($items, 'amount'));
+                $tax_amount = ($request->tax_amount / 100) * $sub_total;
+                $total_purchase_amount = $sub_total + $tax_amount + $service_charge + $shipping_cost;
+                $invoice = date('y').date('m').date('d').date('i').date('s');
+                $purchase = new Purchase;
+                $purchase->package_buy_id = $user['package_buy_id'];
+                $purchase->acc_cus_sup_id = $request['acc_cus_sup_id'];
+                $purchase->purchase_invoice_no = $invoice;
+                $purchase->product_order_by_id = $request->product_order_by_id;
+                $purchase->purchase_date = date('Y-m-d');
+                $purchase->total_purchase_amount =  $sub_total;
+                $purchase->purchase_details = $request['purchase_details'];
+                $purchase->total_tax_amount = $tax_amount;
+                $purchase->service_charge = $service_charge;
+                $purchase->shipping_cost = $shipping_cost;
+                $purchase->grand_total = $total_purchase_amount;
+                $purchase->paid_amount = $paid_amount;
+                $purchase->due_amount = $total_purchase_amount - $paid_amount;
+                $purchase->document = $doc;
+                $purchase->payment_method_id = $request['payment_method_id'];
+                $purchase->save();
+                //purchase items
+                foreach($items as $item){
+                    $product_id = $item->product_id;
+                    $unit_id = $item->unit_id;
+                    $avg_qty = $item->avg_qty;
+                    $bag = $item->bag;
+                    $qty = $item->qty;
+                    $rate = $item->rate;
+                    $amount = $item->amount;
+                    $pur_items = new PurchaseItem;
+                    $pur_items->package_buy_id  = $user['package_buy_id'];
+                    $pur_items->purchase_id = $purchase->id;
+                    $pur_items->purchase_invoice_no = $invoice;
+                    $pur_items->product_id = $product_id;
+                    $pur_items->unit_id = $unit_id;
+                    $pur_items->avg_qty = $avg_qty;
+                    $pur_items->bag = $bag;
+                    $pur_items->qty = $qty;
+                    $pur_items->rate = $rate;
+                    $pur_items->amount = $amount;
+                    $pur_items->save();
+                }
+                if($purchase && $pur_items){
+                    return response()->json([
+                        'status'=>true,
+                        'message'=>"Purchase Created Successfully",
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Something Is Wrong To Create Purchase",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //PurchaseLists
+    public function PurchaseLists(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $purchase = Purchase::where('package_buy_id',$user['package_buy_id'])->select('id','purchase_invoice_no','purchase_date','grand_total','paid_amount','due_amount')->orderBy('id','DESC')->paginate(15);
+                if($purchase){
+                    return response()->json([
+                        'status'=>true,
+                        'lists'=>$purchase,
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Purchase Lists Not Found",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //PurchaseDetails
+    public function PurchaseDetails($id){
+        $purchase = Purchase::with('acc_cus_sup','payment_method')->where('id',$id)->select('id','acc_cus_sup_id','purchase_invoice_no','product_order_by_id','purchase_date','purchase_details','total_purchase_amount','total_tax_amount','service_charge','shipping_cost','grand_total','paid_amount','due_amount','document','payment_method_id')->first();
+        $purchase_items = PurchaseItem::with('product','unit')->where('purchase_id',$id)->select('id','purchase_id','unit_id','purchase_invoice_no','product_id','avg_qty','bag','qty','rate','amount')->get();
+        if($purchase && $purchase_items){
+            return response()->json([
+                'status'=>true,
+                'lists'=>$purchase,
+                'items'=>$purchase_items
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Purchase Quotation Lists Not Found",
+            ],200);
+        }
+    }
+    //UpdatePurchase
+    public function UpdatePurchase(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $validator = Validator::make($request->all(), [
+                    'acc_cus_sup_id'=>'required',
+                    'product_order_by_id'=>'required',
+                    'purchase_details'=>'required',
+                    'tax_amount'=>'required',
+                    'service_charge'=>'required',
+                    'shipping_cost'=>'required',
+                    'paid_amount'=>'required',
+                    'items'=>'required',
+                    'payment_method_id'=>'required',
+                ]);
+                if ($validator->fails()) {
+                    return response()->json(['errors'=>$validator->errors()], 400);
+                }
 
+                //document
+                $image = array();
+                if(!empty($request->file('document'))){
+                    if($request->file('document')){
+                        foreach ($request->file('document') as $imagefile) {
+                            $purchase = mt_rand().'.'.$imagefile->extension();
+                            $imagefile->move(public_path('images/purchase'), $purchase);
+                            $image[] = $_SERVER['HTTP_HOST'].'/public/images/purchase/'.$purchase;
+                        }
+                    }
+                }
+                $doc = json_encode($image);
+                $items = json_decode($request->items);
+                $service_charge = $request->service_charge;
+                $shipping_cost = $request->shipping_cost;
+                $paid_amount = $request->paid_amount;
+                $sub_total = array_sum(array_column($items, 'amount'));
+                $tax_amount = ($request->tax_amount / 100) * $sub_total;
+                $total_purchase_amount = $sub_total + $tax_amount + $service_charge + $shipping_cost;
+                $purchase = Purchase::where('id',$request['purchase_id'])->first();
+                $purchase->acc_cus_sup_id = $request['acc_cus_sup_id'];
+                $purchase->product_order_by_id = $request->product_order_by_id;
+                $purchase->total_purchase_amount =  $sub_total;
+                $purchase->purchase_details = $request['purchase_details'];
+                $purchase->total_tax_amount = $tax_amount;
+                $purchase->service_charge = $service_charge;
+                $purchase->shipping_cost = $shipping_cost;
+                $purchase->grand_total = $total_purchase_amount;
+                $purchase->paid_amount = $paid_amount;
+                $purchase->due_amount = $total_purchase_amount - $paid_amount;
+                if(isset($doc)){
+                    $purchase->document = $doc;
+                }
+                $purchase->payment_method_id = $request['payment_method_id'];
+                $purchase->save();
+                //purchase items
+                foreach($items as $value){
+                    $product_id = $value->product_id;
+                    $unit_id = $value->unit_id;
+                    $avg_qty = $value->avg_qty;
+                    $bag = $value->bag;
+                    $qty = $value->qty;
+                    $rate = $value->rate;
+                    $amount = $value->amount;
+                    $pur_itmes = PurchaseItem::where('id',$value->purchase_item_id)->first();
+                    $pur_itmes->product_id = $product_id;
+                    $pur_itmes->unit_id = $unit_id;
+                    $pur_itmes->avg_qty = $avg_qty;
+                    $pur_itmes->bag = $bag;
+                    $pur_itmes->qty = $qty;
+                    $pur_itmes->rate = $rate;
+                    $pur_itmes->amount = $amount;
+                    $pur_itmes->save();
+                }
+                if($purchase && $pur_itmes){
+                    return response()->json([
+                        'status'=>true,
+                        'message'=>"Purchase Updated Successfully",
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Something Is Wrong To Updated Purchase",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //PurchaseDelete
+    public function PurchaseDelete(Request $request){
+        $purchase = Purchase::where('id',$request['purchase_id'])->delete();
+        if($purchase){
+            return response()->json([
+                'status'=>true,
+                'message'=>"Purchase Deleted Successfully",
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Something Is Wrong To Delete Purchase",
+            ],200);
+        }
+    }
+    //sale
+    public function Sale(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $validator = Validator::make($request->all(), [
+                    'acc_cus_sup_id'=>'required',
+                    'product_order_by_id'=>'required',
+                    'sale_details'=>'required',
+                    'document'=>'required',
+                    'tax_amount'=>'required',
+                    'service_charge'=>'required',
+                    'shipping_cost'=>'required',
+                    'paid_amount'=>'required',
+                    'items'=>'required',
+                    'payment_method_id'=>'required',
+                ]);
+                if ($validator->fails()) {
+                    return response()->json(['errors'=>$validator->errors()], 400);
+                }
+                //document
+                $image = array();
+                foreach ($request->file('document') as $imagefile) {
+                    $sale = mt_rand().'.'.$imagefile->extension();
+                    $imagefile->move(public_path('images/sale'), $sale);
+                    $image[] = $_SERVER['HTTP_HOST'].'/public/images/sale/'.$sale;
+                }
+                $doc = json_encode($image);
+                $items = json_decode($request->items);
+                $service_charge = $request->service_charge;
+                $shipping_cost = $request->shipping_cost;
+                $paid_amount = $request->paid_amount;
+                $sub_total = array_sum(array_column($items, 'amount'));
+                $tax_amount = ($request->tax_amount / 100) * $sub_total;
+                $total_sale_amount = $sub_total + $tax_amount + $service_charge + $shipping_cost;
+                $invoice = date('y').date('m').date('d').date('i').date('s');
+                $sale = new Sale;
+                $sale->package_buy_id = $user['package_buy_id'];
+                $sale->acc_cus_sup_id = $request['acc_cus_sup_id'];
+                $sale->sale_invoice_no = $invoice;
+                $sale->product_order_by_id = $request->product_order_by_id;
+                $sale->sale_date = date('Y-m-d');
+                $sale->total_sale_amount =  $sub_total;
+                $sale->sale_details = $request['sale_details'];
+                $sale->total_tax_amount = $tax_amount;
+                $sale->service_charge = $service_charge;
+                $sale->shipping_cost = $shipping_cost;
+                $sale->grand_total = $total_sale_amount;
+                $sale->paid_amount = $paid_amount;
+                $sale->due_amount = $total_sale_amount - $paid_amount;
+                $sale->document = $doc;
+                $sale->payment_method_id = $request['payment_method_id'];
+                $sale->save();
+                //sale items
+                foreach($items as $item){
+                    $product_id = $item->product_id;
+                    $unit_id = $item->unit_id;
+                    $avg_qty = $item->avg_qty;
+                    $bag = $item->bag;
+                    $qty = $item->qty;
+                    $rate = $item->rate;
+                    $amount = $item->amount;
+                    $sale_items = new SaleItem;
+                    $sale_items->package_buy_id  = $user['package_buy_id'];
+                    $sale_items->sale_id = $sale->id;
+                    $sale_items->sale_invoice_no = $invoice;
+                    $sale_items->product_id = $product_id;
+                    $sale_items->unit_id = $unit_id;
+                    $sale_items->avg_qty = $avg_qty;
+                    $sale_items->bag = $bag;
+                    $sale_items->qty = $qty;
+                    $sale_items->rate = $rate;
+                    $sale_items->amount = $amount;
+                    $sale_items->save();
+                }
+                if($sale && $sale_items){
+                    return response()->json([
+                        'status'=>true,
+                        'message'=>"Sale Created Successfully",
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Something Is Wrong To Create Sale",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //SaleLists
+    public function SaleLists(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $sale = Sale::where('package_buy_id',$user['package_buy_id'])->select('id','sale_invoice_no','sale_date','grand_total','paid_amount','due_amount')->orderBy('id','DESC')->paginate(15);
+                if($sale){
+                    return response()->json([
+                        'status'=>true,
+                        'lists'=>$sale,
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Sale Lists Not Found",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //SaleDetails
+    public function SaleDetails($id){
+        $sale = Sale::with('acc_cus_sup','payment_method')->where('id',$id)->select('id','acc_cus_sup_id','sale_invoice_no','product_order_by_id','sale_date','sale_details','total_sale_amount','total_tax_amount','service_charge','shipping_cost','grand_total','paid_amount','due_amount','document','payment_method_id')->first();
+        $sale_items = SaleItem::with('product','unit')->where('sale_id',$id)->select('id','sale_id','unit_id','sale_invoice_no','product_id','avg_qty','bag','qty','rate','amount')->get();
+        if($sale && $sale_items){
+            return response()->json([
+                'status'=>true,
+                'lists'=>$sale,
+                'items'=>$sale_items
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Sale Lists Not Found",
+            ],200);
+        }
+    }
+    //UpdateSale
+    public function UpdateSale(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $validator = Validator::make($request->all(), [
+                    'acc_cus_sup_id'=>'required',
+                    'product_order_by_id'=>'required',
+                    'sale_details'=>'required',
+                    'tax_amount'=>'required',
+                    'service_charge'=>'required',
+                    'shipping_cost'=>'required',
+                    'paid_amount'=>'required',
+                    'items'=>'required',
+                    'payment_method_id'=>'required',
+                ]);
+                if ($validator->fails()) {
+                    return response()->json(['errors'=>$validator->errors()], 400);
+                }
+
+                //document
+                $image = array();
+
+                if(!empty($request->file('document'))){
+                    foreach ($request->file('document') as $imagefile) {
+                        $sale = mt_rand().'.'.$imagefile->extension();
+                        $imagefile->move(public_path('images/sale'), $sale);
+                        $image[] = $_SERVER['HTTP_HOST'].'/public/images/sale/'.$sale;
+                    }
+                }
+
+                $doc = json_encode($image);
+                $items = json_decode($request->items);
+                $service_charge = $request->service_charge;
+                $shipping_cost = $request->shipping_cost;
+                $paid_amount = $request->paid_amount;
+                $sub_total = array_sum(array_column($items, 'amount'));
+                $tax_amount = ($request->tax_amount / 100) * $sub_total;
+                $total_sale_amount = $sub_total + $tax_amount + $service_charge + $shipping_cost;
+                $sale = Sale::where('id',$request['sale_id'])->first();
+                $sale->acc_cus_sup_id = $request['acc_cus_sup_id'];
+                $sale->product_order_by_id = $request->product_order_by_id;
+                $sale->total_sale_amount =  $sub_total;
+                $sale->sale_details = $request['sale_details'];
+                $sale->total_tax_amount = $tax_amount;
+                $sale->service_charge = $service_charge;
+                $sale->shipping_cost = $shipping_cost;
+                $sale->grand_total = $total_sale_amount;
+                $sale->paid_amount = $paid_amount;
+                $sale->due_amount = $total_sale_amount - $paid_amount;
+                if(isset($doc)){
+                    $sale->document = $doc;
+                }
+                $sale->payment_method_id = $request['payment_method_id'];
+                $sale->save();
+                //sale items
+                foreach($items as $value){
+                    $product_id = $value->product_id;
+                    $unit_id = $value->unit_id;
+                    $avg_qty = $value->avg_qty;
+                    $bag = $value->bag;
+                    $qty = $value->qty;
+                    $rate = $value->rate;
+                    $amount = $value->amount;
+                    $sale_items = SaleItem::where('id',$value->sale_item_id)->first();
+                    $sale_items->product_id = $product_id;
+                    $sale_items->unit_id = $unit_id;
+                    $sale_items->avg_qty = $avg_qty;
+                    $sale_items->bag = $bag;
+                    $sale_items->qty = $qty;
+                    $sale_items->rate = $rate;
+                    $sale_items->amount = $amount;
+                    $sale_items->save();
+                }
+                if($sale && $sale_items){
+                    return response()->json([
+                        'status'=>true,
+                        'message'=>"Sale Updated Successfully",
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Something Is Wrong To Updated Sale",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //SaleDelete
+    public function SaleDelete(Request $request){
+        $sale = Sale::where('id',$request['sale_id'])->delete();
+        if($sale){
+            return response()->json([
+                'status'=>true,
+                'message'=>"Sale Deleted Successfully",
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Something Is Wrong To Delete Sale",
+            ],200);
+        }
+    }
 }
 
