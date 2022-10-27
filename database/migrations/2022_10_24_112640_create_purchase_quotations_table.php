@@ -21,6 +21,7 @@ class CreatePurchaseQuotationsTable extends Migration
             $table->bigInteger('product_order_by_id');
             $table->date('quotation_date');
             $table->longText('quotation_purchase_details');
+            $table->bigInteger('total_qty');
             $table->bigInteger('total_purchase_amount');
             $table->bigInteger('total_tax_amount');
             $table->bigInteger('service_charge');

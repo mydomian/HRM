@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class PurchaseQuotation extends Model
 {
     protected $fillable = [
-        'package_buy_id', 'acc_cus_sup_id', 'quotation_invoice_no','product_order_by_id', 'quotation_date', 'quotation_purchase_details',
+        'package_buy_id', 'acc_cus_sup_id', 'quotation_invoice_no','product_order_by_id', 'quotation_date', 'quotation_purchase_details','total_qty',
         'total_purchase_amount','total_tax_amount','service_charge','shipping_cost','grand_total','paid_amount','due_amount','document'
     ];
     protected $casts = [
@@ -17,6 +17,7 @@ class PurchaseQuotation extends Model
         'quotation_invoice_no' => 'string',
         'product_order_by_id' => 'integer',
         'quotation_date' => 'date',
+        'total_qty' => 'biginteger',
         'quotation_purchase_details' => 'longtext',
         'total_purchase_amount' => 'biginteger',
         'total_tax_amount' => 'biginteger',

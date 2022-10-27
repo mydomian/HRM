@@ -21,6 +21,7 @@ class CreateSalesTable extends Migration
             $table->bigInteger('product_order_by_id');
             $table->date('sale_date');
             $table->longText('sale_details');
+            $table->bigInteger('total_qty');
             $table->bigInteger('total_sale_amount');
             $table->bigInteger('total_tax_amount');
             $table->bigInteger('service_charge');

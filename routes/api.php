@@ -240,3 +240,9 @@ Route::post('/update-sale',[ApiController::class,"UpdateSale"]);
 Route::post('/sale-lists',[ApiController::class,"SaleLists"]);
 Route::get('/sale-details/{sale_id}',[ApiController::class,"SaleDetails"]);
 Route::post('/delete-sale',[ApiController::class,"SaleDelete"]);
+//receipt
+Route::post('/create-receipt',[ApiController::class,"CreateReceipt"]);
+Route::post('/pending-receipt-lists',[ApiController::class,"PendingReceiptLists"]);
+Route::get('/receipt-details/{receipt_id}',[ApiController::class,"ReceiptDetails"]);
+Route::post('/update-receipt',[ApiController::class,"ReceiptUpdate"]);
+Route::post('/receipt-delete',[ApiController::class,"ReceiptDelete"]);

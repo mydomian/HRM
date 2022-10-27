@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Purchase extends Model
 {
     protected $fillable = [
-        'package_buy_id', 'acc_cus_sup_id', 'quotation_invoice_no','product_order_by_id', 'purchase_date', 'purchase_details',
+        'package_buy_id', 'acc_cus_sup_id', 'quotation_invoice_no','product_order_by_id', 'purchase_date', 'purchase_details','total_qty',
         'total_purchase_amount','total_tax_amount','service_charge','shipping_cost','grand_total','paid_amount','due_amount','payment_method_id','document'
     ];
     protected $casts = [
@@ -18,6 +18,7 @@ class Purchase extends Model
         'product_order_by_id' => 'integer',
         'purchase_date' => 'date',
         'purchase_details' => 'longtext',
+        'total_qty' => 'biginteger',
         'total_purchase_amount' => 'biginteger',
         'total_tax_amount' => 'biginteger',
         'service_charge' => 'biginteger',
@@ -35,6 +36,10 @@ class Purchase extends Model
     //acc customer and supplier
     public function acc_cus_sup(){
         return $this->belongsTo(AccCustomerSupplier::class,'acc_cus_sup_id','id')->select('id','acc_name','email','phone','address','acc_opening_balance','acc_hold_balance','profile_image');
+    }
+    //product_order_by
+    public function product_order_by(){
+        return $this->belongsTo(ProductOrderBy::class,'product_order_by_id','id')->select('id','name');
     }
     //payment_method
     public function payment_method(){

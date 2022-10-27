@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class SaleQuotation extends Model
 {
     protected $fillable = [
-        'package_buy_id', 'acc_cus_sup_id', 'quotation_invoice_no','product_order_by_id', 'quotation_date', 'quotation_sale_details',
+        'package_buy_id', 'acc_cus_sup_id', 'quotation_invoice_no','product_order_by_id', 'quotation_date', 'quotation_sale_details','total_qty',
         'total_sale_amount','total_tax_amount','service_charge','shipping_cost','grand_total','paid_amount','due_amount','due_amount',
         'document'
     ];
@@ -19,6 +19,7 @@ class SaleQuotation extends Model
         'product_order_by_id' => 'integer',
         'quotation_date' => 'date',
         'quotation_sale_details' => 'longtext',
+        'total_qty' => 'biginteger',
         'total_sale_amount' => 'biginteger',
         'total_tax_amount' => 'biginteger',
         'service_charge' => 'biginteger',
