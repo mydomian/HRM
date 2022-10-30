@@ -28,6 +28,8 @@ use App\Product;
 use App\ProductionType;
 use App\ProductOrderBy;
 use App\Purchase;
+use App\PurchaseChallan;
+use App\PurchaseChallanItem;
 use App\PurchaseItem;
 use App\PurchaseQuotation;
 use App\PurchaseQuotationItem;
@@ -1304,13 +1306,11 @@ class ApiController extends Controller
                 if ($validator->fails()) {
                     return response()->json(['errors'=>$validator->errors()], 400);
                 }
-
                 $product = Product::where('id',$request['product_id'])->first();
                 //product image
                 if($request->hasFile('product_image')){
                     $image_name = basename($product['product_image']);
                     File::delete(public_path("images/product_image/".$image_name));
-
                     $product_image = time().'.'.$request->product_image->extension();
                     $request->product_image->move(public_path('images/product_image'), $product_image);
                 }
@@ -5464,9 +5464,9 @@ class ApiController extends Controller
         }
     }
     //PurchaseDetails
-    public function PurchaseDetails($id){
-        $purchase = Purchase::with('acc_cus_sup','payment_method')->where('id',$id)->select('id','acc_cus_sup_id','purchase_invoice_no','product_order_by_id','purchase_date','total_qty','purchase_details','total_purchase_amount','total_tax_amount','service_charge','shipping_cost','grand_total','paid_amount','due_amount','document','payment_method_id')->first();
-        $purchase_items = PurchaseItem::with('product','unit')->where('purchase_id',$id)->select('id','purchase_id','unit_id','purchase_invoice_no','product_id','avg_qty','bag','qty','rate','amount')->get();
+    public function PurchaseDetails(Request $request){
+        $purchase = Purchase::with('acc_cus_sup','payment_method')->where('id',$request['purchase_id'])->select('id','acc_cus_sup_id','purchase_invoice_no','product_order_by_id','purchase_date','total_qty','purchase_details','total_purchase_amount','total_tax_amount','service_charge','shipping_cost','grand_total','paid_amount','due_amount','document','payment_method_id')->first();
+        $purchase_items = PurchaseItem::with('product','unit')->where('purchase_id',$request['purchase_id'])->select('id','purchase_id','unit_id','purchase_invoice_no','product_id','avg_qty','bag','qty','rate','amount')->get();
         if($purchase && $purchase_items){
             return response()->json([
                 'status'=>true,
@@ -5725,9 +5725,9 @@ class ApiController extends Controller
         }
     }
     //SaleDetails
-    public function SaleDetails($id){
-        $sale = Sale::with('acc_cus_sup','payment_method')->where('id',$id)->select('id','acc_cus_sup_id','sale_invoice_no','product_order_by_id','sale_date','total_qty','sale_details','total_sale_amount','total_tax_amount','service_charge','shipping_cost','grand_total','paid_amount','due_amount','document','payment_method_id')->first();
-        $sale_items = SaleItem::with('product','unit')->where('sale_id',$id)->select('id','sale_id','unit_id','sale_invoice_no','product_id','avg_qty','bag','qty','rate','amount')->get();
+    public function SaleDetails(Request $request){
+        $sale = Sale::with('acc_cus_sup','payment_method')->where('id',$request['sale_id'])->select('id','acc_cus_sup_id','sale_invoice_no','product_order_by_id','sale_date','total_qty','sale_details','total_sale_amount','total_tax_amount','service_charge','shipping_cost','grand_total','paid_amount','due_amount','document','payment_method_id')->first();
+        $sale_items = SaleItem::with('product','unit')->where('sale_id',$request['sale_id'])->select('id','sale_id','unit_id','sale_invoice_no','product_id','avg_qty','bag','qty','rate','amount')->get();
         if($sale && $sale_items){
             return response()->json([
                 'status'=>true,
@@ -5925,12 +5925,12 @@ class ApiController extends Controller
             ],200);
         }
     }
-    //PendingReceiptLists
-    public function PendingReceiptLists(Request $request){
+    //ReceiptLists
+    public function ReceiptLists(Request $request){
         $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
         if($user){
             if($user['usepackage']['status'] == 'active'){
-                $receipt = Receipt::where(['package_buy_id'=>$user['package_buy_id'],'status'=>'pending'])->select('id','receipt_invoice_no','total_qty','total_receipt','total_pending','receipt_date','status')->orderBy('id','DESC')->paginate(15);
+                $receipt = Receipt::where(['package_buy_id'=>$user['package_buy_id']])->select('id','receipt_invoice_no','total_qty','total_receipt','total_pending','receipt_date','status')->orderBy('id','DESC')->paginate(15);
                 if($receipt){
                     return response()->json([
                         'status'=>true,
@@ -5956,9 +5956,9 @@ class ApiController extends Controller
         }
     }
     //ReceiptDetails
-    public function ReceiptDetails($id){
-        $receipt = Receipt::with('purchase','warehouse','vehicale')->where('id',$id)->select('id','purchase_id','receipt_invoice_no','ware_house_id','vehicale_id','receipt_details','total_receipt','total_pending','receipt_date','status')->first();
-        $items = ReceiptItem::with('receipt_item')->where('receipt_id',$id)->select('id','purchase_item_id','receipt_id','order','receipt','pending')->get();
+    public function ReceiptDetails(Request $request){
+        $receipt = Receipt::with('purchase','warehouse','vehicale')->where('id',$request['receipt_id'])->select('id','purchase_id','receipt_invoice_no','ware_house_id','vehicale_id','receipt_details','total_receipt','total_pending','receipt_date','status')->first();
+        $items = ReceiptItem::with('receipt_item')->where('receipt_id',$request['receipt_id'])->select('id','purchase_item_id','receipt_id','order','receipt','pending')->get();
         if($receipt && $items){
             return response()->json([
                 'status'=>true,
@@ -5974,6 +5974,18 @@ class ApiController extends Controller
     }
     //ReceiptUpdate
     public function ReceiptUpdate(Request $request){
+
+
+        $validator = Validator::make($request->all(), [
+            'ware_house_id'=>'required',
+            'vehicale_id'=>'required',
+            'receipt_details'=>'required',
+            'items'=>'required'
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['errors'=>$validator->errors()], 400);
+        }
+
         $items = json_decode($request['items']);
         $receipt = Receipt::where('id',$request['receipt_id'])->first();
         $receipt->ware_house_id = $request['ware_house_id'];
@@ -6022,5 +6034,168 @@ class ApiController extends Controller
             ],200);
         }
     }
+    //CreatePurchaseChallan
+    public function CreatePurchaseChallan(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $validator = Validator::make($request->all(), [
+                    'purchase_id'=>'required',
+                    'vehicale_id'=>'required',
+                    'challan_details'=>'required',
+                    'items'=>'required',
+                    'document'=>'required'
+                ]);
+                if ($validator->fails()) {
+                    return response()->json(['errors'=>$validator->errors()], 400);
+                }
+                //document
+                $challan = time().'.'.$request->document->extension();
+                $request->document->move(public_path('images/purchase_challan'), $challan);
+
+                $items = json_decode($request['items']);
+                $pur_challan = new PurchaseChallan;
+                $pur_challan->package_buy_id = $user['package_buy_id'];
+                $pur_challan->purchase_id = $request['purchase_id'];
+                $pur_challan->vehicale_id = $request['vehicale_id'];
+                $pur_challan->purchase_challan_invoice_no = date('y').date('m').date('d').date('i').date('s');
+                $pur_challan->challan_details = $request['challan_details'];
+                $pur_challan->challan_date = date('Y-m-d');
+                $pur_challan->document = $_SERVER['HTTP_HOST'].'/public/images/purchase_challan/'.$challan;
+                $pur_challan->save();
+                $pur_challan_id = $pur_challan->id;
+                foreach($items as $value){
+                    $purchase_item_id = $value->purchase_item_id;
+                    $receipt_item = new PurchaseChallanItem;
+                    $receipt_item->package_buy_id = $user['package_buy_id'];
+                    $receipt_item->purchase_id = $request['purchase_id'];
+                    $receipt_item->purchase_challan_id  = $pur_challan_id;
+                    $receipt_item->purchase_item_id = $purchase_item_id;
+                    $receipt_item->save();
+                }
+                if($pur_challan && $receipt_item){
+                    return response()->json([
+                        'status'=>true,
+                        'message'=>"Purchase Challan Created Successfully",
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Something Is Wrong To Create Purchase Challan",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //PurchaseChallanLists
+    public function PurchaseChallanLists(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $pur_challan = PurchaseChallan::where(['package_buy_id'=>$user['package_buy_id']])->select('id','vehicale_id','purchase_challan_invoice_no','challan_details','challan_date','document','status')->orderBy('id','DESC')->paginate(15);
+                if($pur_challan){
+                    return response()->json([
+                        'status'=>true,
+                        'lists'=>$pur_challan,
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Purchase Challan List Not Found",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //PurchaseChallanDetails
+    public function PurchaseChallanDetails(Request $request){
+        $pur_challan = PurchaseChallan::with('vehicale')->where('id',$request['purchase_challan_id'])->select('id','vehicale_id','purchase_challan_invoice_no','challan_details','challan_date','document','status')->first();
+        $items = PurchaseChallanItem::with('purchase_challan_item')->where('purchase_challan_id',$request['purchase_challan_id'])->select('id','purchase_item_id')->get();
+        if($pur_challan && $items){
+            return response()->json([
+                'status'=>true,
+                'purchase_challan'=>$pur_challan,
+                'items'=>$items,
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Purchase Challan Details Not Found",
+            ],200);
+        }
+    }
+    //PurchaseChallanDelete
+    public function PurchaseChallanDelete(Request $request){
+        $pur_challan = PurchaseChallan::where('id',$request['purchase_challan_id'])->delete();
+        if($pur_challan){
+            return response()->json([
+                'status'=>true,
+                'message'=>"Purchase Challan Deleted Successfully",
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Something Is Wrong To Delete Purchase Challan",
+            ],200);
+        }
+    }
+    //PurchaseChallanUpdate
+    public function PurchaseChallanUpdate(Request $request){
+        $validator = Validator::make($request->all(), [
+            'vehicale_id'=>'required',
+            'purchase_challan_id'=>'required',
+            'challan_details'=>'required',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['errors'=>$validator->errors()], 400);
+        }
+        $pur_challan = PurchaseChallan::where('id',$request['purchase_challan_id'])->first();
+        //document
+        if($request->document){
+            $image_name = basename($pur_challan['document']);
+            File::delete(public_path("images/purchase_challan/".$image_name));
+            $challan = time().'.'.$request->document->extension();
+            $request->document->move(public_path('images/purchase_challan'), $challan);
+        }
+        $pur_challan->vehicale_id = $request['vehicale_id'];
+        $pur_challan->challan_details = $request['challan_details'];
+        if(isset($challan)){
+            $pur_challan->document = $_SERVER['HTTP_HOST'].'/public/images/purchase_challan/'.$challan;
+        }
+        $pur_challan->save();
+        if($pur_challan){
+            return response()->json([
+                'status'=>true,
+                'message'=>"Purchase Challan Updated Successfully",
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Something Is Wrong To Update Purchase Challan",
+            ],200);
+        }
+    }
+
+
 }
 
