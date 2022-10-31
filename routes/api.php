@@ -252,3 +252,9 @@ Route::post('/purchase-challan-lists',[ApiController::class,"PurchaseChallanList
 Route::post('/purchase-challan-details',[ApiController::class,"PurchaseChallanDetails"]);
 Route::post('/purchase-challan-delete',[ApiController::class,"PurchaseChallanDelete"]);
 Route::post('/update-purchase-challan',[ApiController::class,"PurchaseChallanUpdate"]);
+//delivery
+Route::post('/create-delivery',[ApiController::class,'CreateDelivery']);
+Route::post('/delivery-lists',[ApiController::class,'DeliveryLists']);
+Route::post('/delivery-details',[ApiController::class,'DeliveryDetails']);
+Route::post('/receipt-delete',[ApiController::class,'DeliveryDelete']);
+Route::post('/update-delivery',[ApiController::class,'UpdateDelivery']);

@@ -14,6 +14,8 @@ use App\BankBranch;
 use App\CashCounter;
 use App\Category;
 use App\City;
+use App\Delivery;
+use App\DeliveryItem;
 use App\Designation;
 use App\District;
 use App\Driver;
@@ -5886,7 +5888,7 @@ class ApiController extends Controller
                 $receipt_invoice_no = $receipt->receipt_invoice_no;
                 //receipt items
                 foreach($items as $value){
-                    $purchase_item_id = $value->purchase_item_id;
+                    $purchase_item_id = $value->id;
                     $order = $value->order;
                     $receipt = $value->receipt;
                     $pending = $value->pending;
@@ -5903,7 +5905,7 @@ class ApiController extends Controller
                 }
                 if($receipt && $receipt_item){
                     return response()->json([
-                        'status'=>false,
+                        'status'=>true,
                         'message'=>"Receipt Created Successfully",
                     ],200);
                 }else{
@@ -5962,8 +5964,8 @@ class ApiController extends Controller
         if($receipt && $items){
             return response()->json([
                 'status'=>true,
-                'receipt'=>$receipt,
-                'receipt_item'=>$items,
+                'lists'=>$receipt,
+                'items'=>$items,
             ],200);
         }else{
             return response()->json([
@@ -5975,7 +5977,6 @@ class ApiController extends Controller
     //ReceiptUpdate
     public function ReceiptUpdate(Request $request){
 
-
         $validator = Validator::make($request->all(), [
             'ware_house_id'=>'required',
             'vehicale_id'=>'required',
@@ -5985,7 +5986,6 @@ class ApiController extends Controller
         if ($validator->fails()) {
             return response()->json(['errors'=>$validator->errors()], 400);
         }
-
         $items = json_decode($request['items']);
         $receipt = Receipt::where('id',$request['receipt_id'])->first();
         $receipt->ware_house_id = $request['ware_house_id'];
@@ -5997,7 +5997,7 @@ class ApiController extends Controller
         $receipt->total_pending  = array_sum(array_column($items, 'pending'));
         $receipt->save();
         foreach($items as $value){
-            $receipt_item_id = $value->receipt_item_id;
+            $receipt_item_id = $value->id;
             $order = $value->order;
             $receipt = $value->receipt;
             $pending = $value->pending;
@@ -6065,7 +6065,7 @@ class ApiController extends Controller
                 $pur_challan->save();
                 $pur_challan_id = $pur_challan->id;
                 foreach($items as $value){
-                    $purchase_item_id = $value->purchase_item_id;
+                    $purchase_item_id = $value->id;
                     $receipt_item = new PurchaseChallanItem;
                     $receipt_item->package_buy_id = $user['package_buy_id'];
                     $receipt_item->purchase_id = $request['purchase_id'];
@@ -6134,7 +6134,7 @@ class ApiController extends Controller
         if($pur_challan && $items){
             return response()->json([
                 'status'=>true,
-                'purchase_challan'=>$pur_challan,
+                'lists'=>$pur_challan,
                 'items'=>$items,
             ],200);
         }else{
@@ -6195,7 +6195,185 @@ class ApiController extends Controller
             ],200);
         }
     }
-
+    //CreateDelivery
+    public function CreateDelivery(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $validator = Validator::make($request->all(), [
+                    'sale_id'=>'required',
+                    'ware_house_id'=>'required',
+                    'vehicale_id'=>'required',
+                    'delivery_details'=>'required',
+                    'items'=>'required'
+                ]);
+                if ($validator->fails()) {
+                    return response()->json(['errors'=>$validator->errors()], 400);
+                }
+                $items = json_decode($request->items);
+                $delivery = new Delivery;
+                $delivery->package_buy_id = $user['package_buy_id'];
+                $delivery->sale_id  = $request['sale_id'];
+                $delivery->delivery_invoice_no  = date('y').date('m').date('d').date('i').date('s');
+                $delivery->ware_house_id = $request['ware_house_id'];
+                $delivery->vehicale_id  = $request['vehicale_id'];
+                $delivery->delivery_details  = $request['delivery_details'];
+                $delivery->total_qty  = array_sum(array_column($items, 'order'));
+                $delivery->total_receipt  = array_sum(array_column($items, 'receipt'));
+                $delivery->total_pending  = array_sum(array_column($items, 'pending'));
+                $delivery->delivery_date  = date('Y-m-d');
+                $delivery->save();
+                $delivery_id = $delivery->id;
+                $delivery_invoice_no = $delivery->delivery_invoice_no;
+                //delivery items
+                foreach($items as $value){
+                    $sale_item_id = $value->id;
+                    $order = $value->order;
+                    $receipt = $value->receipt;
+                    $pending = $value->pending;
+                    $sale_item = new DeliveryItem;
+                    $sale_item->package_buy_id = $user['package_buy_id'];
+                    $sale_item->sale_id = $request['sale_id'];
+                    $sale_item->delivery_id = $delivery_id;
+                    $sale_item->delivery_invoice_no = $delivery_invoice_no;
+                    $sale_item->sale_item_id = $sale_item_id;
+                    $sale_item->order = $order;
+                    $sale_item->receipt = $receipt;
+                    $sale_item->pending = $pending;
+                    $sale_item->save();
+                }
+                if($delivery && $sale_item){
+                    return response()->json([
+                        'status'=>true,
+                        'message'=>"Delivery Created Successfully",
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Something Is Wrong To Create Delivery",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //DeliveryLists
+    public function DeliveryLists(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $delivery = Delivery::where(['package_buy_id'=>$user['package_buy_id']])->select('id','delivery_invoice_no','total_qty','total_receipt','total_pending','delivery_date','status')->orderBy('id','DESC')->paginate(15);
+                if($delivery){
+                    return response()->json([
+                        'status'=>true,
+                        'lists'=>$delivery,
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Delivery List Not Found",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //DeliveryDetails
+    public function DeliveryDetails(Request $request){
+        $delivery = Delivery::with('sale','warehouse','vehicale')->where('id',$request['delivery_id'])->select('id','sale_id','delivery_invoice_no','ware_house_id','vehicale_id','delivery_details','total_qty','total_receipt','total_pending','delivery_date','status')->first();
+        $items = DeliveryItem::with('delivery_item')->where('delivery_id',$request['delivery_id'])->select('id','sale_item_id','order','receipt','pending')->get();
+        if($delivery && $items){
+            return response()->json([
+                'status'=>true,
+                'lists'=>$delivery,
+                'items'=>$items,
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Delivery Details Not Found",
+            ],200);
+        }
+    }
+    //DeliveryDelete
+    public function DeliveryDelete(Request $request){
+        $delivery = Delivery::where('id',$request['delivery_id'])->delete();
+        if($delivery){
+            return response()->json([
+                'status'=>true,
+                'message'=>"Delivery Deleted Successfully",
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Something Is Wrong To Delete Delivery",
+            ],200);
+        }
+    }
+    //UpdateDelivery
+    public function UpdateDelivery(Request $request){
+        $validator = Validator::make($request->all(), [
+            'delivery_id'=>'required',
+            'ware_house_id'=>'required',
+            'vehicale_id'=>'required',
+            'delivery_details'=>'required',
+            'items'=>'required'
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['errors'=>$validator->errors()], 400);
+        }
+        $items = json_decode($request->items);
+        $delivery = Delivery::where('id',$request['delivery_id'])->first();
+        $delivery->ware_house_id = $request['ware_house_id'];
+        $delivery->vehicale_id  = $request['vehicale_id'];
+        $delivery->delivery_details  = $request['delivery_details'];
+        $delivery->total_qty  = array_sum(array_column($items, 'order'));
+        $delivery->total_receipt  = array_sum(array_column($items, 'receipt'));
+        $delivery->total_pending  = array_sum(array_column($items, 'pending'));
+        $delivery->delivery_date  = date('Y-m-d');
+        $delivery->save();
+        //delivery items
+        foreach($items as $value){
+            $delivery_item_id = $value->id;
+            $order = $value->order;
+            $receipt = $value->receipt;
+            $pending = $value->pending;
+            $sale_item = DeliveryItem::where('id',$delivery_item_id)->first();
+            $sale_item->order = $order;
+            $sale_item->receipt = $receipt;
+            $sale_item->pending = $pending;
+            $sale_item->save();
+        }
+        if($delivery && $sale_item){
+            return response()->json([
+                'status'=>true,
+                'message'=>"Delivery Updated Successfully",
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Something Is Wrong To Update Delivery",
+            ],200);
+        }
+    }
 
 }
 

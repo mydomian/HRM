@@ -29,13 +29,21 @@ class Sale extends Model
         'document' => 'longtext',
         'payment_method_id' => 'biginteger',
     ];
-    //quotation date formating
+    //sale date formating
+    public function getSaleDateAttribute($date){
+        return Carbon::createFromFormat('Y-m-d', $date)->format('Y-m-d');
+    }
+    //purchase date formating
     public function getPurchaseDateAttribute($date){
         return Carbon::createFromFormat('Y-m-d', $date)->format('Y-m-d');
     }
     //acc customer and supplier
     public function acc_cus_sup(){
         return $this->belongsTo(AccCustomerSupplier::class,'acc_cus_sup_id','id')->select('id','acc_name','email','phone','address','acc_opening_balance','acc_hold_balance','profile_image');
+    }
+    //product_order_by
+    public function product_order_by(){
+        return $this->belongsTo(ProductOrderBy::class,'product_order_by_id','id')->select('id','name');
     }
     //payment_method
     public function payment_method(){
