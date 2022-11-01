@@ -8,18 +8,20 @@ use Illuminate\Database\Eloquent\Model;
 class Purchase extends Model
 {
     protected $fillable = [
-        'package_buy_id', 'acc_cus_sup_id', 'quotation_invoice_no','product_order_by_id', 'purchase_date', 'purchase_details','total_qty',
-        'total_purchase_amount','total_tax_amount','service_charge','shipping_cost','grand_total','paid_amount','due_amount','payment_method_id','document'
+        'package_buy_id', 'acc_cus_sup_id', 'quotation_invoice_no','receipt_invoice_no','product_order_by_id', 'purchase_date', 'purchase_details','total_qty',
+        'total_purchase_amount','tax','total_tax_amount','service_charge','shipping_cost','grand_total','paid_amount','due_amount','payment_method_id','document'
     ];
     protected $casts = [
         'package_buy_id' => 'integer',
         'acc_cus_sup_id' => 'integer',
         'quotation_invoice_no' => 'string',
         'product_order_by_id' => 'integer',
+        'receipt_invoice_no' => 'string',
         'purchase_date' => 'date',
         'purchase_details' => 'longtext',
         'total_qty' => 'biginteger',
         'total_purchase_amount' => 'biginteger',
+        'tax'=>'biginteger',
         'total_tax_amount' => 'biginteger',
         'service_charge' => 'biginteger',
         'shipping_cost' => 'biginteger',

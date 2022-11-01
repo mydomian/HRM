@@ -205,7 +205,6 @@ class ApiController extends Controller
     //BrandLists
     public function BrandLists(Request $request){
         $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
-
         if($user){
             if($user['usepackage']['status'] == 'active'){
                 $brand = Brand::where('package_buy_id',$user['package_buy_id'])->select('id','name')->orderBy('id','DESC')->paginate(15);
@@ -1080,23 +1079,6 @@ class ApiController extends Controller
     public function UpdateCusSupAcc(Request $request){
         if($request->isMethod('post')){
 
-                $validator = Validator::make($request->all(), [
-                    'acc_name'=>'required',
-                    'email'=>'required|email',
-                    'phone'=>'required|numeric',
-                    'address'=>'required',
-                    'word'=>'required',
-                    'acc_area'=>'required',
-                    'acc_opening_balance'=>'required|numeric',
-                    'acc_hold_balance'=>'required|numeric',
-                    'profile_image'=>'file|mimes:jpeg,png,jpg,gif,svg|max:2048',
-                    'nid_image'=>'file',
-                    'cus_sup_acc_id'=>'required',
-                ]);
-                if ($validator->fails()) {
-                    return response()->json(['errors'=>$validator->errors()], 400);
-                }
-
                 $acc_cus_sup = AccCustomerSupplier::findOrFail($request['cus_sup_acc_id']);
                 //profile image
                 if($request->hasFile('profile_image')){
@@ -1112,14 +1094,31 @@ class ApiController extends Controller
                     $nid = time().'.'.$request->nid_image->extension();
                     $request->nid_image->move(public_path('images/nid_image'), $nid);
                 }
-                $acc_cus_sup->acc_name = $request['acc_name'];
-                $acc_cus_sup->email = $request['email'];
-                $acc_cus_sup->phone = $request['phone'];
-                $acc_cus_sup->address = $request['address'];
-                $acc_cus_sup->word = $request['word'];
-                $acc_cus_sup->acc_area = $request['acc_area'];
-                $acc_cus_sup->acc_opening_balance = $request['acc_opening_balance'];
-                $acc_cus_sup->acc_hold_balance = $request['acc_hold_balance'];
+                if(isset($request['acc_name'])){
+                    $acc_cus_sup->acc_name = $request['acc_name'];
+                }
+                if(isset($request['email'])){
+                    $acc_cus_sup->email = $request['email'];
+                }
+                if(isset($request['phone'])){
+                    $acc_cus_sup->phone = $request['phone'];
+                }
+                if(isset($request['address'])){
+                    $acc_cus_sup->address = $request['address'];
+                }
+                if(isset($request['word'])){
+                    $acc_cus_sup->word = $request['word'];
+                }
+                if(isset($request['acc_area'])){
+                    $acc_cus_sup->acc_area = $request['acc_area'];
+                }
+                if(isset($request['acc_opening_balance'])){
+                    $acc_cus_sup->acc_opening_balance = $request['acc_opening_balance'];
+                }
+                if(isset($request['acc_hold_balance'])){
+                    $acc_cus_sup->acc_hold_balance = $request['acc_hold_balance'];
+                }
+
                 if(isset($profile)){
                     $acc_cus_sup->profile_image = $_SERVER['HTTP_HOST'].'/public/images/profile_image/'.$profile;
                 }
@@ -1179,12 +1178,9 @@ class ApiController extends Controller
                     if ($validator->fails()) {
                         return response()->json(['errors'=>$validator->errors()], 400);
                     }
-
-
                     //product image
                     $product_image = time().'.'.$request->product_image->extension();
                     $request->product_image->move(public_path('images/product_image'), $product_image);
-
                     $digits = 15;
                     $product = new Product;
                     $product->package_buy_id = $user['package_buy_id'];
@@ -1290,24 +1286,7 @@ class ApiController extends Controller
     //UpdateProduct
     public function UpdateProduct(Request $request){
         if($request->isMethod('post')){
-                $validator = Validator::make($request->all(), [
-                    'brand_id'=>'required',
-                    'categroy_id'=>'required',
-                    'unit_id'=>'required',
-                    'acc_cus_sup_id'=>'required',
-                    'lot_gallary_id'=>'required',
-                    'product_name'=>'required',
-                    'product_model'=>'required',
-                    'product_image'=>'file|mimes:jpeg,png,jpg,gif,svg|max:2048',
-                    'serial_no'=>'required',
-                    'supplier_price'=>'required|numeric',
-                    'our_price'=>'required|numeric',
-                    'khat_acc_id'=>'required',
-                    'product_id'=>'required',
-                ]);
-                if ($validator->fails()) {
-                    return response()->json(['errors'=>$validator->errors()], 400);
-                }
+
                 $product = Product::where('id',$request['product_id'])->first();
                 //product image
                 if($request->hasFile('product_image')){
@@ -1316,20 +1295,39 @@ class ApiController extends Controller
                     $product_image = time().'.'.$request->product_image->extension();
                     $request->product_image->move(public_path('images/product_image'), $product_image);
                 }
-
-                $product->brand_id = $request['brand_id'];
-                $product->categroy_id = $request['categroy_id'];
-                $product->unit_id = $request['unit_id'];
-                $product->acc_cus_sup_id = $request['acc_cus_sup_id'];
-                $product->lot_gallary_id = $request['lot_gallary_id'];
-                $product->product_name = $request['product_name'];
-                $product->product_model = $request['product_model'];
+                if(isset($request['brand_id'])){
+                    $product->brand_id = $request['brand_id'];
+                }
+                if(isset($request['categroy_id'])){
+                    $product->categroy_id = $request['categroy_id'];
+                }
+                if(isset($request['unit_id'])){
+                    $product->unit_id = $request['unit_id'];
+                }
+                if(isset($request['acc_cus_sup_id'])){
+                    $product->acc_cus_sup_id = $request['acc_cus_sup_id'];
+                }
+                if(isset($request['lot_gallary_id'])){
+                    $product->lot_gallary_id = $request['lot_gallary_id'];
+                }
+                if(isset($request['product_name'])){
+                    $product->product_name = $request['product_name'];
+                }
+                if(isset($request['product_model'])){
+                    $product->product_model = $request['product_model'];
+                }
                 if(isset($product_image)){
                     $product->product_image = $_SERVER['HTTP_HOST'].'/public/images/product_image/'.$product_image;
                 }
-                $product->serial_no = $request['serial_no'];
-                $product->supplier_price = $request['supplier_price'];
-                $product->our_price = $request['our_price'];
+                if(isset($request['serial_no'])){
+                    $product->serial_no = $request['serial_no'];
+                }
+                if(isset($request['supplier_price'])){
+                    $product->supplier_price = $request['supplier_price'];
+                }
+                if(isset($request['our_price'])){
+                    $product->our_price = $request['our_price'];
+                }
                 // $product->khat_acc_id = $request['khat_acc_id'];
                 $product->save();
                 if($product){
@@ -3758,38 +3756,47 @@ class ApiController extends Controller
     //UpdateVehicale
     public function UpdateVehicale(Request $request){
 
-        $validator = Validator::make($request->all(), [
-            'city_id'=>'required',
-            'district_id'=>'required',
-            'thana_id'=>'required',
-            'union_id'=>'required',
-            'vehicle_name'=>'required',
-            'vehicle_type'=>'required',
-            'vehicle_no'=>'required',
-            'vehicle_reg_no'=>'required',
-            'owner_name'=>'required',
-            'father_name'=>'required',
-            'owner_phone'=>'required|numeric',
-            'owner_post_office'=>'required',
-            'owner_village'=>'required',
-        ]);
-        if ($validator->fails()) {
-            return response()->json(['errors'=>$validator->errors()], 400);
-        }
         $vehicale = Vehicale::findOrFail($request['vehicale_id']);
-        $vehicale->city_id = $request['city_id'];
-        $vehicale->district_id = $request['district_id'];
-        $vehicale->thana_id = $request['thana_id'];
-        $vehicale->union_id = $request['union_id'];
-        $vehicale->vehicle_name = $request['vehicle_name'];
-        $vehicale->vehicle_type = $request['vehicle_type'];
-        $vehicale->vehicle_no = $request['vehicle_no'];
-        $vehicale->vehicle_reg_no = $request['vehicle_reg_no'];
-        $vehicale->owner_name = $request['owner_name'];
-        $vehicale->father_name = $request['father_name'];
-        $vehicale->owner_phone = $request['owner_phone'];
-        $vehicale->owner_post_office = $request['owner_post_office'];
-        $vehicale->owner_village = $request['owner_village'];
+        if(isset($request['city_id'])){
+            $vehicale->city_id = $request['city_id'];
+        }
+        if(isset($request['district_id'])){
+            $vehicale->district_id = $request['district_id'];
+        }
+        if(isset($request['thana_id'])){
+            $vehicale->thana_id = $request['thana_id'];
+        }
+        if(isset($request['union_id'])){
+            $vehicale->union_id = $request['union_id'];
+        }
+        if(isset($request['vehicle_name'])){
+            $vehicale->vehicle_name = $request['vehicle_name'];
+        }
+        if(isset($request['vehicle_type'])){
+            $vehicale->vehicle_type = $request['vehicle_type'];
+        }
+        if(isset($request['vehicle_no'])){
+            $vehicale->vehicle_no = $request['vehicle_no'];
+        }
+        if( isset($request['vehicle_reg_no'])){
+            $vehicale->vehicle_reg_no = $request['vehicle_reg_no'];
+        }
+        if(isset($request['owner_name'])){
+            $vehicale->owner_name = $request['owner_name'];
+        }
+        if(isset($request['father_name'])){
+            $vehicale->father_name = $request['father_name'];
+        }
+        if(isset($request['owner_phone'])){
+            $vehicale->owner_phone = $request['owner_phone'];
+        }
+        if(isset($request['owner_post_office'])){
+            $vehicale->owner_post_office = $request['owner_post_office'];
+        }
+        if(isset($request['owner_village'])){
+            $vehicale->owner_village = $request['owner_village'];
+        }
+
         $vehicale->save();
         if($vehicale){
             return response()->json([
@@ -3957,32 +3964,37 @@ class ApiController extends Controller
     //UpdateDriver
     public function UpdateDriver(Request $request){
 
-        $validator = Validator::make($request->all(), [
-            'city_id'=>'required',
-            'district_id'=>'required',
-            'thana_id'=>'required',
-            'union_id'=>'required',
-            'vehicle_id'=>'required',
-            'driver_name'=>'required',
-            'driver_phone'=>'required|numeric',
-            'father_name'=>'required',
-            'driver_post_office'=>'required',
-            'driver_village'=>'required',
-        ]);
-        if ($validator->fails()) {
-            return response()->json(['errors'=>$validator->errors()], 400);
-        }
         $driver = Driver::findOrFail($request['driver_id']);
-        $driver->vehicle_id = $request['vehicle_id'];
-        $driver->city_id = $request['city_id'];
-        $driver->district_id = $request['district_id'];
-        $driver->thana_id = $request['thana_id'];
-        $driver->union_id = $request['union_id'];
-        $driver->driver_name = $request['driver_name'];
-        $driver->driver_phone = $request['driver_phone'];
-        $driver->father_name = $request['father_name'];
-        $driver->driver_post_office = $request['driver_post_office'];
-        $driver->driver_village = $request['driver_village'];
+        if(isset($request['vehicle_id'])){
+            $driver->vehicle_id = $request['vehicle_id'];
+        }
+        if(isset($request['city_id'])){
+            $driver->city_id = $request['city_id'];
+        }
+        if(isset($request['district_id'])){
+            $driver->district_id = $request['district_id'];
+        }
+        if(isset($request['thana_id'])){
+            $driver->thana_id = $request['thana_id'];
+        }
+        if(isset($request['union_id'])){
+            $driver->union_id = $request['union_id'];
+        }
+        if(isset($request['driver_name'])){
+            $driver->driver_name = $request['driver_name'];
+        }
+        if(isset($request['driver_phone'])){
+            $driver->driver_phone = $request['driver_phone'];
+        }
+        if(isset($request['father_name'])){
+            $driver->father_name = $request['father_name'];
+        }
+        if(isset($request['driver_post_office'])){
+            $driver->driver_post_office = $request['driver_post_office'];
+        }
+        if(isset($request['driver_village'])){
+            $driver->driver_village = $request['driver_village'];
+        }
         $driver->save();
         if($driver){
             return response()->json([
@@ -4972,19 +4984,7 @@ class ApiController extends Controller
         $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
         if($user){
             if($user['usepackage']['status'] == 'active'){
-                $validator = Validator::make($request->all(), [
-                    'acc_cus_sup_id'=>'required',
-                    'product_order_by_id'=>'required',
-                    'quotation_sale_details'=>'required',
-                    'tax_amount'=>'required',
-                    'service_charge'=>'required',
-                    'shipping_cost'=>'required',
-                    'paid_amount'=>'required',
-                    'items'=>'required',
-                ]);
-                if ($validator->fails()) {
-                    return response()->json(['errors'=>$validator->errors()], 400);
-                }
+
                 //document
                 $image = array();
                 if(!empty($request->file('document'))){
@@ -5004,38 +5004,68 @@ class ApiController extends Controller
                 $total_sale_amount = $sub_total + $tax_amount + $service_charge + $shipping_cost;
                 $invoice = date('y').date('m').date('d').date('i').date('s');
                 $sale_quotation = SaleQuotation::where('id',$request['sale_quotation_id'])->first();
-                $sale_quotation->acc_cus_sup_id = $request['acc_cus_sup_id'];
-                $sale_quotation->product_order_by_id = $request->product_order_by_id;
-                $sale_quotation->total_sale_amount =  $sub_total;
-                $sale_quotation->total_qty =  array_sum(array_column($items, 'qty'));
-                $sale_quotation->quotation_sale_details = $request['quotation_sale_details'];
-                $sale_quotation->total_tax_amount = $tax_amount;
-                $sale_quotation->service_charge = $service_charge;
-                $sale_quotation->shipping_cost = $shipping_cost;
-                $sale_quotation->grand_total = $total_sale_amount;
-                $sale_quotation->paid_amount = $paid_amount;
-                $sale_quotation->due_amount = $total_sale_amount - $paid_amount;
+                if(isset($request['acc_cus_sup_id'])){
+                    $sale_quotation->acc_cus_sup_id = $request['acc_cus_sup_id'];
+                }
+                if(isset($request->product_order_by_id)){
+                    $sale_quotation->product_order_by_id = $request->product_order_by_id;
+                }
+                if(isset($sub_total)){
+                    $sale_quotation->total_sale_amount =  $sub_total;
+                }
+                if(isset(array_sum(array_column($items, 'qty')))){
+                    $sale_quotation->total_qty =  array_sum(array_column($items, 'qty'));
+                }
+                if(isset($request['quotation_sale_details'])){
+                    $sale_quotation->quotation_sale_details = $request['quotation_sale_details'];
+                }
+                if(isset($tax_amount)){
+                    $sale_quotation->total_tax_amount = $tax_amount;
+                }
+                if(isset($service_charge)){
+                    $sale_quotation->service_charge = $service_charge;
+                }
+                if(isset($shipping_cost)){
+                    $sale_quotation->shipping_cost = $shipping_cost;
+                }
+                if(isset($total_sale_amount)){
+                    $sale_quotation->grand_total = $total_sale_amount;
+                }
+                if(isset($paid_amount)){
+                    $sale_quotation->paid_amount = $paid_amount;
+                }
+                $due_amount = $total_sale_amount - $paid_amount;
+                if(isset($due_amount)){
+                    $sale_quotation->due_amount = $due_amount;
+                }
                 if(isset($doc)){
                     $sale_quotation->document = $doc;
                 }
                 $sale_quotation->save();
                 //sale quotation items
                 foreach($items as $value){
-                    $product_id = $value->product_id;
-                    $unit_id = $value->unit_id;
-                    $avg_qty = $value->avg_qty;
-                    $bag = $value->bag;
-                    $qty = $value->qty;
-                    $rate = $value->rate;
-                    $amount = $value->amount;
                     $sale_items = SaleQuotationItem::where('id',$value->sale_quotation_item_id)->first();
-                    $sale_items->product_id = $product_id;
-                    $sale_items->unit_id = $unit_id;
-                    $sale_items->avg_qty = $avg_qty;
-                    $sale_items->bag = $bag;
-                    $sale_items->qty = $qty;
-                    $sale_items->rate = $rate;
-                    $sale_items->amount = $amount;
+                    if(isset($value->product_id)){
+                        $sale_items->product_id = $value->product_id;
+                    }
+                    if(isset($value->unit_id)){
+                        $sale_items->unit_id = $value->unit_id;
+                    }
+                    if(isset($value->avg_qty)){
+                        $sale_items->avg_qty = $value->avg_qty;
+                    }
+                    if(isset($value->bag)){
+                        $sale_items->bag = $value->bag;
+                    }
+                    if(isset($value->qty)){
+                        $sale_items->qty = $value->qty;
+                    }
+                    if(isset($value->rate)){
+                        $sale_items->rate = $value->rate;
+                    }
+                    if($value->amount){
+                        $sale_items->amount = $value->amount;
+                    }
                     $sale_items->save();
                 }
                 if($sale_quotation && $sale_items){
@@ -5228,20 +5258,6 @@ class ApiController extends Controller
         $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
         if($user){
             if($user['usepackage']['status'] == 'active'){
-                $validator = Validator::make($request->all(), [
-                    'acc_cus_sup_id'=>'required',
-                    'product_order_by_id'=>'required',
-                    'quotation_purchase_details'=>'required',
-                    'tax_amount'=>'required',
-                    'service_charge'=>'required',
-                    'shipping_cost'=>'required',
-                    'paid_amount'=>'required',
-                    'items'=>'required',
-                ]);
-                if ($validator->fails()) {
-                    return response()->json(['errors'=>$validator->errors()], 400);
-                }
-
 
                 //document
                 $image = array();
@@ -5261,38 +5277,70 @@ class ApiController extends Controller
                 $tax_amount = ($request->tax_amount / 100) * $sub_total;
                 $total_purchase_amount = $sub_total + $tax_amount + $service_charge + $shipping_cost;
                 $pur_quotation = PurchaseQuotation::where('id',$request['purchase_quotation_id'])->first();
-                $pur_quotation->acc_cus_sup_id = $request['acc_cus_sup_id'];
-                $pur_quotation->product_order_by_id = $request->product_order_by_id;
-                $pur_quotation->total_purchase_amount =  $sub_total;
-                $pur_quotation->total_qty =  array_sum(array_column($items, 'qty'));
-                $pur_quotation->quotation_purchase_details = $request['quotation_purchase_details'];
-                $pur_quotation->total_tax_amount = $tax_amount;
-                $pur_quotation->service_charge = $service_charge;
-                $pur_quotation->shipping_cost = $shipping_cost;
-                $pur_quotation->grand_total = $total_purchase_amount;
-                $pur_quotation->paid_amount = $paid_amount;
-                $pur_quotation->due_amount = $total_purchase_amount - $paid_amount;
+                if(isset($request['acc_cus_sup_id'])){
+                    $pur_quotation->acc_cus_sup_id = $request['acc_cus_sup_id'];
+                }
+                if(isset($request->product_order_by_id)){
+                    $pur_quotation->product_order_by_id = $request->product_order_by_id;
+                }
+                if(isset($sub_total)){
+                    $pur_quotation->total_purchase_amount =  $sub_total;
+                }
+                $total_qty = array_sum(array_column($items, 'qty'));
+                if(isset($total_qty)){
+                    $pur_quotation->total_qty =  $total_qty;
+                }
+                if(isset($request['quotation_purchase_details'])){
+                    $pur_quotation->quotation_purchase_details = $request['quotation_purchase_details'];
+                }
+                if(isset($tax_amount)){
+                    $pur_quotation->total_tax_amount = $tax_amount;
+                }
+                if(isset($service_charge)){
+                    $pur_quotation->service_charge = $service_charge;
+                }
+                if(isset($shipping_cost)){
+                    $pur_quotation->shipping_cost = $shipping_cost;
+                }
+                if(isset($total_purchase_amount)){
+                    $pur_quotation->grand_total = $total_purchase_amount;
+                }
+                if(isset($paid_amount)){
+                    $pur_quotation->paid_amount = $paid_amount;
+                }
+                $due = $total_purchase_amount - $paid_amount;
+                if(isset($due)){
+                    $pur_quotation->due_amount = $total_purchase_amount - $paid_amount;
+                }
+
                 if(isset($doc)){
                     $pur_quotation->document = $doc;
                 }
                 $pur_quotation->save();
                 //purchase quotation items
                 foreach($items as $value){
-                    $product_id = $value->product_id;
-                    $unit_id = $value->unit_id;
-                    $avg_qty = $value->avg_qty;
-                    $bag = $value->bag;
-                    $qty = $value->qty;
-                    $rate = $value->rate;
-                    $amount = $value->amount;
                     $pur_itmes = PurchaseQuotationItem::where('id',$value->purchase_quotation_item_id)->first();
-                    $pur_itmes->product_id = $product_id;
-                    $pur_itmes->unit_id = $unit_id;
-                    $pur_itmes->avg_qty = $avg_qty;
-                    $pur_itmes->bag = $bag;
-                    $pur_itmes->qty = $qty;
-                    $pur_itmes->rate = $rate;
-                    $pur_itmes->amount = $amount;
+                    if(isset($value->product_id)){
+                        $pur_itmes->product_id = $value->product_id;
+                    }
+                    if(isset($value->unit_id)){
+                        $pur_itmes->unit_id = $value->unit_id;
+                    }
+                    if(isset($value->avg_qty)){
+                        $pur_itmes->avg_qty = $value->avg_qty;
+                    }
+                    if(isset($value->bag)){
+                        $pur_itmes->bag = $value->bag;
+                    }
+                    if(isset($value->qty)){
+                        $pur_itmes->qty = $value->qty;
+                    }
+                    if(isset($value->rate)){
+                        $pur_itmes->rate = $value->rate;
+                    }
+                    if(isset($value->amount)){
+                        $pur_itmes->amount = $value->amount;
+                    }
                     $pur_itmes->save();
                 }
                 if($pur_quotation && $pur_itmes){
@@ -5344,7 +5392,7 @@ class ApiController extends Controller
                     'product_order_by_id'=>'required',
                     'purchase_details'=>'required',
                     'document'=>'required',
-                    'tax_amount'=>'required',
+                    'tax'=>'required',
                     'service_charge'=>'required',
                     'shipping_cost'=>'required',
                     'paid_amount'=>'required',
@@ -5354,7 +5402,6 @@ class ApiController extends Controller
                 if ($validator->fails()) {
                     return response()->json(['errors'=>$validator->errors()], 400);
                 }
-
                 //document
                 $image = array();
                 foreach ($request->file('document') as $imagefile) {
@@ -5368,7 +5415,7 @@ class ApiController extends Controller
                 $shipping_cost = $request->shipping_cost;
                 $paid_amount = $request->paid_amount;
                 $sub_total = array_sum(array_column($items, 'amount'));
-                $tax_amount = ($request->tax_amount / 100) * $sub_total;
+                $tax_amount = ($request->tax / 100) * $sub_total;
                 $total_purchase_amount = $sub_total + $tax_amount + $service_charge + $shipping_cost;
                 $invoice = date('y').date('m').date('d').date('i').date('s');
                 $purchase = new Purchase;
@@ -5380,6 +5427,7 @@ class ApiController extends Controller
                 $purchase->total_purchase_amount =  $sub_total;
                 $purchase->total_qty =  array_sum(array_column($items, 'qty'));
                 $purchase->purchase_details = $request['purchase_details'];
+                $purchase->tax = $request->tax;
                 $purchase->total_tax_amount = $tax_amount;
                 $purchase->service_charge = $service_charge;
                 $purchase->shipping_cost = $shipping_cost;
@@ -5467,7 +5515,7 @@ class ApiController extends Controller
     }
     //PurchaseDetails
     public function PurchaseDetails(Request $request){
-        $purchase = Purchase::with('acc_cus_sup','payment_method')->where('id',$request['purchase_id'])->select('id','acc_cus_sup_id','purchase_invoice_no','product_order_by_id','purchase_date','total_qty','purchase_details','total_purchase_amount','total_tax_amount','service_charge','shipping_cost','grand_total','paid_amount','due_amount','document','payment_method_id')->first();
+        $purchase = Purchase::with('acc_cus_sup','payment_method')->where('id',$request['purchase_id'])->select('id','acc_cus_sup_id','purchase_invoice_no','product_order_by_id','purchase_date','total_qty','purchase_details','total_purchase_amount','tax','total_tax_amount','service_charge','shipping_cost','grand_total','paid_amount','due_amount','document','payment_method_id')->first();
         $purchase_items = PurchaseItem::with('product','unit')->where('purchase_id',$request['purchase_id'])->select('id','purchase_id','unit_id','purchase_invoice_no','product_id','avg_qty','bag','qty','rate','amount')->get();
         if($purchase && $purchase_items){
             return response()->json([
@@ -5484,24 +5532,10 @@ class ApiController extends Controller
     }
     //UpdatePurchase
     public function UpdatePurchase(Request $request){
+
         $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
         if($user){
             if($user['usepackage']['status'] == 'active'){
-                $validator = Validator::make($request->all(), [
-                    'acc_cus_sup_id'=>'required',
-                    'product_order_by_id'=>'required',
-                    'purchase_details'=>'required',
-                    'tax_amount'=>'required',
-                    'service_charge'=>'required',
-                    'shipping_cost'=>'required',
-                    'paid_amount'=>'required',
-                    'items'=>'required',
-                    'payment_method_id'=>'required',
-                ]);
-                if ($validator->fails()) {
-                    return response()->json(['errors'=>$validator->errors()], 400);
-                }
-
                 //document
                 $image = array();
                 if(!empty($request->file('document'))){
@@ -5519,42 +5553,79 @@ class ApiController extends Controller
                 $shipping_cost = $request->shipping_cost;
                 $paid_amount = $request->paid_amount;
                 $sub_total = array_sum(array_column($items, 'amount'));
-                $tax_amount = ($request->tax_amount / 100) * $sub_total;
+                $tax_amount = ($request->tax / 100) * $sub_total;
                 $total_purchase_amount = $sub_total + $tax_amount + $service_charge + $shipping_cost;
                 $purchase = Purchase::where('id',$request['purchase_id'])->first();
-                $purchase->acc_cus_sup_id = $request['acc_cus_sup_id'];
-                $purchase->product_order_by_id = $request->product_order_by_id;
-                $purchase->total_purchase_amount =  $sub_total;
-                $purchase->total_qty =  array_sum(array_column($items, 'qty'));
-                $purchase->purchase_details = $request['purchase_details'];
-                $purchase->total_tax_amount = $tax_amount;
-                $purchase->service_charge = $service_charge;
-                $purchase->shipping_cost = $shipping_cost;
-                $purchase->grand_total = $total_purchase_amount;
-                $purchase->paid_amount = $paid_amount;
-                $purchase->due_amount = $total_purchase_amount - $paid_amount;
+                if(isset($request['acc_cus_sup_id'])){
+                    $purchase->acc_cus_sup_id = $request['acc_cus_sup_id'];
+                }
+                if(isset($request->product_order_by_id)){
+                    $purchase->product_order_by_id = $request->product_order_by_id;
+                }
+                if(isset($sub_total)){
+                    $purchase->total_purchase_amount =  $sub_total;
+                }
+                $total_qty = array_sum(array_column($items, 'qty'));
+                if(isset($total_qty)){
+                    $purchase->total_qty = $total_qty;
+                }
+                if(isset($request['purchase_details'])){
+                    $purchase->purchase_details = $request['purchase_details'];
+                }
+                if(isset($tax_amount)){
+                    $purchase->tax = $request->tax;
+                }
+                if(isset($tax_amount)){
+                    $purchase->total_tax_amount = $tax_amount;
+                }
+                if(isset($service_charge)){
+                    $purchase->service_charge = $service_charge;
+                }
+                if(isset($shipping_cost)){
+                    $purchase->shipping_cost = $shipping_cost;
+                }
+                if(isset($total_purchase_amount)){
+                    $purchase->grand_total = $total_purchase_amount;
+                }
+                if(isset($paid_amount)){
+                    $purchase->paid_amount = $paid_amount;
+                }
+                $due_amount = $total_purchase_amount - $paid_amount;
+                if(isset($due_amount)){
+                    $purchase->due_amount = $due_amount;
+                }
+                if(isset($request['payment_method_id'])){
+                    $purchase->payment_method_id = $request['payment_method_id'];
+                }
                 if(isset($doc)){
                     $purchase->document = $doc;
                 }
-                $purchase->payment_method_id = $request['payment_method_id'];
                 $purchase->save();
                 //purchase items
                 foreach($items as $value){
-                    $product_id = $value->product_id;
-                    $unit_id = $value->unit_id;
-                    $avg_qty = $value->avg_qty;
-                    $bag = $value->bag;
-                    $qty = $value->qty;
-                    $rate = $value->rate;
-                    $amount = $value->amount;
                     $pur_itmes = PurchaseItem::where('id',$value->purchase_item_id)->first();
-                    $pur_itmes->product_id = $product_id;
-                    $pur_itmes->unit_id = $unit_id;
-                    $pur_itmes->avg_qty = $avg_qty;
-                    $pur_itmes->bag = $bag;
-                    $pur_itmes->qty = $qty;
-                    $pur_itmes->rate = $rate;
-                    $pur_itmes->amount = $amount;
+                    if(isset($value->product_id)){
+                        $pur_itmes->product_id = $value->product_id;
+                    }
+                    if(isset($value->unit_id)){
+                        $pur_itmes->unit_id = $value->unit_id;
+                    }
+                    if(isset($value->avg_qty)){
+                        $pur_itmes->avg_qty = $value->avg_qty;
+                    }
+                    if(isset($value->bag)){
+                        $pur_itmes->bag = $value->bag;
+                    }
+
+                    if(isset($value->qty)){
+                        $pur_itmes->qty = $value->qty;
+                    }
+                    if(isset($value->rate)){
+                        $pur_itmes->rate = $value->rate;
+                    }
+                    if(isset($value->amount)){
+                        $pur_itmes->amount = $value->amount;
+                    }
                     $pur_itmes->save();
                 }
                 if($purchase && $pur_itmes){
@@ -5748,21 +5819,6 @@ class ApiController extends Controller
         $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
         if($user){
             if($user['usepackage']['status'] == 'active'){
-                $validator = Validator::make($request->all(), [
-                    'acc_cus_sup_id'=>'required',
-                    'product_order_by_id'=>'required',
-                    'sale_details'=>'required',
-                    'tax_amount'=>'required',
-                    'service_charge'=>'required',
-                    'shipping_cost'=>'required',
-                    'paid_amount'=>'required',
-                    'items'=>'required',
-                    'payment_method_id'=>'required',
-                ]);
-                if ($validator->fails()) {
-                    return response()->json(['errors'=>$validator->errors()], 400);
-                }
-
                 //document
                 $image = array();
 
@@ -5782,39 +5838,71 @@ class ApiController extends Controller
                 $tax_amount = ($request->tax_amount / 100) * $sub_total;
                 $total_sale_amount = $sub_total + $tax_amount + $service_charge + $shipping_cost;
                 $sale = Sale::where('id',$request['sale_id'])->first();
-                $sale->acc_cus_sup_id = $request['acc_cus_sup_id'];
-                $sale->product_order_by_id = $request->product_order_by_id;
-                $sale->total_sale_amount =  $sub_total;
-                $sale->total_qty =  array_sum(array_column($items, 'qty'));
-                $sale->sale_details = $request['sale_details'];
-                $sale->total_tax_amount = $tax_amount;
-                $sale->service_charge = $service_charge;
-                $sale->shipping_cost = $shipping_cost;
-                $sale->grand_total = $total_sale_amount;
-                $sale->paid_amount = $paid_amount;
-                $sale->due_amount = $total_sale_amount - $paid_amount;
+                if(isset($request['acc_cus_sup_id'])){
+                    $sale->acc_cus_sup_id = $request['acc_cus_sup_id'];
+                }
+                if(isset($request->product_order_by_id)){
+                    $sale->product_order_by_id = $request->product_order_by_id;
+                }
+                if(isset($sub_total)){
+                    $sale->total_sale_amount =  $sub_total;
+                }
+                if(isset(array_sum(array_column($items, 'qty')))){
+                    $sale->total_qty =  array_sum(array_column($items, 'qty'));
+                }
+                if(isset($request['sale_details'])){
+                    $sale->sale_details = $request['sale_details'];
+                }
+                if(isset($tax_amount)){
+                    $sale->total_tax_amount = $tax_amount;
+                }
+                if(isset($service_charge)){
+                    $sale->service_charge = $service_charge;
+                }
+                if(isset($shipping_cost)){
+                    $sale->shipping_cost = $shipping_cost;
+                }
+                if(isset($total_sale_amount)){
+                    $sale->grand_total = $total_sale_amount;
+                }
+                if(isset($paid_amount)){
+                    $sale->paid_amount = $paid_amount;
+                }
+                $due = $total_sale_amount - $paid_amount;
+                if(isset($due)){
+                    $sale->due_amount = $total_sale_amount - $paid_amount;
+                }
                 if(isset($doc)){
                     $sale->document = $doc;
                 }
-                $sale->payment_method_id = $request['payment_method_id'];
+                if(isset($request['payment_method_id'])){
+                    $sale->payment_method_id = $request['payment_method_id'];
+                }
                 $sale->save();
                 //sale items
                 foreach($items as $value){
-                    $product_id = $value->product_id;
-                    $unit_id = $value->unit_id;
-                    $avg_qty = $value->avg_qty;
-                    $bag = $value->bag;
-                    $qty = $value->qty;
-                    $rate = $value->rate;
-                    $amount = $value->amount;
                     $sale_items = SaleItem::where('id',$value->sale_item_id)->first();
-                    $sale_items->product_id = $product_id;
-                    $sale_items->unit_id = $unit_id;
-                    $sale_items->avg_qty = $avg_qty;
-                    $sale_items->bag = $bag;
-                    $sale_items->qty = $qty;
-                    $sale_items->rate = $rate;
-                    $sale_items->amount = $amount;
+                    if(isset($value->product_id)){
+                        $sale_items->product_id = $product_id;
+                    }
+                    if(isset($value->unit_id)){
+                        $sale_items->unit_id = $unit_id;
+                    }
+                    if(isset($value->avg_qty)){
+                        $sale_items->avg_qty = $avg_qty;
+                    }
+                    if(isset($value->bag)){
+                        $sale_items->bag = $bag;
+                    }
+                    if(isset($value->qty)){
+                        $sale_items->qty = $qty;
+                    }
+                    if(isset($value->rate)){
+                        $sale_items->rate = $rate;
+                    }
+                    if(isset($value->amount)){
+                        $sale_items->amount = $amount;
+                    }
                     $sale_items->save();
                 }
                 if($sale && $sale_items){
@@ -5903,7 +5991,11 @@ class ApiController extends Controller
                     $receipt_item->pending = $pending;
                     $receipt_item->save();
                 }
-                if($receipt && $receipt_item){
+                //purchase module update in receipt invoice no
+                $purchase = Purchase::findOrFail($request['purchase_id']);
+                $purchase->receipt_invoice_no = $receipt_invoice_no;
+                $purchase->save();
+                if($receipt && $receipt_item && $purchase){
                     return response()->json([
                         'status'=>true,
                         'message'=>"Receipt Created Successfully",
@@ -5912,6 +6004,36 @@ class ApiController extends Controller
                     return response()->json([
                         'status'=>false,
                         'message'=>"Something Is Wrong To Create Receipt",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //PendingReceipt
+    public function PendingReceipt(Request $request){
+       $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $pending_receipt = Purchase::where('package_buy_id',$user['package_buy_id'])->whereNull('receipt_invoice_no')->select('id','purchase_invoice_no','purchase_date','grand_total','paid_amount','due_amount')->orderBy('id','DESC')->paginate(15);
+                if($pending_receipt){
+                    return response()->json([
+                        'status'=>true,
+                        'lists'=>$pending_receipt,
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Pending Receipt Lists Not Found",
                     ],200);
                 }
             }else{
@@ -5977,34 +6099,42 @@ class ApiController extends Controller
     //ReceiptUpdate
     public function ReceiptUpdate(Request $request){
 
-        $validator = Validator::make($request->all(), [
-            'ware_house_id'=>'required',
-            'vehicale_id'=>'required',
-            'receipt_details'=>'required',
-            'items'=>'required'
-        ]);
-        if ($validator->fails()) {
-            return response()->json(['errors'=>$validator->errors()], 400);
-        }
         $items = json_decode($request['items']);
         $receipt = Receipt::where('id',$request['receipt_id'])->first();
-        $receipt->ware_house_id = $request['ware_house_id'];
-        $receipt->vehicale_id = $request['vehicale_id'];
-        $receipt->receipt_details = $request['receipt_details'];
-        $receipt->total_qty = $request['receipt_details'];
-        $receipt->total_qty  = array_sum(array_column($items, 'order'));
-        $receipt->total_receipt  = array_sum(array_column($items, 'receipt'));
-        $receipt->total_pending  = array_sum(array_column($items, 'pending'));
+        if(isset($request['ware_house_id'])){
+            $receipt->ware_house_id = $request['ware_house_id'];
+        }
+        if(isset($request['vehicale_id'])){
+            $receipt->vehicale_id = $request['vehicale_id'];
+        }
+        if(isset($request['receipt_details'])){
+            $receipt->receipt_details = $request['receipt_details'];
+        }
+        if(isset($request['receipt_details'])){
+            $receipt->total_qty = $request['receipt_details'];
+        }
+        if(isset(array_sum(array_column($items, 'order')))){
+            $receipt->total_qty  = array_sum(array_column($items, 'order'));
+        }
+        if(isset(array_sum(array_column($items, 'receipt')))){
+            $receipt->total_receipt  = array_sum(array_column($items, 'receipt'));
+        }
+        if(isset(array_sum(array_column($items, 'pending')))){
+            $receipt->total_pending  = array_sum(array_column($items, 'pending'));
+        }
         $receipt->save();
         foreach($items as $value){
             $receipt_item_id = $value->id;
-            $order = $value->order;
-            $receipt = $value->receipt;
-            $pending = $value->pending;
             $receipt_item = ReceiptItem::where('id',$receipt_item_id)->first();
-            $receipt_item->order = $order;
-            $receipt_item->receipt = $receipt;
-            $receipt_item->pending = $pending;
+            if(isset($value->order)){
+                $receipt_item->order = $order;
+            }
+            if(isset($value->receipt)){
+                $receipt_item->receipt = $receipt;
+            }
+            if(isset($value->pending)){
+                $receipt_item->pending = $pending;
+            }
             $receipt_item->save();
         }
         if($receipt && $receipt_item){
@@ -6161,14 +6291,7 @@ class ApiController extends Controller
     }
     //PurchaseChallanUpdate
     public function PurchaseChallanUpdate(Request $request){
-        $validator = Validator::make($request->all(), [
-            'vehicale_id'=>'required',
-            'purchase_challan_id'=>'required',
-            'challan_details'=>'required',
-        ]);
-        if ($validator->fails()) {
-            return response()->json(['errors'=>$validator->errors()], 400);
-        }
+
         $pur_challan = PurchaseChallan::where('id',$request['purchase_challan_id'])->first();
         //document
         if($request->document){
@@ -6177,8 +6300,12 @@ class ApiController extends Controller
             $challan = time().'.'.$request->document->extension();
             $request->document->move(public_path('images/purchase_challan'), $challan);
         }
-        $pur_challan->vehicale_id = $request['vehicale_id'];
-        $pur_challan->challan_details = $request['challan_details'];
+        if(isset($request['vehicale_id'])){
+            $pur_challan->vehicale_id = $request['vehicale_id'];
+        }
+        if(isset($request['challan_details'])){
+            $pur_challan->challan_details = $request['challan_details'];
+        }
         if(isset($challan)){
             $pur_challan->document = $_SERVER['HTTP_HOST'].'/public/images/purchase_challan/'.$challan;
         }
@@ -6330,36 +6457,41 @@ class ApiController extends Controller
     }
     //UpdateDelivery
     public function UpdateDelivery(Request $request){
-        $validator = Validator::make($request->all(), [
-            'delivery_id'=>'required',
-            'ware_house_id'=>'required',
-            'vehicale_id'=>'required',
-            'delivery_details'=>'required',
-            'items'=>'required'
-        ]);
-        if ($validator->fails()) {
-            return response()->json(['errors'=>$validator->errors()], 400);
-        }
+
         $items = json_decode($request->items);
         $delivery = Delivery::where('id',$request['delivery_id'])->first();
-        $delivery->ware_house_id = $request['ware_house_id'];
-        $delivery->vehicale_id  = $request['vehicale_id'];
-        $delivery->delivery_details  = $request['delivery_details'];
-        $delivery->total_qty  = array_sum(array_column($items, 'order'));
-        $delivery->total_receipt  = array_sum(array_column($items, 'receipt'));
-        $delivery->total_pending  = array_sum(array_column($items, 'pending'));
-        $delivery->delivery_date  = date('Y-m-d');
+        if(isset($request['ware_house_id'])){
+            $delivery->ware_house_id = $request['ware_house_id'];
+        }
+        if(isset($request['vehicale_id'])){
+            $delivery->vehicale_id  = $request['vehicale_id'];
+        }
+        if(isset($request['delivery_details'])){
+            $delivery->delivery_details  = $request['delivery_details'];
+        }
+        if(isset(array_sum(array_column($items, 'order')))){
+            $delivery->total_qty  = array_sum(array_column($items, 'order'));
+        }
+        if(isset(array_sum(array_column($items, 'receipt')))){
+            $delivery->total_receipt  = array_sum(array_column($items, 'receipt'));
+        }
+        if(isset(array_sum(array_column($items, 'pending')))){
+            $delivery->total_pending  = array_sum(array_column($items, 'pending'));
+        }
         $delivery->save();
         //delivery items
         foreach($items as $value){
             $delivery_item_id = $value->id;
-            $order = $value->order;
-            $receipt = $value->receipt;
-            $pending = $value->pending;
             $sale_item = DeliveryItem::where('id',$delivery_item_id)->first();
-            $sale_item->order = $order;
-            $sale_item->receipt = $receipt;
-            $sale_item->pending = $pending;
+            if(isset($value->order)){
+                $sale_item->order = $order;
+            }
+            if(isset($value->receipt)){
+                $sale_item->receipt = $receipt;
+            }
+            if(isset($value->pending)){
+                $sale_item->pending = $pending;
+            }
             $sale_item->save();
         }
         if($delivery && $sale_item){

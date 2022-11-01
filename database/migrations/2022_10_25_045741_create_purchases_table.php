@@ -19,10 +19,12 @@ class CreatePurchasesTable extends Migration
             $table->unsignedBigInteger('acc_cus_sup_id');
             $table->string('purchase_invoice_no');
             $table->bigInteger('product_order_by_id');
+            $table->string('receipt_invoice_no')->nullable();
             $table->date('purchase_date');
             $table->longText('purchase_details');
             $table->bigInteger('total_qty');
             $table->bigInteger('total_purchase_amount');
+            $table->bigInteger('tax');
             $table->bigInteger('total_tax_amount');
             $table->bigInteger('service_charge');
             $table->bigInteger('shipping_cost');

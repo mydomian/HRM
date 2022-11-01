@@ -246,6 +246,7 @@ Route::post('/receipt-lists',[ApiController::class,"ReceiptLists"]);
 Route::post('/receipt-details',[ApiController::class,"ReceiptDetails"]);
 Route::post('/update-receipt',[ApiController::class,"ReceiptUpdate"]);
 Route::post('/receipt-delete',[ApiController::class,"ReceiptDelete"]);
+Route::post('/pending-receipt',[ApiController::class,"PendingReceipt"]);
 //receipt challan
 Route::post('/create-purchase-challan',[ApiController::class,"CreatePurchaseChallan"]);
 Route::post('/purchase-challan-lists',[ApiController::class,"PurchaseChallanLists"]);

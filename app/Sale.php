@@ -8,13 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 class Sale extends Model
 {
     protected $fillable = [
-        'package_buy_id', 'acc_cus_sup_id', 'sale_invoice_no','product_order_by_id', 'sale_date', 'sale_details','total_qty',
+        'package_buy_id', 'acc_cus_sup_id', 'sale_invoice_no','delivery_invoice_no','product_order_by_id', 'sale_date', 'sale_details','total_qty',
         'total_sale_amount','total_tax_amount','service_charge','shipping_cost','grand_total','paid_amount','due_amount','payment_method_id','document'
     ];
     protected $casts = [
         'package_buy_id' => 'integer',
         'acc_cus_sup_id' => 'integer',
         'sale_invoice_no' => 'string',
+        'delivery_invoice_no' => 'string',
         'product_order_by_id' => 'integer',
         'sale_date' => 'date',
         'sale_details' => 'longtext',
