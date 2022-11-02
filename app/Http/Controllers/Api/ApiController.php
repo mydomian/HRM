@@ -5013,7 +5013,8 @@ class ApiController extends Controller
                 if(isset($sub_total)){
                     $sale_quotation->total_sale_amount =  $sub_total;
                 }
-                if(isset(array_sum(array_column($items, 'qty')))){
+                $total_qty = array_sum(array_column($items, 'qty'));
+                if($total_qty){
                     $sale_quotation->total_qty =  array_sum(array_column($items, 'qty'));
                 }
                 if(isset($request['quotation_sale_details'])){
@@ -5159,7 +5160,6 @@ class ApiController extends Controller
                 $pur_quotation->due_amount = $total_purchase_amount - $paid_amount;
                 $pur_quotation->document = $doc;
                 $pur_quotation->save();
-
                 //purchase quotation items
                 foreach($items as $item){
                     $product_id = $item->product_id;
@@ -5258,7 +5258,6 @@ class ApiController extends Controller
         $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
         if($user){
             if($user['usepackage']['status'] == 'active'){
-
                 //document
                 $image = array();
                 if(!empty($request->file('document'))){
@@ -5392,7 +5391,7 @@ class ApiController extends Controller
                     'product_order_by_id'=>'required',
                     'purchase_details'=>'required',
                     'document'=>'required',
-                    'tax'=>'required',
+                    'tax_amount'=>'required',
                     'service_charge'=>'required',
                     'shipping_cost'=>'required',
                     'paid_amount'=>'required',
@@ -5415,7 +5414,7 @@ class ApiController extends Controller
                 $shipping_cost = $request->shipping_cost;
                 $paid_amount = $request->paid_amount;
                 $sub_total = array_sum(array_column($items, 'amount'));
-                $tax_amount = ($request->tax / 100) * $sub_total;
+                $tax_amount = ($request->tax_amount / 100) * $sub_total;
                 $total_purchase_amount = $sub_total + $tax_amount + $service_charge + $shipping_cost;
                 $invoice = date('y').date('m').date('d').date('i').date('s');
                 $purchase = new Purchase;
@@ -5427,7 +5426,7 @@ class ApiController extends Controller
                 $purchase->total_purchase_amount =  $sub_total;
                 $purchase->total_qty =  array_sum(array_column($items, 'qty'));
                 $purchase->purchase_details = $request['purchase_details'];
-                $purchase->tax = $request->tax;
+                $purchase->tax_amount = $request->tax_amount;
                 $purchase->total_tax_amount = $tax_amount;
                 $purchase->service_charge = $service_charge;
                 $purchase->shipping_cost = $shipping_cost;
@@ -5488,7 +5487,7 @@ class ApiController extends Controller
         $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
         if($user){
             if($user['usepackage']['status'] == 'active'){
-                $purchase = Purchase::where('package_buy_id',$user['package_buy_id'])->select('id','purchase_invoice_no','purchase_date','grand_total','paid_amount','due_amount')->orderBy('id','DESC')->paginate(15);
+                $purchase = Purchase::where('package_buy_id',$user['package_buy_id'])->select('id','purchase_invoice_no','purchase_date','total_qty','total_purchase_amount','tax_amount','total_tax_amount','service_charge','shipping_cost','grand_total','paid_amount','due_amount')->orderBy('id','DESC')->paginate(15);
                 if($purchase){
                     return response()->json([
                         'status'=>true,
@@ -5515,7 +5514,7 @@ class ApiController extends Controller
     }
     //PurchaseDetails
     public function PurchaseDetails(Request $request){
-        $purchase = Purchase::with('acc_cus_sup','payment_method')->where('id',$request['purchase_id'])->select('id','acc_cus_sup_id','purchase_invoice_no','product_order_by_id','purchase_date','total_qty','purchase_details','total_purchase_amount','tax','total_tax_amount','service_charge','shipping_cost','grand_total','paid_amount','due_amount','document','payment_method_id')->first();
+        $purchase = Purchase::with('acc_cus_sup','payment_method')->where('id',$request['purchase_id'])->select('id','acc_cus_sup_id','purchase_invoice_no','product_order_by_id','purchase_date','total_qty','purchase_details','total_purchase_amount','tax_amount','total_tax_amount','service_charge','shipping_cost','grand_total','paid_amount','due_amount','document','payment_method_id')->first();
         $purchase_items = PurchaseItem::with('product','unit')->where('purchase_id',$request['purchase_id'])->select('id','purchase_id','unit_id','purchase_invoice_no','product_id','avg_qty','bag','qty','rate','amount')->get();
         if($purchase && $purchase_items){
             return response()->json([
@@ -5532,7 +5531,6 @@ class ApiController extends Controller
     }
     //UpdatePurchase
     public function UpdatePurchase(Request $request){
-
         $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
         if($user){
             if($user['usepackage']['status'] == 'active'){
@@ -5552,8 +5550,8 @@ class ApiController extends Controller
                 $service_charge = $request->service_charge;
                 $shipping_cost = $request->shipping_cost;
                 $paid_amount = $request->paid_amount;
-                $sub_total = array_sum(array_column($items, 'amount'));
-                $tax_amount = ($request->tax / 100) * $sub_total;
+                $sub_total = array_sum(array_column($items,'amount'));
+                $tax_amount = ($request->tax_amount / 100) * $sub_total;
                 $total_purchase_amount = $sub_total + $tax_amount + $service_charge + $shipping_cost;
                 $purchase = Purchase::where('id',$request['purchase_id'])->first();
                 if(isset($request['acc_cus_sup_id'])){
@@ -5572,10 +5570,10 @@ class ApiController extends Controller
                 if(isset($request['purchase_details'])){
                     $purchase->purchase_details = $request['purchase_details'];
                 }
-                if(isset($tax_amount)){
-                    $purchase->tax = $request->tax;
+                if(isset($request->tax)){
+                    $purchase->tax_amount = $request->tax_amount;
                 }
-                if(isset($tax_amount)){
+                if(isset($tax_amount) >0){
                     $purchase->total_tax_amount = $tax_amount;
                 }
                 if(isset($service_charge)){
@@ -5712,6 +5710,7 @@ class ApiController extends Controller
                 $sale->total_sale_amount =  $sub_total;
                 $sale->total_qty = array_sum(array_column($items, 'qty'));
                 $sale->sale_details = $request['sale_details'];
+                $sale->tax_amount = $request->tax_amount;
                 $sale->total_tax_amount = $tax_amount;
                 $sale->service_charge = $service_charge;
                 $sale->shipping_cost = $shipping_cost;
@@ -5772,7 +5771,7 @@ class ApiController extends Controller
         $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
         if($user){
             if($user['usepackage']['status'] == 'active'){
-                $sale = Sale::where('package_buy_id',$user['package_buy_id'])->select('id','sale_invoice_no','sale_date','grand_total','paid_amount','due_amount')->orderBy('id','DESC')->paginate(15);
+                $sale = Sale::where('package_buy_id',$user['package_buy_id'])->select('id','sale_invoice_no','sale_date','total_qty','total_sale_amount','tax_amount','total_tax_amount','service_charge','shipping_cost','grand_total','paid_amount','due_amount')->orderBy('id','DESC')->paginate(15);
                 if($sale){
                     return response()->json([
                         'status'=>true,
@@ -5821,7 +5820,6 @@ class ApiController extends Controller
             if($user['usepackage']['status'] == 'active'){
                 //document
                 $image = array();
-
                 if(!empty($request->file('document'))){
                     foreach ($request->file('document') as $imagefile) {
                         $sale = mt_rand().'.'.$imagefile->extension();
@@ -5847,13 +5845,17 @@ class ApiController extends Controller
                 if(isset($sub_total)){
                     $sale->total_sale_amount =  $sub_total;
                 }
-                if(isset(array_sum(array_column($items, 'qty')))){
+                $total_qty = array_sum(array_column($items, 'qty'));
+                if(isset($total_qty) > 0){
                     $sale->total_qty =  array_sum(array_column($items, 'qty'));
                 }
                 if(isset($request['sale_details'])){
                     $sale->sale_details = $request['sale_details'];
                 }
-                if(isset($tax_amount)){
+                if(isset($request->tax_amount)){
+                    $sale->tax_amount = $request->tax_amount;
+                }
+                if(isset($tax_amount) > 0){
                     $sale->total_tax_amount = $tax_amount;
                 }
                 if(isset($service_charge)){
@@ -5872,6 +5874,9 @@ class ApiController extends Controller
                 if(isset($due)){
                     $sale->due_amount = $total_sale_amount - $paid_amount;
                 }
+                if(isset($request['payment_method_id'])){
+                    $sale->payment_method_id = $request['payment_method_id'];
+                }
                 if(isset($doc)){
                     $sale->document = $doc;
                 }
@@ -5881,27 +5886,30 @@ class ApiController extends Controller
                 $sale->save();
                 //sale items
                 foreach($items as $value){
-                    $sale_items = SaleItem::where('id',$value->sale_item_id)->first();
                     if(isset($value->product_id)){
+                        $product_id = $value->product_id;
+                    }
+                    $sale_items = SaleItem::where('id',$value->sale_item_id)->first();
+                    if(isset($product_id)){
                         $sale_items->product_id = $product_id;
                     }
                     if(isset($value->unit_id)){
-                        $sale_items->unit_id = $unit_id;
+                        $sale_items->unit_id = $value->unit_id;
                     }
                     if(isset($value->avg_qty)){
-                        $sale_items->avg_qty = $avg_qty;
+                        $sale_items->avg_qty = $value->avg_qty;
                     }
                     if(isset($value->bag)){
-                        $sale_items->bag = $bag;
+                        $sale_items->bag = $value->bag;
                     }
                     if(isset($value->qty)){
-                        $sale_items->qty = $qty;
+                        $sale_items->qty = $value->qty;
                     }
                     if(isset($value->rate)){
-                        $sale_items->rate = $rate;
+                        $sale_items->rate = $value->rate;
                     }
                     if(isset($value->amount)){
-                        $sale_items->amount = $amount;
+                        $sale_items->amount = $value->amount;
                     }
                     $sale_items->save();
                 }
@@ -6113,13 +6121,16 @@ class ApiController extends Controller
         if(isset($request['receipt_details'])){
             $receipt->total_qty = $request['receipt_details'];
         }
-        if(isset(array_sum(array_column($items, 'order')))){
+        $total_qty = array_sum(array_column($items, 'order'));
+        if(isset($total_qty)){
             $receipt->total_qty  = array_sum(array_column($items, 'order'));
         }
-        if(isset(array_sum(array_column($items, 'receipt')))){
+        $total_reciept = array_sum(array_column($items, 'receipt'));
+        if(isset($total_reciept)){
             $receipt->total_receipt  = array_sum(array_column($items, 'receipt'));
         }
-        if(isset(array_sum(array_column($items, 'pending')))){
+        $total_pending = array_sum(array_column($items, 'pending'));
+        if(isset($total_pending)){
             $receipt->total_pending  = array_sum(array_column($items, 'pending'));
         }
         $receipt->save();
@@ -6127,13 +6138,13 @@ class ApiController extends Controller
             $receipt_item_id = $value->id;
             $receipt_item = ReceiptItem::where('id',$receipt_item_id)->first();
             if(isset($value->order)){
-                $receipt_item->order = $order;
+                $receipt_item->order = $value->order;
             }
             if(isset($value->receipt)){
-                $receipt_item->receipt = $receipt;
+                $receipt_item->receipt = $value->receipt;
             }
             if(isset($value->pending)){
-                $receipt_item->pending = $pending;
+                $receipt_item->pending = $value->pending;
             }
             $receipt_item->save();
         }
@@ -6291,7 +6302,6 @@ class ApiController extends Controller
     }
     //PurchaseChallanUpdate
     public function PurchaseChallanUpdate(Request $request){
-
         $pur_challan = PurchaseChallan::where('id',$request['purchase_challan_id'])->first();
         //document
         if($request->document){
@@ -6358,18 +6368,23 @@ class ApiController extends Controller
                     $order = $value->order;
                     $receipt = $value->receipt;
                     $pending = $value->pending;
-                    $sale_item = new DeliveryItem;
-                    $sale_item->package_buy_id = $user['package_buy_id'];
-                    $sale_item->sale_id = $request['sale_id'];
-                    $sale_item->delivery_id = $delivery_id;
-                    $sale_item->delivery_invoice_no = $delivery_invoice_no;
-                    $sale_item->sale_item_id = $sale_item_id;
-                    $sale_item->order = $order;
-                    $sale_item->receipt = $receipt;
-                    $sale_item->pending = $pending;
-                    $sale_item->save();
+                    $delivery_item = new DeliveryItem;
+                    $delivery_item->package_buy_id = $user['package_buy_id'];
+                    $delivery_item->sale_id = $request['sale_id'];
+                    $delivery_item->delivery_id = $delivery_id;
+                    $delivery_item->delivery_invoice_no = $delivery_invoice_no;
+                    $delivery_item->sale_item_id = $sale_item_id;
+                    $delivery_item->order = $order;
+                    $delivery_item->receipt = $receipt;
+                    $delivery_item->pending = $pending;
+                    $delivery_item->save();
                 }
-                if($delivery && $sale_item){
+                //sale module update with delivery invoice no
+                $sale = Sale::findOrFail($request['sale_id']);
+                $sale->delivery_invoice_no = $delivery_invoice_no;
+                $sale->save();
+
+                if($delivery && $delivery_item && $sale){
                     return response()->json([
                         'status'=>true,
                         'message'=>"Delivery Created Successfully",
@@ -6469,13 +6484,16 @@ class ApiController extends Controller
         if(isset($request['delivery_details'])){
             $delivery->delivery_details  = $request['delivery_details'];
         }
-        if(isset(array_sum(array_column($items, 'order')))){
+        $total_qty = array_sum(array_column($items, 'order'));
+        if(isset($total_qty )){
             $delivery->total_qty  = array_sum(array_column($items, 'order'));
         }
-        if(isset(array_sum(array_column($items, 'receipt')))){
+        $total_reciept = array_sum(array_column($items, 'receipt'));
+        if(isset($total_reciept)){
             $delivery->total_receipt  = array_sum(array_column($items, 'receipt'));
         }
-        if(isset(array_sum(array_column($items, 'pending')))){
+        $total_pending = array_sum(array_column($items, 'pending'));
+        if(isset($total_pending)){
             $delivery->total_pending  = array_sum(array_column($items, 'pending'));
         }
         $delivery->save();
@@ -6484,13 +6502,13 @@ class ApiController extends Controller
             $delivery_item_id = $value->id;
             $sale_item = DeliveryItem::where('id',$delivery_item_id)->first();
             if(isset($value->order)){
-                $sale_item->order = $order;
+                $sale_item->order = $value->order;
             }
             if(isset($value->receipt)){
-                $sale_item->receipt = $receipt;
+                $sale_item->receipt = $value->receipt;
             }
             if(isset($value->pending)){
-                $sale_item->pending = $pending;
+                $sale_item->pending = $value->pending;
             }
             $sale_item->save();
         }
@@ -6503,6 +6521,51 @@ class ApiController extends Controller
             return response()->json([
                 'status'=>false,
                 'message'=>"Something Is Wrong To Update Delivery",
+            ],200);
+        }
+    }
+    //PendingDelivery
+    public function PendingDelivery(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $delivery = Sale::where(['package_buy_id'=>$user['package_buy_id']])->whereNull('delivery_invoice_no')->select('id','sale_invoice_no','sale_date','grand_total','paid_amount','due_amount')->orderBy('id','DESC')->paginate(15);
+                if($delivery){
+                    return response()->json([
+                        'status'=>true,
+                        'lists'=>$delivery,
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Delivery List Not Found",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //DeleteProduct
+    public function DeleteProduct(Request $request){
+        $product = Product::where('id',$request['product_id'])->delete();
+        if($product){
+            return response()->json([
+                'status'=>true,
+                'message'=>"Product Deleted Successfully",
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Something Is Wrong To Delete Product",
             ],200);
         }
     }

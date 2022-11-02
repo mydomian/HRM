@@ -69,6 +69,7 @@ Route::post('update-product',[ApiController::class,"UpdateProduct"]);
 Route::post('disable-product',[ApiController::class,"DisableProduct"]);
 Route::post('enable-product',[ApiController::class,"EnableProduct"]);
 Route::post('disable-product',[ApiController::class,"DisableProduct"]);
+Route::post('delete-product',[ApiController::class,"DeleteProduct"]);
 Route::get('/single-product/{product_id}',[ApiController::class,"SingleProduct"]);
 //warehouse
 Route::post('/create-warehouse',[ApiController::class,"CreateWarehouse"]);
@@ -259,3 +260,4 @@ Route::post('/delivery-lists',[ApiController::class,'DeliveryLists']);
 Route::post('/delivery-details',[ApiController::class,'DeliveryDetails']);
 Route::post('/receipt-delete',[ApiController::class,'DeliveryDelete']);
 Route::post('/update-delivery',[ApiController::class,'UpdateDelivery']);
+Route::post('/pending-delivery',[ApiController::class,'PendingDelivery']);

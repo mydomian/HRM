@@ -24,6 +24,7 @@ class CreateSalesTable extends Migration
             $table->longText('sale_details');
             $table->bigInteger('total_qty');
             $table->bigInteger('total_sale_amount');
+            $table->bigInteger('tax_amount');
             $table->bigInteger('total_tax_amount');
             $table->bigInteger('service_charge');
             $table->bigInteger('shipping_cost');

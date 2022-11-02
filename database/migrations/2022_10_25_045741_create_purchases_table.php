@@ -24,7 +24,7 @@ class CreatePurchasesTable extends Migration
             $table->longText('purchase_details');
             $table->bigInteger('total_qty');
             $table->bigInteger('total_purchase_amount');
-            $table->bigInteger('tax');
+            $table->bigInteger('tax_amount');
             $table->bigInteger('total_tax_amount');
             $table->bigInteger('service_charge');
             $table->bigInteger('shipping_cost');

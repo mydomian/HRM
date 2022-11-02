@@ -9,7 +9,7 @@ class Purchase extends Model
 {
     protected $fillable = [
         'package_buy_id', 'acc_cus_sup_id', 'quotation_invoice_no','receipt_invoice_no','product_order_by_id', 'purchase_date', 'purchase_details','total_qty',
-        'total_purchase_amount','tax','total_tax_amount','service_charge','shipping_cost','grand_total','paid_amount','due_amount','payment_method_id','document'
+        'total_purchase_amount','tax_amount','total_tax_amount','service_charge','shipping_cost','grand_total','paid_amount','due_amount','payment_method_id','document'
     ];
     protected $casts = [
         'package_buy_id' => 'integer',
@@ -21,7 +21,7 @@ class Purchase extends Model
         'purchase_details' => 'longtext',
         'total_qty' => 'biginteger',
         'total_purchase_amount' => 'biginteger',
-        'tax'=>'biginteger',
+        'tax_amount'=>'biginteger',
         'total_tax_amount' => 'biginteger',
         'service_charge' => 'biginteger',
         'shipping_cost' => 'biginteger',
