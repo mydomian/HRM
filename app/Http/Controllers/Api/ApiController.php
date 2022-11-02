@@ -38,6 +38,8 @@ use App\PurchaseQuotationItem;
 use App\Receipt;
 use App\ReceiptItem;
 use App\Sale;
+use App\SaleChallan;
+use App\SaleChallanItem;
 use App\SaleItem;
 use App\SaleQuotation;
 use App\SaleQuotationItem;
@@ -266,14 +268,14 @@ class ApiController extends Controller
     //UpdateBrand
     public function UpdateBrand(Request $request){
         $validator = Validator::make($request->all(), [
-            'brand_id'=>'required',
+            'id'=>'required',
             'name'=>'required',
         ]);
         if ($validator->fails()) {
             return response()->json(['errors'=>$validator->errors()], 400);
         }
 
-        $brand = Brand::findOrFail($request['brand_id']);
+        $brand = Brand::findOrFail($request['id']);
         $brand->name = $request['name'];
         $brand->save();
         if($brand){
@@ -290,7 +292,7 @@ class ApiController extends Controller
     }
     //DeleteBrand
     public function DeleteBrand(Request $request){
-        $brand = Brand::findOrFail($request['brand_id']);
+        $brand = Brand::findOrFail($request['id']);
         $brand->delete();
         if($brand){
             return response()->json([
@@ -423,13 +425,13 @@ class ApiController extends Controller
     //UpdateCategory
     public function UpdateCategory(Request $request){
         $validator = Validator::make($request->all(), [
-            'category_id'=>'required',
+            'id'=>'required',
             'name'=>'required',
         ]);
         if ($validator->fails()) {
             return response()->json(['errors'=>$validator->errors()], 400);
         }
-        $category = Category::findOrFail($request['category_id']);
+        $category = Category::findOrFail($request['id']);
         $category->name = $request['name'];
         $category->save();
         if($category){
@@ -446,7 +448,7 @@ class ApiController extends Controller
     }
     //DeleteCategory
     public function DeleteCategory(Request $request){
-        $category = Category::findOrFail($request['category_id']);
+        $category = Category::findOrFail($request['id']);
         $category->delete();
         if($category){
             return response()->json([
@@ -579,13 +581,13 @@ class ApiController extends Controller
     //UpdateUnit
     public function UpdateUnit(Request $request){
         $validator = Validator::make($request->all(), [
-            'unit_id'=>'required',
+            'id'=>'required',
             'name'=>'required',
         ]);
         if ($validator->fails()) {
             return response()->json(['errors'=>$validator->errors()], 400);
         }
-        $unit = Unit::findOrFail($request['unit_id']);
+        $unit = Unit::findOrFail($request['id']);
         $unit->name = $request['name'];
         $unit->save();
         if($unit){
@@ -602,7 +604,7 @@ class ApiController extends Controller
     }
     //DeleteUnit
     public function DeleteUnit(Request $request){
-        $unit = Unit::findOrFail($request['unit_id']);
+        $unit = Unit::findOrFail($request['id']);
         $unit->delete();
         if($unit){
             return response()->json([
@@ -735,13 +737,13 @@ class ApiController extends Controller
     //UpdateLotGallary
     public function UpdateLotGallary(Request $request){
         $validator = Validator::make($request->all(), [
-            'lot_gallary_id'=>'required',
+            'id'=>'required',
             'name'=>'required',
         ]);
         if ($validator->fails()) {
             return response()->json(['errors'=>$validator->errors()], 400);
         }
-        $lot_gallary = LotGallary::findOrFail($request['lot_gallary_id']);
+        $lot_gallary = LotGallary::findOrFail($request['id']);
         $lot_gallary->name = $request['name'];
         $lot_gallary->save();
         if($lot_gallary){
@@ -758,7 +760,7 @@ class ApiController extends Controller
     }
     //DeleteLotGallary
     public function DeleteLotGallary(Request $request){
-        $lot_gallary = LotGallary::findOrFail($request['lot_gallary_id']);
+        $lot_gallary = LotGallary::findOrFail($request['id']);
         $lot_gallary->delete();
         if($lot_gallary){
             return response()->json([
@@ -892,13 +894,13 @@ class ApiController extends Controller
     //UpdateProductOrderBy
     public function UpdateProductOrderBy(Request $request){
         $validator = Validator::make($request->all(), [
-            'product_order_by_id'=>'required',
+            'id'=>'required',
             'name'=>'required',
         ]);
         if ($validator->fails()) {
             return response()->json(['errors'=>$validator->errors()], 400);
         }
-        $product_order_by = ProductOrderBy::findOrFail($request['product_order_by_id']);
+        $product_order_by = ProductOrderBy::findOrFail($request['id']);
         $product_order_by->name = $request['name'];
         $product_order_by->save();
         if($product_order_by){
@@ -915,7 +917,7 @@ class ApiController extends Controller
     }
     //DeleteProductOrderBy
     public function DeleteProductOrderBy(Request $request){
-        $product_order_by = ProductOrderBy::findOrFail($request['product_order_by_id']);
+        $product_order_by = ProductOrderBy::findOrFail($request['id']);
         $product_order_by->delete();
         if($product_order_by){
             return response()->json([
@@ -1079,7 +1081,7 @@ class ApiController extends Controller
     public function UpdateCusSupAcc(Request $request){
         if($request->isMethod('post')){
 
-                $acc_cus_sup = AccCustomerSupplier::findOrFail($request['cus_sup_acc_id']);
+                $acc_cus_sup = AccCustomerSupplier::findOrFail($request['id']);
                 //profile image
                 if($request->hasFile('profile_image')){
                     $image_name = basename($acc_cus_sup['profile_image']);
@@ -1283,11 +1285,12 @@ class ApiController extends Controller
             ],200);
         }
     }
+
     //UpdateProduct
     public function UpdateProduct(Request $request){
         if($request->isMethod('post')){
 
-                $product = Product::where('id',$request['product_id'])->first();
+                $product = Product::where('id',$request['id'])->first();
                 //product image
                 if($request->hasFile('product_image')){
                     $image_name = basename($product['product_image']);
@@ -1298,8 +1301,8 @@ class ApiController extends Controller
                 if(isset($request['brand_id'])){
                     $product->brand_id = $request['brand_id'];
                 }
-                if(isset($request['categroy_id'])){
-                    $product->categroy_id = $request['categroy_id'];
+                if(isset($request['category_id'])){
+                    $product->categroy_id = $request['category_id'];
                 }
                 if(isset($request['unit_id'])){
                     $product->unit_id = $request['unit_id'];
@@ -1345,7 +1348,7 @@ class ApiController extends Controller
     }
     //EnableProduct
     public function EnableProduct(Request $request){
-        $product = Product::findOrFail($request['product_id']);
+        $product = Product::findOrFail($request['id']);
         $product->status = 'active';
         $product->save();
         if($product){
@@ -1362,7 +1365,7 @@ class ApiController extends Controller
     }
     //DisableProduct
     public function DisableProduct(Request $request){
-        $product = Product::findOrFail($request['product_id']);
+        $product = Product::findOrFail($request['id']);
         $product->status = 'deactive';
         $product->save();
         if($product){
@@ -1389,6 +1392,21 @@ class ApiController extends Controller
             return response()->json([
                 'status'=>false,
                 'message'=>"Not Found",
+            ],200);
+        }
+    }
+    //DeleteProduct
+    public function DeleteProduct(Request $request){
+        $product = Product::where('id',$request['id'])->delete();
+        if($product){
+            return response()->json([
+                'status'=>true,
+                'message'=>"Product Deleted Successfully",
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Something Is Wrong To Delete Product",
             ],200);
         }
     }
@@ -1498,13 +1516,13 @@ class ApiController extends Controller
     //UpdateWareHouse
     public function UpdateWareHouse(Request $request){
         $validator = Validator::make($request->all(), [
-            'warehouse_id'=>'required',
+            'id'=>'required',
             'name'=>'required',
         ]);
         if ($validator->fails()) {
             return response()->json(['errors'=>$validator->errors()], 400);
         }
-        $warehouse = WareHouse::findOrFail($request['warehouse_id']);
+        $warehouse = WareHouse::findOrFail($request['id']);
         $warehouse->name = $request['name'];
         $warehouse->save();
         if($warehouse){
@@ -1521,7 +1539,7 @@ class ApiController extends Controller
     }
     //DeleteWareHouse
     public function DeleteWareHouse(Request $request){
-        $warehouse = WareHouse::findOrFail($request['warehouse_id']);
+        $warehouse = WareHouse::findOrFail($request['id']);
         $warehouse->delete();
         if($warehouse){
             return response()->json([
@@ -1662,14 +1680,14 @@ class ApiController extends Controller
         $validator = Validator::make($request->all(), [
             'city_id'=>'required',
             'district_id'=>'required',
-            'thana_id'=>'required',
+            'id'=>'required',
             'name'=>'required',
         ]);
         if ($validator->fails()) {
             return response()->json(['errors'=>$validator->errors()], 400);
         }
 
-        $thana = Thana::findOrFail($request['thana_id']);
+        $thana = Thana::findOrFail($request['id']);
         $thana->name = $request['name'];
         $thana->save();
         if($thana){
@@ -1686,7 +1704,7 @@ class ApiController extends Controller
     }
     //DeleteThana
     public function DeleteThana(Request $request){
-        $warehouse = Thana::findOrFail($request['thana_id']);
+        $warehouse = Thana::findOrFail($request['id']);
         $warehouse->delete();
         if($warehouse){
             return response()->json([
@@ -1821,13 +1839,13 @@ class ApiController extends Controller
     //UpdateCity
     public function UpdateCity(Request $request){
         $validator = Validator::make($request->all(), [
-            'city_id'=>'required',
+            'id'=>'required',
             'name'=>'required',
         ]);
         if ($validator->fails()) {
             return response()->json(['errors'=>$validator->errors()], 400);
         }
-        $city = City::findOrFail($request['city_id']);
+        $city = City::findOrFail($request['id']);
         $city->name = $request['name'];
         $city->save();
         if($city){
@@ -1844,7 +1862,7 @@ class ApiController extends Controller
     }
     //DeleteCity
     public function DeleteCity(Request $request){
-        $city = City::findOrFail($request['city_id']);
+        $city = City::findOrFail($request['id']);
         $city->delete();
         if($city){
             return response()->json([
@@ -1983,14 +2001,14 @@ class ApiController extends Controller
     public function UpdateDistrict(Request $request){
 
         $validator = Validator::make($request->all(), [
-            'city_id'=>'required',
+            'id'=>'required',
             'name'=>'required',
         ]);
         if ($validator->fails()) {
             return response()->json(['errors'=>$validator->errors()], 400);
         }
 
-        $district = District::findOrFail($request['district_id']);
+        $district = District::findOrFail($request['id']);
         $district->name = $request['name'];
         $district->city_id = $request['city_id'];
         $district->save();
@@ -2008,7 +2026,7 @@ class ApiController extends Controller
     }
     //DeleteDistrict
     public function DeleteDistrict(Request $request){
-        $district = District::findOrFail($request['district_id']);
+        $district = District::findOrFail($request['id']);
         $district->delete();
         if($district){
             return response()->json([
@@ -2154,14 +2172,14 @@ class ApiController extends Controller
             'city_id'=>'required',
             'district_id'=>'required',
             'thana_id'=>'required',
-            'union_id'=>'required',
+            'id'=>'required',
             'name'=>'required',
         ]);
         if ($validator->fails()) {
             return response()->json(['errors'=>$validator->errors()], 400);
         }
 
-        $union = Union::findOrFail($request['union_id']);
+        $union = Union::findOrFail($request['id']);
         $union->name = $request['name'];
         $union->city_id = $request['city_id'];
         $union->district_id = $request['district_id'];
@@ -2181,7 +2199,7 @@ class ApiController extends Controller
     }
     //DeleteUnion
     public function DeleteUnion(Request $request){
-        $union = Union::findOrFail($request['union_id']);
+        $union = Union::findOrFail($request['id']);
         $union->delete();
         if($union){
             return response()->json([
@@ -2318,14 +2336,14 @@ class ApiController extends Controller
     public function UpdateIncExpAccType(Request $request){
 
         $validator = Validator::make($request->all(), [
-            'inc_exp_acc_id'=>'required',
+            'id'=>'required',
             'name'=>'required',
         ]);
         if ($validator->fails()) {
             return response()->json(['errors'=>$validator->errors()], 400);
         }
 
-        $inc_exp_acc_type = IncomeExpenseAccType::findOrFail($request['inc_exp_acc_id']);
+        $inc_exp_acc_type = IncomeExpenseAccType::findOrFail($request['id']);
         $inc_exp_acc_type->name = $request['name'];
         $inc_exp_acc_type->save();
         if($inc_exp_acc_type){
@@ -2343,7 +2361,7 @@ class ApiController extends Controller
 
     //DeleteIncExpAccType
     public function DeleteIncExpAccType(Request $request){
-        $inc_exp_acc_id = IncomeExpenseAccType::findOrFail($request['inc_exp_acc_id']);
+        $inc_exp_acc_id = IncomeExpenseAccType::findOrFail($request['id']);
         $inc_exp_acc_id->delete();
         if($inc_exp_acc_id){
             return response()->json([
@@ -2477,14 +2495,14 @@ class ApiController extends Controller
     public function UpdateIncExpPayMethod(Request $request){
 
         $validator = Validator::make($request->all(), [
-            'inc_exp_pay_method_id'=>'required',
+            'id'=>'required',
             'name'=>'required',
         ]);
         if ($validator->fails()) {
             return response()->json(['errors'=>$validator->errors()], 400);
         }
 
-        $inc_exp_pay_method = IncomeExpensePaymentMethodType::findOrFail($request['inc_exp_pay_method_id']);
+        $inc_exp_pay_method = IncomeExpensePaymentMethodType::findOrFail($request['id']);
         $inc_exp_pay_method->name = $request['name'];
         $inc_exp_pay_method->save();
         if($inc_exp_pay_method){
@@ -2502,7 +2520,7 @@ class ApiController extends Controller
     //DeleteIncExpPayMethod
     public function DeleteIncExpPayMethod(Request $request){
 
-        $inc_exp_pay_method = IncomeExpensePaymentMethodType::findOrFail($request['inc_exp_pay_method_id']);
+        $inc_exp_pay_method = IncomeExpensePaymentMethodType::findOrFail($request['id']);
         $inc_exp_pay_method->delete();
         if($inc_exp_pay_method){
             return response()->json([
@@ -2624,14 +2642,14 @@ class ApiController extends Controller
     public function UpdateProductionType(Request $request){
 
         $validator = Validator::make($request->all(), [
-            'production_type_id'=>'required',
+            'id'=>'required',
             'name'=>'required',
         ]);
         if ($validator->fails()) {
             return response()->json(['errors'=>$validator->errors()], 400);
         }
 
-        $production_type = ProductionType::findOrFail($request['production_type_id']);
+        $production_type = ProductionType::findOrFail($request['id']);
         $production_type->name = $request['name'];
         $production_type->save();
         if($production_type){
@@ -2649,7 +2667,7 @@ class ApiController extends Controller
     //DeleteProductionType
     public function DeleteProductionType(Request $request){
 
-        $production_type = ProductionType::findOrFail($request['production_type_id']);
+        $production_type = ProductionType::findOrFail($request['id']);
         $production_type->delete();
         if($production_type){
             return response()->json([
@@ -2786,14 +2804,14 @@ class ApiController extends Controller
     public function UpdatePaymentMethod(Request $request){
 
         $validator = Validator::make($request->all(), [
-            'pay_method_id'=>'required',
+            'id'=>'required',
             'name'=>'required',
         ]);
         if ($validator->fails()) {
             return response()->json(['errors'=>$validator->errors()], 400);
         }
 
-        $payment_method = PaymentMethod::findOrFail($request['pay_method_id']);
+        $payment_method = PaymentMethod::findOrFail($request['id']);
         $payment_method->name = $request['name'];
         $payment_method->save();
         if($payment_method){
@@ -2811,7 +2829,7 @@ class ApiController extends Controller
     //DeletePaymentMethod
     public function DeletePaymentMethod(Request $request){
 
-        $payment_method = PaymentMethod::findOrFail($request['pay_method_id']);
+        $payment_method = PaymentMethod::findOrFail($request['id']);
         $payment_method->delete();
         if($payment_method){
             return response()->json([
@@ -2944,13 +2962,13 @@ class ApiController extends Controller
     //UpdateAccArea
     public function UpdateAccArea(Request $request){
         $validator = Validator::make($request->all(), [
-            'acc_area_id'=>'required',
+            'id'=>'required',
             'name'=>'required',
         ]);
         if ($validator->fails()) {
             return response()->json(['errors'=>$validator->errors()], 400);
         }
-        $acc_area = AccArea::findOrFail($request['acc_area_id']);
+        $acc_area = AccArea::findOrFail($request['id']);
         $acc_area->name = $request['name'];
         $acc_area->save();
         if($acc_area){
@@ -2967,7 +2985,7 @@ class ApiController extends Controller
     }
     //DeleteAccArea
     public function DeleteAccArea(Request $request){
-        $acc_area = AccArea::findOrFail($request['acc_area_id']);
+        $acc_area = AccArea::findOrFail($request['id']);
         $acc_area->delete();
         if($acc_area){
             return response()->json([
@@ -3101,13 +3119,13 @@ class ApiController extends Controller
     public function UpdateAccCategory(Request $request){
 
         $validator = Validator::make($request->all(), [
-            'acc_category_id'=>'required',
+            'id'=>'required',
             'name'=>'required',
         ]);
         if ($validator->fails()) {
             return response()->json(['errors'=>$validator->errors()], 400);
         }
-        $acc_category = AccCategory::findOrFail($request['acc_category_id']);
+        $acc_category = AccCategory::findOrFail($request['id']);
         $acc_category->name = $request['name'];
         $acc_category->save();
         if($acc_category){
@@ -3124,7 +3142,7 @@ class ApiController extends Controller
     }
     //DeleteAccCategory
     public function DeleteAccCategory(Request $request){
-        $acc_category = AccCategory::findOrFail($request['acc_category_id']);
+        $acc_category = AccCategory::findOrFail($request['id']);
         $acc_category->delete();
         if($acc_category){
             return response()->json([
@@ -3258,13 +3276,13 @@ class ApiController extends Controller
     public function UpdateAccType(Request $request){
 
         $validator = Validator::make($request->all(), [
-            'acc_type_id'=>'required',
+            'id'=>'required',
             'name'=>'required',
         ]);
         if ($validator->fails()) {
             return response()->json(['errors'=>$validator->errors()], 400);
         }
-        $acc_type = AccType::findOrFail($request['acc_type_id']);
+        $acc_type = AccType::findOrFail($request['id']);
         $acc_type->name = $request['name'];
         $acc_type->save();
         if($acc_type){
@@ -3281,7 +3299,7 @@ class ApiController extends Controller
     }
     //DeleteAccType
     public function DeleteAccType(Request $request){
-        $acc_type = AccType::findOrFail($request['acc_type_id']);
+        $acc_type = AccType::findOrFail($request['id']);
         $acc_type->delete();
         if($acc_type){
             return response()->json([
@@ -3415,13 +3433,13 @@ class ApiController extends Controller
     public function UpdateBankAccCategory(Request $request){
 
         $validator = Validator::make($request->all(), [
-            'bank_acc_category_id'=>'required',
+            'id'=>'required',
             'name'=>'required',
         ]);
         if ($validator->fails()) {
             return response()->json(['errors'=>$validator->errors()], 400);
         }
-        $bank_acc_cat = BankAccCategory::findOrFail($request['bank_acc_category_id']);
+        $bank_acc_cat = BankAccCategory::findOrFail($request['id']);
         $bank_acc_cat->name = $request['name'];
         $bank_acc_cat->save();
         if($bank_acc_cat){
@@ -3438,7 +3456,7 @@ class ApiController extends Controller
     }
     //DeleteBankAccCategory
     public function DeleteBankAccCategory(Request $request){
-        $bank_acc_category = BankAccCategory::findOrFail($request['bank_acc_category_id']);
+        $bank_acc_category = BankAccCategory::findOrFail($request['id']);
         $bank_acc_category->delete();
         if($bank_acc_category){
             return response()->json([
@@ -3455,7 +3473,6 @@ class ApiController extends Controller
      //SingleBankAccCategory
      public function SingleBankAccCategory($bank_acc_category_id){
         $bank_acc_category = BankAccCategory::where('id',$bank_acc_category_id)->select('id','name')->first();
-        return $bank_acc_category;
         if($bank_acc_category){
             return response()->json([
                 'status'=>true,
@@ -3470,7 +3487,6 @@ class ApiController extends Controller
     }
     //CreateCashCounter
     public function CreateCashCounter(Request $request){
-
         if($request->isMethod('post')){
             $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
             if($user){
@@ -3572,15 +3588,14 @@ class ApiController extends Controller
     }
     //UpdateCashCounter
     public function UpdateCashCounter(Request $request){
-
         $validator = Validator::make($request->all(), [
-            'cash_counter_id'=>'required',
+            'id'=>'required',
             'name'=>'required',
         ]);
         if ($validator->fails()) {
             return response()->json(['errors'=>$validator->errors()], 400);
         }
-        $bank_acc_cat = CashCounter::findOrFail($request['cash_counter_id']);
+        $bank_acc_cat = CashCounter::findOrFail($request['id']);
         $bank_acc_cat->name = $request['name'];
         $bank_acc_cat->save();
         if($bank_acc_cat){
@@ -3597,7 +3612,7 @@ class ApiController extends Controller
     }
     //DeleteCashCounter
     public function DeleteCashCounter(Request $request){
-        $bank_acc_category = CashCounter::findOrFail($request['cash_counter_id']);
+        $bank_acc_category = CashCounter::findOrFail($request['id']);
         $bank_acc_category->delete();
         if($bank_acc_category){
             return response()->json([
@@ -3614,7 +3629,6 @@ class ApiController extends Controller
      //SingleCashCounter
      public function SingleCashCounter($cash_counter_id){
         $cash_counter = CashCounter::where('id',$cash_counter_id)->select('id','name')->first();
-        return $cash_counter;
         if($cash_counter){
             return response()->json([
                 'status'=>true,
@@ -3756,7 +3770,7 @@ class ApiController extends Controller
     //UpdateVehicale
     public function UpdateVehicale(Request $request){
 
-        $vehicale = Vehicale::findOrFail($request['vehicale_id']);
+        $vehicale = Vehicale::findOrFail($request['id']);
         if(isset($request['city_id'])){
             $vehicale->city_id = $request['city_id'];
         }
@@ -3812,7 +3826,7 @@ class ApiController extends Controller
     }
     //DeleteVehicale
     public function DeleteVehicale(Request $request){
-        $vehicale = Vehicale::findOrFail($request['vehicale_id']);
+        $vehicale = Vehicale::findOrFail($request['id']);
         $vehicale->delete();
         if($vehicale){
             return response()->json([
@@ -3964,7 +3978,7 @@ class ApiController extends Controller
     //UpdateDriver
     public function UpdateDriver(Request $request){
 
-        $driver = Driver::findOrFail($request['driver_id']);
+        $driver = Driver::findOrFail($request['id']);
         if(isset($request['vehicle_id'])){
             $driver->vehicle_id = $request['vehicle_id'];
         }
@@ -4010,7 +4024,7 @@ class ApiController extends Controller
     }
     //DeleteDriver
     public function DeleteDriver(Request $request){
-        $driver = Driver::findOrFail($request['driver_id']);
+        $driver = Driver::findOrFail($request['id']);
         $driver->delete();
         if($driver){
             return response()->json([
@@ -4146,13 +4160,13 @@ class ApiController extends Controller
     public function UpdateVehicaleType(Request $request){
 
         $validator = Validator::make($request->all(), [
-            'vehicale_type_id'=>'required',
+            'id'=>'required',
             'name'=>'required',
         ]);
         if ($validator->fails()) {
             return response()->json(['errors'=>$validator->errors()], 400);
         }
-        $vehicale_type = VehicaleType::findOrFail($request['vehicale_type_id']);
+        $vehicale_type = VehicaleType::findOrFail($request['id']);
         $vehicale_type->name = $request['name'];
         $vehicale_type->save();
         if($vehicale_type){
@@ -4169,7 +4183,7 @@ class ApiController extends Controller
     }
     //DeleteVehicaleType
     public function DeleteVehicaleType(Request $request){
-        $vehicale_type = VehicaleType::findOrFail($request['vehicale_type_id']);
+        $vehicale_type = VehicaleType::findOrFail($request['id']);
         $vehicale_type->delete();
         if($vehicale_type){
             return response()->json([
@@ -4303,13 +4317,13 @@ class ApiController extends Controller
     public function UpdateBank(Request $request){
 
         $validator = Validator::make($request->all(), [
-            'bank_id'=>'required',
+            'id'=>'required',
             'name'=>'required',
         ]);
         if ($validator->fails()) {
             return response()->json(['errors'=>$validator->errors()], 400);
         }
-        $bank = Bank::findOrFail($request['bank_id']);
+        $bank = Bank::findOrFail($request['id']);
         $bank->name = $request['name'];
         $bank->save();
         if($bank){
@@ -4326,7 +4340,7 @@ class ApiController extends Controller
     }
     //DeleteBank
     public function DeleteBank(Request $request){
-        $bank = Bank::findOrFail($request['bank_id']);
+        $bank = Bank::findOrFail($request['id']);
         $bank->delete();
         if($bank){
             return response()->json([
@@ -4463,14 +4477,14 @@ class ApiController extends Controller
     public function UpdateBankBranch(Request $request){
 
         $validator = Validator::make($request->all(), [
-            'bank_branch_id'=>'required',
+            'id'=>'required',
             'bank_id'=>'required',
             'name'=>'required',
         ]);
         if ($validator->fails()) {
             return response()->json(['errors'=>$validator->errors()], 400);
         }
-        $bank_branch = BankBranch::findOrFail($request['bank_branch_id']);
+        $bank_branch = BankBranch::findOrFail($request['id']);
         $bank_branch->name = $request['name'];
         $bank_branch->bank_id = $request['bank_id'];
         $bank_branch->save();
@@ -4488,7 +4502,7 @@ class ApiController extends Controller
     }
     //DeleteBankBranch
     public function DeleteBankBranch(Request $request){
-        $bank_branch = BankBranch::findOrFail($request['bank_branch_id']);
+        $bank_branch = BankBranch::findOrFail($request['id']);
         $bank_branch->delete();
         if($bank_branch){
             return response()->json([
@@ -4623,13 +4637,13 @@ class ApiController extends Controller
     public function UpdateDesignation(Request $request){
 
         $validator = Validator::make($request->all(), [
-            'designation_id'=>'required',
+            'id'=>'required',
             'name'=>'required',
         ]);
         if ($validator->fails()) {
             return response()->json(['errors'=>$validator->errors()], 400);
         }
-        $designation = Designation::findOrFail($request['designation_id']);
+        $designation = Designation::findOrFail($request['id']);
         $designation->name = $request['name'];
         $designation->save();
         if($designation){
@@ -4646,7 +4660,7 @@ class ApiController extends Controller
     }
     //DeleteDesignation
     public function DeleteDesignation(Request $request){
-        $designation = Designation::findOrFail($request['designation_id']);
+        $designation = Designation::findOrFail($request['id']);
         $designation->delete();
         if($designation){
             return response()->json([
@@ -4781,13 +4795,13 @@ class ApiController extends Controller
     public function UpdateBankAccountType(Request $request){
 
         $validator = Validator::make($request->all(), [
-            'bank_acc_type_id'=>'required',
+            'id'=>'required',
             'name'=>'required',
         ]);
         if ($validator->fails()) {
             return response()->json(['errors'=>$validator->errors()], 400);
         }
-        $bank_acc_type = BankAccType::findOrFail($request['bank_acc_type_id']);
+        $bank_acc_type = BankAccType::findOrFail($request['id']);
         $bank_acc_type->name = $request['name'];
         $bank_acc_type->save();
         if($bank_acc_type){
@@ -4804,7 +4818,7 @@ class ApiController extends Controller
     }
     //DeleteBankAccountType
     public function DeleteBankAccountType(Request $request){
-        $bank_acc_type = BankAccType::findOrFail($request['bank_acc_type_id']);
+        $bank_acc_type = BankAccType::findOrFail($request['id']);
         $bank_acc_type->delete();
         if($bank_acc_type){
             return response()->json([
@@ -5003,7 +5017,7 @@ class ApiController extends Controller
                 $tax_amount = ($request->tax_amount / 100) * $sub_total;
                 $total_sale_amount = $sub_total + $tax_amount + $service_charge + $shipping_cost;
                 $invoice = date('y').date('m').date('d').date('i').date('s');
-                $sale_quotation = SaleQuotation::where('id',$request['sale_quotation_id'])->first();
+                $sale_quotation = SaleQuotation::where('id',$request['id'])->first();
                 if(isset($request['acc_cus_sup_id'])){
                     $sale_quotation->acc_cus_sup_id = $request['acc_cus_sup_id'];
                 }
@@ -5045,7 +5059,7 @@ class ApiController extends Controller
                 $sale_quotation->save();
                 //sale quotation items
                 foreach($items as $value){
-                    $sale_items = SaleQuotationItem::where('id',$value->sale_quotation_item_id)->first();
+                    $sale_items = SaleQuotationItem::where('id',$value->id)->first();
                     if(isset($value->product_id)){
                         $sale_items->product_id = $value->product_id;
                     }
@@ -5095,7 +5109,7 @@ class ApiController extends Controller
     }
     //SaleQuotationDelete
     public function SaleQuotationDelete(Request $request){
-        $sale_quotation = SaleQuotation::where('id',$request['sale_quotation_id'])->delete();
+        $sale_quotation = SaleQuotation::where('id',$request['id'])->delete();
         if($sale_quotation){
             return response()->json([
                 'status'=>true,
@@ -5275,7 +5289,7 @@ class ApiController extends Controller
                 $sub_total = array_sum(array_column($items, 'amount'));
                 $tax_amount = ($request->tax_amount / 100) * $sub_total;
                 $total_purchase_amount = $sub_total + $tax_amount + $service_charge + $shipping_cost;
-                $pur_quotation = PurchaseQuotation::where('id',$request['purchase_quotation_id'])->first();
+                $pur_quotation = PurchaseQuotation::where('id',$request['id'])->first();
                 if(isset($request['acc_cus_sup_id'])){
                     $pur_quotation->acc_cus_sup_id = $request['acc_cus_sup_id'];
                 }
@@ -5318,7 +5332,7 @@ class ApiController extends Controller
                 $pur_quotation->save();
                 //purchase quotation items
                 foreach($items as $value){
-                    $pur_itmes = PurchaseQuotationItem::where('id',$value->purchase_quotation_item_id)->first();
+                    $pur_itmes = PurchaseQuotationItem::where('id',$value->id)->first();
                     if(isset($value->product_id)){
                         $pur_itmes->product_id = $value->product_id;
                     }
@@ -5368,7 +5382,7 @@ class ApiController extends Controller
     }
     //PurchaseQuotationDelete
     public function PurchaseQuotationDelete(Request $request){
-        $pur_quotation = PurchaseQuotation::where('id',$request['purchase_quotation_id'])->delete();
+        $pur_quotation = PurchaseQuotation::where('id',$request['id'])->delete();
         if($pur_quotation){
             return response()->json([
                 'status'=>true,
@@ -5553,7 +5567,7 @@ class ApiController extends Controller
                 $sub_total = array_sum(array_column($items,'amount'));
                 $tax_amount = ($request->tax_amount / 100) * $sub_total;
                 $total_purchase_amount = $sub_total + $tax_amount + $service_charge + $shipping_cost;
-                $purchase = Purchase::where('id',$request['purchase_id'])->first();
+                $purchase = Purchase::where('id',$request['id'])->first();
                 if(isset($request['acc_cus_sup_id'])){
                     $purchase->acc_cus_sup_id = $request['acc_cus_sup_id'];
                 }
@@ -5601,7 +5615,7 @@ class ApiController extends Controller
                 $purchase->save();
                 //purchase items
                 foreach($items as $value){
-                    $pur_itmes = PurchaseItem::where('id',$value->purchase_item_id)->first();
+                    $pur_itmes = PurchaseItem::where('id',$value->id)->first();
                     if(isset($value->product_id)){
                         $pur_itmes->product_id = $value->product_id;
                     }
@@ -5652,7 +5666,7 @@ class ApiController extends Controller
     }
     //PurchaseDelete
     public function PurchaseDelete(Request $request){
-        $purchase = Purchase::where('id',$request['purchase_id'])->delete();
+        $purchase = Purchase::where('id',$request['id'])->delete();
         if($purchase){
             return response()->json([
                 'status'=>true,
@@ -5835,7 +5849,7 @@ class ApiController extends Controller
                 $sub_total = array_sum(array_column($items, 'amount'));
                 $tax_amount = ($request->tax_amount / 100) * $sub_total;
                 $total_sale_amount = $sub_total + $tax_amount + $service_charge + $shipping_cost;
-                $sale = Sale::where('id',$request['sale_id'])->first();
+                $sale = Sale::where('id',$request['id'])->first();
                 if(isset($request['acc_cus_sup_id'])){
                     $sale->acc_cus_sup_id = $request['acc_cus_sup_id'];
                 }
@@ -5889,7 +5903,7 @@ class ApiController extends Controller
                     if(isset($value->product_id)){
                         $product_id = $value->product_id;
                     }
-                    $sale_items = SaleItem::where('id',$value->sale_item_id)->first();
+                    $sale_items = SaleItem::where('id',$value->id)->first();
                     if(isset($product_id)){
                         $sale_items->product_id = $product_id;
                     }
@@ -6108,7 +6122,7 @@ class ApiController extends Controller
     public function ReceiptUpdate(Request $request){
 
         $items = json_decode($request['items']);
-        $receipt = Receipt::where('id',$request['receipt_id'])->first();
+        $receipt = Receipt::where('id',$request['id'])->first();
         if(isset($request['ware_house_id'])){
             $receipt->ware_house_id = $request['ware_house_id'];
         }
@@ -6135,8 +6149,7 @@ class ApiController extends Controller
         }
         $receipt->save();
         foreach($items as $value){
-            $receipt_item_id = $value->id;
-            $receipt_item = ReceiptItem::where('id',$receipt_item_id)->first();
+            $receipt_item = ReceiptItem::where('id',$value->id)->first();
             if(isset($value->order)){
                 $receipt_item->order = $value->order;
             }
@@ -6162,7 +6175,7 @@ class ApiController extends Controller
     }
     //ReceiptDelete
     public function ReceiptDelete(Request $request){
-        $receipt = Receipt::where('id',$request['receipt_id'])->delete();
+        $receipt = Receipt::where('id',$request['id'])->delete();
         if($receipt){
             return response()->json([
                 'status'=>true,
@@ -6287,7 +6300,7 @@ class ApiController extends Controller
     }
     //PurchaseChallanDelete
     public function PurchaseChallanDelete(Request $request){
-        $pur_challan = PurchaseChallan::where('id',$request['purchase_challan_id'])->delete();
+        $pur_challan = PurchaseChallan::where('id',$request['id'])->delete();
         if($pur_challan){
             return response()->json([
                 'status'=>true,
@@ -6302,7 +6315,7 @@ class ApiController extends Controller
     }
     //PurchaseChallanUpdate
     public function PurchaseChallanUpdate(Request $request){
-        $pur_challan = PurchaseChallan::where('id',$request['purchase_challan_id'])->first();
+        $pur_challan = PurchaseChallan::where('id',$request['id'])->first();
         //document
         if($request->document){
             $image_name = basename($pur_challan['document']);
@@ -6457,7 +6470,7 @@ class ApiController extends Controller
     }
     //DeliveryDelete
     public function DeliveryDelete(Request $request){
-        $delivery = Delivery::where('id',$request['delivery_id'])->delete();
+        $delivery = Delivery::where('id',$request['id'])->delete();
         if($delivery){
             return response()->json([
                 'status'=>true,
@@ -6474,7 +6487,7 @@ class ApiController extends Controller
     public function UpdateDelivery(Request $request){
 
         $items = json_decode($request->items);
-        $delivery = Delivery::where('id',$request['delivery_id'])->first();
+        $delivery = Delivery::where('id',$request['id'])->first();
         if(isset($request['ware_house_id'])){
             $delivery->ware_house_id = $request['ware_house_id'];
         }
@@ -6500,7 +6513,7 @@ class ApiController extends Controller
         //delivery items
         foreach($items as $value){
             $delivery_item_id = $value->id;
-            $sale_item = DeliveryItem::where('id',$delivery_item_id)->first();
+            $sale_item = DeliveryItem::where('id',$id)->first();
             if(isset($value->order)){
                 $sale_item->order = $value->order;
             }
@@ -6554,18 +6567,113 @@ class ApiController extends Controller
             ],200);
         }
     }
-    //DeleteProduct
-    public function DeleteProduct(Request $request){
-        $product = Product::where('id',$request['product_id'])->delete();
-        if($product){
+    //CreateSaleChallan
+    public function CreateSaleChallan(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $validator = Validator::make($request->all(), [
+                    'sale_id'=>'required',
+                    'vehicale_id'=>'required',
+                    'challan_details'=>'required',
+                    'items'=>'required',
+                    'document'=>'required'
+                ]);
+                if ($validator->fails()) {
+                    return response()->json(['errors'=>$validator->errors()], 400);
+                }
+                //document
+                $challan = time().'.'.$request->document->extension();
+                $request->document->move(public_path('images/sale_challan'), $challan);
+
+                $items = json_decode($request['items']);
+                $sale_challan = new SaleChallan;
+                $sale_challan->package_buy_id = $user['package_buy_id'];
+                $sale_challan->sale_id = $request['sale_id'];
+                $sale_challan->vehicale_id = $request['vehicale_id'];
+                $sale_challan->sale_challan_invoice_no = date('y').date('m').date('d').date('i').date('s');
+                $sale_challan->challan_details = $request['challan_details'];
+                $sale_challan->challan_date = date('Y-m-d');
+                $sale_challan->document = $_SERVER['HTTP_HOST'].'/public/images/sale_challan/'.$challan;
+                $sale_challan->save();
+                $sale_challan_id = $sale_challan->id;
+                foreach($items as $value){
+                    $sale_item_id = $value->id;
+                    $sale_item = new SaleChallanItem;
+                    $sale_item->package_buy_id = $user['package_buy_id'];
+                    $sale_item->sale_id = $request['sale_id'];
+                    $sale_item->sale_challan_id  = $sale_challan_id;
+                    $sale_item->sale_item_id = $sale_item_id;
+                    $sale_item->save();
+                }
+                if($sale_challan && $sale_item){
+                    return response()->json([
+                        'status'=>true,
+                        'message'=>"Sale Challan Created Successfully",
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Something Is Wrong To Create Sale Challan",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //ListsSaleChallan
+    public function  ListsSaleChallan(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $sale_challan = SaleChallan::where(['package_buy_id'=>$user['package_buy_id']])->select('id','sale_challan_invoice_no','vehicale_id','challan_details','challan_date','status','document')->orderBy('id','DESC')->paginate(15);
+                if($sale_challan){
+                    return response()->json([
+                        'status'=>true,
+                        'lists'=>$sale_challan,
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Sale Challan List Not Found",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //SaleChallanDetails
+    public function SaleChallanDetails(Request $request){
+        $sale_challan = SaleChallan::with('vehicale')->where('id',$request['sale_challan_id'])->select('id','vehicale_id','sale_challan_invoice_no','challan_details','challan_date','document','status')->first();
+        $items = SaleChallanItem::with('sale_challan_item')->where('sale_challan_id',$request['sale_challan_id'])->select('id','sale_item_id')->get();
+        if($sale_challan && $items){
             return response()->json([
                 'status'=>true,
-                'message'=>"Product Deleted Successfully",
+                'lists'=>$sale_challan,
+                'items'=>$items,
             ],200);
         }else{
             return response()->json([
                 'status'=>false,
-                'message'=>"Something Is Wrong To Delete Product",
+                'message'=>"Sales Challan Details Not Found",
             ],200);
         }
     }
