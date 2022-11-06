@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePurchaseChallansTable extends Migration
+class CreateReceiptChallansTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,11 @@ class CreatePurchaseChallansTable extends Migration
      */
     public function up()
     {
-        Schema::create('purchase_challans', function (Blueprint $table) {
+        Schema::create('receipt_challans', function (Blueprint $table) {
             $table->id()->autoIncrement();
             $table->unsignedBigInteger('package_buy_id');
-            $table->unsignedBigInteger('purchase_id');
-            $table->string('purchase_challan_invoice_no');
+            $table->unsignedBigInteger('receipt_id');
+            $table->string('receipt_challan_invoice_no');
             $table->unsignedBigInteger('vehicale_id');
             $table->longText('challan_details');
             $table->date('challan_date');
@@ -25,7 +25,7 @@ class CreatePurchaseChallansTable extends Migration
             $table->enum('status',['pending', 'accept'])->default('pending');
             $table->timestamps();
             $table->foreign('package_buy_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreign('purchase_id')->references('id')->on('purchases')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('receipt_id')->references('id')->on('receipts')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('vehicale_id')->references('id')->on('vehicales')->onUpdate('cascade')->onDelete('cascade');
         });
     }
@@ -38,7 +38,7 @@ class CreatePurchaseChallansTable extends Migration
     public function down()
     {
         Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('purchase_challans');
+        Schema::dropIfExists('receipt_challans');
         Schema::enableForeignKeyConstraints();
     }
 }

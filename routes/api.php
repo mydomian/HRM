@@ -221,13 +221,13 @@ Route::get('/single-bank-acc-type/{bank_acc_type_id}',[ApiController::class,"Sin
 Route::post('/create-sale-quotation',[ApiController::class,"SaleQuotation"]);
 Route::post('/update-sale-quotation',[ApiController::class,"UpdateSaleQuotation"]);
 Route::post('/sale-quotation-lists',[ApiController::class,"SaleQuotationLists"]);
-Route::get('/sale-quotation-details/{sale_quotation_id}',[ApiController::class,"SaleQuotationDetails"]);
+Route::post('/sale-quotation-details',[ApiController::class,"SaleQuotationDetails"]);
 Route::post('/delete-sale-quotation',[ApiController::class,"SaleQuotationDelete"]);
 //purchase quotation
 Route::post('/create-purchase-quotation',[ApiController::class,"PurchaseQuotation"]);
 Route::post('/update-purchase-quotation',[ApiController::class,"UpdatePurchaseQuotation"]);
 Route::post('/purchase-quotation-lists',[ApiController::class,"PurchaseQuotationLists"]);
-Route::get('/purchase-quotation-details/{purchase_quotation_id}',[ApiController::class,"PurchaseQuotationDetails"]);
+Route::post('/purchase-quotation-details',[ApiController::class,"PurchaseQuotationDetails"]);
 Route::post('/delete-purchase-quotation',[ApiController::class,"PurchaseQuotationDelete"]);
 //purchase
 Route::post('/create-purchase',[ApiController::class,"Purchase"]);
@@ -248,20 +248,23 @@ Route::post('/receipt-details',[ApiController::class,"ReceiptDetails"]);
 Route::post('/update-receipt',[ApiController::class,"ReceiptUpdate"]);
 Route::post('/receipt-delete',[ApiController::class,"ReceiptDelete"]);
 Route::post('/pending-receipt',[ApiController::class,"PendingReceipt"]);
+Route::post('/due-receipt',[ApiController::class,"DueReceipt"]);
 //receipt challan
-Route::post('/create-purchase-challan',[ApiController::class,"CreatePurchaseChallan"]);
-Route::post('/purchase-challan-lists',[ApiController::class,"PurchaseChallanLists"]);
-Route::post('/purchase-challan-details',[ApiController::class,"PurchaseChallanDetails"]);
-Route::post('/purchase-challan-delete',[ApiController::class,"PurchaseChallanDelete"]);
-Route::post('/update-purchase-challan',[ApiController::class,"PurchaseChallanUpdate"]);
+Route::post('/create-receipt-challan',[ApiController::class,"CreateReceiptChallan"]);
+Route::post('/receipt-challan-lists',[ApiController::class,"ReceiptChallanLists"]);
+Route::post('/receipt-challan-details',[ApiController::class,"ReceiptChallanDetails"]);
+Route::post('/receipt-challan-delete',[ApiController::class,"ReceiptChallanDelete"]);
+Route::post('/update-receipt-challan',[ApiController::class,"ReceiptChallanUpdate"]);
 //delivery
 Route::post('/create-delivery',[ApiController::class,'CreateDelivery']);
 Route::post('/delivery-lists',[ApiController::class,'DeliveryLists']);
 Route::post('/delivery-details',[ApiController::class,'DeliveryDetails']);
-Route::post('/receipt-delete',[ApiController::class,'DeliveryDelete']);
+Route::post('/delivery-delete',[ApiController::class,'DeliveryDelete']);
 Route::post('/update-delivery',[ApiController::class,'UpdateDelivery']);
 Route::post('/pending-delivery',[ApiController::class,'PendingDelivery']);
-//sale challan
-Route::post('/create-sale-challan',[ApiController::class,'CreateSaleChallan']);
-Route::post('/sale-challan-lists',[ApiController::class,'ListsSaleChallan']);
-Route::post('/purchase-challan-details',[ApiController::class,'SaleChallanDetails']);
+//delivery challan
+Route::post('/create-delivery-challan',[ApiController::class,'CreateDeliveryChallan']);
+Route::post('/delivery-challan-lists',[ApiController::class,'ListsDeliveryChallan']);
+Route::post('/delivery-challan-details',[ApiController::class,'DeliveryChallanDetails']);
+Route::post('/update-delivery-challan',[ApiController::class,'DeliveryChallanUpdate']);
+Route::post('/delivery-challan-delete',[ApiController::class,'DeliveryChallanDelete']);
