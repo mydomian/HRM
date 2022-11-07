@@ -19,6 +19,7 @@ class CreateSalesTable extends Migration
             $table->unsignedBigInteger('acc_cus_sup_id');
             $table->string('sale_invoice_no');
             $table->string('delivery_invoice_no')->nullable();
+            $table->string('challan_invoice_no')->nullable();
             $table->bigInteger('product_order_by_id');
             $table->date('sale_date');
             $table->longText('sale_details');

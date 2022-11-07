@@ -34,6 +34,6 @@ class Delivery extends Model
         return $this->belongsTo(WareHouse::class,'ware_house_id')->select('id','name');
     }
     public function vehicale(){
-        return $this->belongsTo(Vehicale::class,'vehicale_id')->select('id','vehicle_name','vehicle_type','vehicle_no');
+        return $this->belongsTo(Vehicale::class,'vehicale_id')->with('driver')->select('id','vehicle_name','vehicle_type','vehicle_no','vehicle_reg_no','owner_name','father_name','owner_phone','owner_post_office','owner_village');
     }
 }

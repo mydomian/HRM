@@ -34,7 +34,7 @@ class Driver extends Model
     public function thana(){
         return $this->belongsTo(Thana::class, 'thana_id')->select('id','city_id','district_id','name');
     }
-   //union
+    //union
     public function union(){
         return $this->belongsTo(Union::class, 'union_id')->select('id','city_id','district_id','thana_id','name');
     }

@@ -249,12 +249,14 @@ Route::post('/update-receipt',[ApiController::class,"ReceiptUpdate"]);
 Route::post('/receipt-delete',[ApiController::class,"ReceiptDelete"]);
 Route::post('/pending-receipt',[ApiController::class,"PendingReceipt"]);
 Route::post('/due-receipt',[ApiController::class,"DueReceipt"]);
+Route::post('/receipt-invoice',[ApiController::class,"ReceiptInvoice"]);
 //receipt challan
 Route::post('/create-receipt-challan',[ApiController::class,"CreateReceiptChallan"]);
 Route::post('/receipt-challan-lists',[ApiController::class,"ReceiptChallanLists"]);
 Route::post('/receipt-challan-details',[ApiController::class,"ReceiptChallanDetails"]);
 Route::post('/receipt-challan-delete',[ApiController::class,"ReceiptChallanDelete"]);
 Route::post('/update-receipt-challan',[ApiController::class,"ReceiptChallanUpdate"]);
+Route::post('/receipt-challan-invoice',[ApiController::class,"ReceiptChallanInvoice"]);
 //delivery
 Route::post('/create-delivery',[ApiController::class,'CreateDelivery']);
 Route::post('/delivery-lists',[ApiController::class,'DeliveryLists']);
@@ -262,6 +264,7 @@ Route::post('/delivery-details',[ApiController::class,'DeliveryDetails']);
 Route::post('/delivery-delete',[ApiController::class,'DeliveryDelete']);
 Route::post('/update-delivery',[ApiController::class,'UpdateDelivery']);
 Route::post('/pending-delivery',[ApiController::class,'PendingDelivery']);
+Route::post('/delivery-invoice',[ApiController::class,'DeliveryInovoice']);
 //delivery challan
 Route::post('/create-delivery-challan',[ApiController::class,'CreateDeliveryChallan']);
 Route::post('/delivery-challan-lists',[ApiController::class,'ListsDeliveryChallan']);

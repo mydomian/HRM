@@ -20,6 +20,7 @@ class CreatePurchasesTable extends Migration
             $table->string('purchase_invoice_no');
             $table->bigInteger('product_order_by_id');
             $table->string('receipt_invoice_no')->nullable();
+            $table->string('challan_invoice_no')->nullable();
             $table->date('purchase_date');
             $table->longText('purchase_details');
             $table->bigInteger('total_qty');

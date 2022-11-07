@@ -106,10 +106,10 @@ injectSvgSprite('https://bootstraptemple.com/files/icons/orion-svg-sprite.svg');
         confirmButtonText: 'Yes, Activated it!'
         })
         .then((willDelete) => {
-        if (willDelete) {
-            window.location.href="/admin/package-activate/"+recordid;
-        }
-        });
+            if (willDelete) {
+                window.location.href="/admin/package-activate/"+recordid;
+            }
+            });
         });
         //package_deactivation
         $('.package_deactivation').on('click', function () {

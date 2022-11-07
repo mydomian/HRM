@@ -44,7 +44,7 @@ class Vehicale extends Model
     }
     //driver
     public function driver(){
-        return $this->hasMany(Driver::class,'vehicle_id')->select('id','vehicle_id','driver_name');
+        return $this->hasMany(Driver::class,'vehicle_id')->with('city','district','thana','union')->select('id','city_id','district_id','thana_id','union_id','vehicle_id','driver_name','driver_phone','father_name','driver_post_office','driver_village');
     }
 }
 
