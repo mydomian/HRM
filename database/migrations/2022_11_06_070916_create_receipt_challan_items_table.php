@@ -18,6 +18,7 @@ class CreateReceiptChallanItemsTable extends Migration
             $table->unsignedBigInteger('package_buy_id');
             $table->string('receipt_invoice_no');
             $table->unsignedBigInteger('receipt_challan_id');
+            $table->string('receipt_challan_invoice_no');
             $table->unsignedBigInteger('receipt_item_id');
             $table->timestamps();
             $table->foreign('package_buy_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');

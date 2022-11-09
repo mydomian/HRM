@@ -8,10 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class ReceiptChallan extends Model
 {
     protected $fillable = [
-        'package_buy_id', 'receipt_invoice_no', 'receipt_challan_invoice_no','vehicale_id', 'challan_details', 'challan_date','document','status'
+        'package_buy_id','purchase_invoice_no','receipt_invoice_no', 'receipt_challan_invoice_no','vehicale_id', 'challan_details', 'challan_date','document','status'
     ];
     protected $casts = [
         'package_buy_id' => 'integer',
+        'purchase_invoice_no' => 'string',
         'receipt_invoice_no' => 'string',
         'receipt_challan_invoice_no' => 'string',
         'vehicale_id' => 'biginteger',

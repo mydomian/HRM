@@ -8,12 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class DeliveryChallan extends Model
 {
     protected $fillable = [
-        'package_buy_id', 'delivery_id', 'delivery_challan_invoice_no','vehicale_id', 'challan_details','challan_date','document',
+        'package_buy_id','sale_invoice_no','delivery_invoice_no', 'delivery_challan_invoice_no','vehicale_id', 'challan_details','challan_date','document',
         'status'
     ];
     protected $casts = [
         'package_buy_id' => 'integer',
-        'delivery_id' => 'integer',
+        'sale_invoice_no' => 'string',
+        'delivery_invoice_no' => 'string',
         'delivery_challan_invoice_no' => 'string',
         'vehicale_id' => 'integer',
         'challan_date' => 'date',
@@ -26,6 +27,6 @@ class DeliveryChallan extends Model
     }
     //vehicale
     public function vehicale(){
-        return $this->belongsTo(Vehicale::class, 'vehicale_id')->select('id','vehicle_name','vehicle_type','vehicle_no','vehicle_reg_no','owner_name','father_name','owner_phone','owner_post_office','owner_village');
+        return $this->belongsTo(Vehicale::class, 'vehicale_id')->with('driver')->select('id','vehicle_name','vehicle_type','vehicle_no','vehicle_reg_no','owner_name','father_name','owner_phone','owner_post_office','owner_village');
     }
 }

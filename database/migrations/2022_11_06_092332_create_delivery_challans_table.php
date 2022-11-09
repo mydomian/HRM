@@ -16,7 +16,8 @@ class CreateDeliveryChallansTable extends Migration
         Schema::create('delivery_challans', function (Blueprint $table) {
             $table->id()->autoIncrement();
             $table->unsignedBigInteger('package_buy_id');
-            $table->unsignedBigInteger('delivery_id');
+            $table->string('sale_invoice_no');
+            $table->string('delivery_invoice_no');
             $table->string('delivery_challan_invoice_no');
             $table->unsignedBigInteger('vehicale_id');
             $table->longText('challan_details');
@@ -25,7 +26,6 @@ class CreateDeliveryChallansTable extends Migration
             $table->enum('status',['pending', 'accept'])->default('pending');
             $table->timestamps();
             $table->foreign('package_buy_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreign('delivery_id')->references('id')->on('deliveries')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('vehicale_id')->references('id')->on('vehicales')->onUpdate('cascade')->onDelete('cascade');
         });
     }

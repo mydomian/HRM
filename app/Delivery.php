@@ -36,4 +36,7 @@ class Delivery extends Model
     public function vehicale(){
         return $this->belongsTo(Vehicale::class,'vehicale_id')->with('driver')->select('id','vehicle_name','vehicle_type','vehicle_no','vehicle_reg_no','owner_name','father_name','owner_phone','owner_post_office','owner_village');
     }
+    public function sale_invoice_no(){
+        return $this->belongsTo(Sale::class,'sale_id')->select('id','sale_invoice_no');
+    }
 }

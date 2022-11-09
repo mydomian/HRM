@@ -5533,8 +5533,8 @@ class ApiController extends Controller
     }
     //PurchaseDetails
     public function PurchaseDetails(Request $request){
-        $purchase = Purchase::with('acc_cus_sup','payment_method')->where('id',$request['purchase_id'])->select('id','acc_cus_sup_id','purchase_invoice_no','receipt_invoice_no','challan_invoice_no','product_order_by_id','purchase_date','total_qty','purchase_details','total_purchase_amount','tax_amount','total_tax_amount','service_charge','shipping_cost','grand_total','paid_amount','due_amount','document','payment_method_id')->first();
-        $purchase_items = PurchaseItem::with('product','unit')->where('purchase_id',$request['purchase_id'])->select('id','purchase_id','unit_id','purchase_invoice_no','product_id','avg_qty','bag','qty','rate','amount')->get();
+        $purchase = Purchase::with('acc_cus_sup','payment_method')->where('purchase_invoice_no',$request['purchase_invoice_no'])->select('id','acc_cus_sup_id','purchase_invoice_no','receipt_invoice_no','challan_invoice_no','product_order_by_id','purchase_date','total_qty','purchase_details','total_purchase_amount','tax_amount','total_tax_amount','service_charge','shipping_cost','grand_total','paid_amount','due_amount','document','payment_method_id')->first();
+        $purchase_items = PurchaseItem::with('product','unit')->where('purchase_invoice_no',$request['purchase_invoice_no'])->select('id','purchase_id','unit_id','purchase_invoice_no','product_id','avg_qty','bag','qty','rate','amount')->get();
         if($purchase && $purchase_items){
             return response()->json([
                 'status'=>true,
@@ -5572,7 +5572,7 @@ class ApiController extends Controller
                 $sub_total = array_sum(array_column($items,'amount'));
                 $tax_amount = ($request->tax_amount / 100) * $sub_total;
                 $total_purchase_amount = $sub_total + $tax_amount + $service_charge + $shipping_cost;
-                $purchase = Purchase::where('id',$request['id'])->first();
+                $purchase = Purchase::where('purchase_invoice_no',$request['purchase_invoice_no'])->first();
                 if(isset($request['acc_cus_sup_id'])){
                     $purchase->acc_cus_sup_id = $request['acc_cus_sup_id'];
                 }
@@ -5817,8 +5817,8 @@ class ApiController extends Controller
     }
     //SaleDetails
     public function SaleDetails(Request $request){
-        $sale = Sale::with('acc_cus_sup','payment_method')->where('id',$request['sale_id'])->select('id','acc_cus_sup_id','sale_invoice_no','delivery_invoice_no','challan_invoice_no','product_order_by_id','sale_date','total_qty','sale_details','total_sale_amount','total_tax_amount','service_charge','shipping_cost','grand_total','paid_amount','due_amount','document','payment_method_id')->first();
-        $sale_items = SaleItem::with('product','unit')->where('sale_id',$request['sale_id'])->select('id','sale_id','unit_id','sale_invoice_no','product_id','avg_qty','bag','qty','rate','amount')->get();
+        $sale = Sale::with('acc_cus_sup','payment_method')->where('sale_invoice_no',$request['sale_invoice_no'])->select('id','acc_cus_sup_id','sale_invoice_no','delivery_invoice_no','challan_invoice_no','product_order_by_id','sale_date','total_qty','sale_details','total_sale_amount','total_tax_amount','service_charge','shipping_cost','grand_total','paid_amount','due_amount','document','payment_method_id')->first();
+        $sale_items = SaleItem::with('product','unit')->where('sale_invoice_no',$request['sale_invoice_no'])->select('id','sale_id','unit_id','sale_invoice_no','product_id','avg_qty','bag','qty','rate','amount')->get();
         if($sale && $sale_items){
             return response()->json([
                 'status'=>true,
@@ -5854,7 +5854,7 @@ class ApiController extends Controller
                 $sub_total = array_sum(array_column($items, 'amount'));
                 $tax_amount = ($request->tax_amount / 100) * $sub_total;
                 $total_sale_amount = $sub_total + $tax_amount + $service_charge + $shipping_cost;
-                $sale = Sale::where('id',$request['id'])->first();
+                $sale = Sale::where('sale_invoice_no',$request['sale_invoice_no'])->first();
                 if(isset($request['acc_cus_sup_id'])){
                     $sale->acc_cus_sup_id = $request['acc_cus_sup_id'];
                 }
@@ -6094,7 +6094,7 @@ class ApiController extends Controller
         $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
         if($user){
             if($user['usepackage']['status'] == 'active'){
-                $receipt = Receipt::where(['package_buy_id'=>$user['package_buy_id']])->select('id','receipt_invoice_no','total_qty','total_receipt','total_pending','receipt_date','status')->orderBy('id','DESC')->paginate(15);
+                $receipt = Receipt::with('purchase_invoice_no')->where(['package_buy_id'=>$user['package_buy_id']])->select('id','purchase_id','receipt_invoice_no','total_qty','total_receipt','total_pending','receipt_date','status')->orderBy('id','DESC')->paginate(15);
                 if($receipt){
                     return response()->json([
                         'status'=>true,
@@ -6140,7 +6140,7 @@ class ApiController extends Controller
     public function ReceiptUpdate(Request $request){
 
         $items = json_decode($request['items']);
-        $receipt = Receipt::where('id',$request['id'])->first();
+        $receipt = Receipt::where('receipt_invoice_no',$request['receipt_invoice_no'])->first();
         if(isset($request['ware_house_id'])){
             $receipt->ware_house_id = $request['ware_house_id'];
         }
@@ -6264,10 +6264,13 @@ class ApiController extends Controller
                 //document
                 $challan = time().'.'.$request->document->extension();
                 $request->document->move(public_path('images/receipt_challan'), $challan);
-
                 $items = json_decode($request['items']);
+                //purchase_invoice_no
+                $purchase_invoice_no = Purchase::where('receipt_invoice_no',$request['receipt_invoice_no'])->select('purchase_invoice_no')->first();
+
                 $receipt_challan = new ReceiptChallan;
                 $receipt_challan->package_buy_id = $user['package_buy_id'];
+                $receipt_challan->purchase_invoice_no = $purchase_invoice_no['purchase_invoice_no'];
                 $receipt_challan->receipt_invoice_no = $request['receipt_invoice_no'];
                 $receipt_challan->vehicale_id = $request['vehicale_id'];
                 $receipt_challan->receipt_challan_invoice_no = date('y').date('m').date('d').date('i').date('s');
@@ -6282,6 +6285,7 @@ class ApiController extends Controller
                     $receipt_item = new ReceiptChallanItem;
                     $receipt_item->package_buy_id = $user['package_buy_id'];
                     $receipt_item->receipt_invoice_no = $request['receipt_invoice_no'];
+                    $receipt_item->receipt_challan_invoice_no  = $receipt_challan_invoice;
                     $receipt_item->receipt_challan_id  = $receipt_challan_id;
                     $receipt_item->receipt_item_id = $receipt_item_id;
                     $receipt_item->save();
@@ -6291,7 +6295,6 @@ class ApiController extends Controller
                 $purchase = Purchase::where('id',$purchase_id['purchase_id'])->first();
                 $purchase->challan_invoice_no = $receipt_challan_invoice;
                 $purchase->save();
-
                 if($receipt_challan && $receipt_item){
                     return response()->json([
                         'status'=>true,
@@ -6321,7 +6324,7 @@ class ApiController extends Controller
         $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
         if($user){
             if($user['usepackage']['status'] == 'active'){
-                $receipt_challan = ReceiptChallan::where(['package_buy_id'=>$user['package_buy_id']])->select('id','receipt_challan_invoice_no','challan_details','challan_date','document','status')->orderBy('id','DESC')->paginate(15);
+                $receipt_challan = ReceiptChallan::where(['package_buy_id'=>$user['package_buy_id']])->select('id','purchase_invoice_no','receipt_invoice_no','vehicale_id','receipt_challan_invoice_no','challan_details','challan_date','document','status')->orderBy('id','DESC')->paginate(15);
                 if($receipt_challan){
                     return response()->json([
                         'status'=>true,
@@ -6348,13 +6351,13 @@ class ApiController extends Controller
     }
     //ReceiptChallanDetails
     public function ReceiptChallanDetails(Request $request){
-        $receipt_challan = ReceiptChallan::with('vehicale')->where('id',$request['receipt_challan_id'])->select('id','receipt_id','vehicale_id','receipt_challan_invoice_no','challan_details','challan_date','document','status')->first();
-        $receipt = Receipt::where('id',$receipt_challan['receipt_id'])->select('receipt_invoice_no')->first();
-        $purchase = Purchase::where('receipt_invoice_no',$receipt['receipt_invoice_no'])->select('id','acc_cus_sup_id')->first();
+        $receipt_challan = ReceiptChallan::with('vehicale')->where('receipt_invoice_no',$request['receipt_invoice_no'])->first();
+        $purchase = Purchase::where('receipt_invoice_no',$request['receipt_invoice_no'])->select('id','challan_invoice_no','acc_cus_sup_id')->first();
         $cus_sup_acc = AccCustomerSupplier::where('id',$purchase['acc_cus_sup_id'])->select('id','acc_name','email','phone','address','acc_opening_balance','acc_hold_balance','profile_image')->first();
-        $items = ReceiptChallanItem::where('receipt_challan_id',$request['receipt_challan_id'])->select('receipt_item_id')->get();
+        $items = ReceiptChallanItem::where('receipt_invoice_no',$request['receipt_invoice_no'])->select('receipt_item_id')->get();
         $receipt_items = ReceiptItem::whereIn('id',$items)->select('purchase_item_id')->get();
         $purchase_items = PurchaseItem::with('product','unit')->whereIn('id',$receipt_items)->select('id','product_id','unit_id','avg_qty','bag','qty','rate','amount')->get();
+
         if($receipt_challan && $items){
             return response()->json([
                 'status'=>true,
@@ -6369,35 +6372,7 @@ class ApiController extends Controller
             ],200);
         }
     }
-    //ReceiptChallanInvoice
-    public function ReceiptChallanInvoice(Request $request){
-        $receipt_challan = ReceiptChallan::with('vehicale')->where('receipt_challan_invoice_no',$request['challan_invoice_no'])->select('id','receipt_id','vehicale_id','receipt_challan_invoice_no','challan_details','challan_date','document','status')->first();
 
-
-        $receipt = Receipt::where('id',$receipt_challan['receipt_id'])->select('receipt_invoice_no')->first();
-return $receipt;
-        $purchase = Purchase::where('receipt_invoice_no',$receipt['receipt_invoice_no'])->select('id','acc_cus_sup_id')->first();
-        return $purchase;
-        $cus_sup_acc = AccCustomerSupplier::where('id',$purchase['acc_cus_sup_id'])->select('id','acc_name','email','phone','address','acc_opening_balance','acc_hold_balance','profile_image')->first();
-
-
-        $items = ReceiptChallanItem::where('receipt_challan_id',$request['receipt_challan_id'])->select('receipt_item_id')->get();
-        $receipt_items = ReceiptItem::whereIn('id',$items)->select('purchase_item_id')->get();
-        $purchase_items = PurchaseItem::with('product','unit')->whereIn('id',$receipt_items)->select('id','product_id','unit_id','avg_qty','bag','qty','rate','amount')->get();
-        if($receipt_challan && $items){
-            return response()->json([
-                'status'=>true,
-                'customer'=>$cus_sup_acc,
-                'lists'=>$receipt_challan,
-                'items'=>$purchase_items,
-            ],200);
-        }else{
-            return response()->json([
-                'status'=>false,
-                'message'=>"Receipt Challan Details Not Found",
-            ],200);
-        }
-    }
     //ReceiptChallanDelete
     public function ReceiptChallanDelete(Request $request){
         $receipt_challan = ReceiptChallan::where('id',$request['id'])->delete();
@@ -6415,7 +6390,7 @@ return $receipt;
     }
     //ReceiptChallanUpdate
     public function ReceiptChallanUpdate(Request $request){
-        $receipt_challan = ReceiptChallan::where('id',$request['id'])->first();
+        $receipt_challan = ReceiptChallan::where('receipt_challan_invoice_no',$request['receipt_challan_invoice_no'])->first();
         //document
         if($request->document){
             $image_name = basename($receipt_challan['document']);
@@ -6526,7 +6501,7 @@ return $receipt;
         $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
         if($user){
             if($user['usepackage']['status'] == 'active'){
-                $delivery = Delivery::where(['package_buy_id'=>$user['package_buy_id']])->select('id','delivery_invoice_no','total_qty','total_receipt','total_pending','delivery_date','status')->orderBy('id','DESC')->paginate(15);
+                $delivery = Delivery::with('sale_invoice_no')->where(['package_buy_id'=>$user['package_buy_id']])->select('id','sale_id','delivery_invoice_no','total_qty','total_receipt','total_pending','delivery_date','status')->orderBy('id','DESC')->paginate(15);
                 if($delivery){
                     return response()->json([
                         'status'=>true,
@@ -6587,7 +6562,7 @@ return $receipt;
     public function UpdateDelivery(Request $request){
 
         $items = json_decode($request->items);
-        $delivery = Delivery::where('id',$request['id'])->first();
+        $delivery = Delivery::where('delivery_invoice_no',$request['delivery_invoice_no'])->first();
         if(isset($request['ware_house_id'])){
             $delivery->ware_house_id = $request['ware_house_id'];
         }
@@ -6690,7 +6665,7 @@ return $receipt;
         if($user){
             if($user['usepackage']['status'] == 'active'){
                 $validator = Validator::make($request->all(), [
-                    'delivery_id'=>'required',
+                    'delivery_invoice_no'=>'required',
                     'vehicale_id'=>'required',
                     'challan_details'=>'required',
                     'items'=>'required',
@@ -6703,9 +6678,13 @@ return $receipt;
                 $challan = time().'.'.$request->document->extension();
                 $request->document->move(public_path('images/delivery_challan'), $challan);
                 $items = json_decode($request['items']);
+
+                //sale_invoice_no
+                $sale_invoice_no = Sale::where('delivery_invoice_no',$request['delivery_invoice_no'])->select('sale_invoice_no')->first();
                 $delivery_challan = new DeliveryChallan;
                 $delivery_challan->package_buy_id = $user['package_buy_id'];
-                $delivery_challan->delivery_id = $request['delivery_id'];
+                $delivery_challan->sale_invoice_no = $sale_invoice_no['sale_invoice_no'];
+                $delivery_challan->delivery_invoice_no = $request['delivery_invoice_no'];
                 $delivery_challan->vehicale_id = $request['vehicale_id'];
                 $delivery_challan->delivery_challan_invoice_no = date('y').date('m').date('d').date('i').date('s');
                 $delivery_challan->challan_details = $request['challan_details'];
@@ -6718,13 +6697,14 @@ return $receipt;
                     $delivery_item_id = $value->id;
                     $delivery_item = new DeliveryChallanItem;
                     $delivery_item->package_buy_id = $user['package_buy_id'];
-                    $delivery_item->delivery_id = $request['delivery_id'];
+                    $delivery_item->delivery_invoice_no = $request['delivery_invoice_no'];
+                    $delivery_item->delivery_challan_invoice_no = $delivery_challan_invoice;
                     $delivery_item->delivery_challan_id  = $delivery_challan_id;
                     $delivery_item->delivery_item_id = $delivery_item_id;
                     $delivery_item->save();
                 }
                 //sale table update with delivery challan invoice
-                $sale_id = Delivery::where('id',$request['delivery_id'])->select('sale_id')->first();
+                $sale_id = Delivery::where('delivery_invoice_no',$request['delivery_invoice_no'])->select('sale_id')->first();
                 $sale = Sale::where('id',$sale_id['sale_id'])->first();
                 $sale->challan_invoice_no = $delivery_challan_invoice;
                 $sale->save();
@@ -6757,7 +6737,7 @@ return $receipt;
         $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
         if($user){
             if($user['usepackage']['status'] == 'active'){
-                $delivery_challan = DeliveryChallan::where(['package_buy_id'=>$user['package_buy_id']])->select('id','delivery_challan_invoice_no','vehicale_id','challan_details','challan_date','status','document')->orderBy('id','DESC')->paginate(15);
+                $delivery_challan = DeliveryChallan::where(['package_buy_id'=>$user['package_buy_id']])->select('id','sale_invoice_no','delivery_invoice_no','delivery_challan_invoice_no','vehicale_id','challan_details','challan_date','status','document')->orderBy('id','DESC')->paginate(15);
                 if($delivery_challan){
                     return response()->json([
                         'status'=>true,
@@ -6784,11 +6764,10 @@ return $receipt;
     }
     //DeliveryChallanDetails
     public function DeliveryChallanDetails(Request $request){
-        $delivery_challan = DeliveryChallan::with('vehicale')->where('id',$request['delivery_challan_id'])->select('id','delivery_id','vehicale_id','delivery_challan_invoice_no','challan_details','challan_date','document','status')->first();
-        $delivery = Delivery::where('id',$delivery_challan['delivery_id'])->select('delivery_invoice_no')->first();
-        $sale = Sale::where('delivery_invoice_no',$delivery['delivery_invoice_no'])->select('id','acc_cus_sup_id')->first();
+        $delivery_challan = DeliveryChallan::with('vehicale')->where('delivery_invoice_no',$request['delivery_invoice_no'])->select('id','sale_invoice_no','delivery_invoice_no','vehicale_id','delivery_challan_invoice_no','challan_details','challan_date','document','status')->first();
+        $sale = Sale::where('delivery_invoice_no',$request['delivery_invoice_no'])->select('id','challan_invoice_no','acc_cus_sup_id')->first();
         $cus_sup_acc = AccCustomerSupplier::where('id',$sale['acc_cus_sup_id'])->select('id','acc_name','email','phone','address','acc_opening_balance','acc_hold_balance','profile_image')->first();
-        $items = DeliveryChallanItem::where('delivery_challan_id',$request['delivery_challan_id'])->select('delivery_item_id')->get();
+        $items = DeliveryChallanItem::where('delivery_invoice_no',$request['delivery_invoice_no'])->select('delivery_item_id')->get();
         $delivery_items = DeliveryItem::whereIn('id',$items)->select('sale_item_id')->get();
         $sale_items = SaleItem::with('product','unit')->whereIn('id',$delivery_items)->select('id','product_id','unit_id','avg_qty','bag','qty','rate','amount')->get();
 
@@ -6809,7 +6788,7 @@ return $receipt;
 
     //DeliveryChallanUpdate
     public function DeliveryChallanUpdate(Request $request){
-        $delivery_challan = DeliveryChallan::where('id',$request['id'])->first();
+        $delivery_challan = DeliveryChallan::where('delivery_challan_invoice_no',$request['delivery_challan_invoice_no'])->first();
         //document
         if($request->document){
             $image_name = basename($delivery_challan['document']);

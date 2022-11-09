@@ -16,6 +16,7 @@ class CreateReceiptChallansTable extends Migration
         Schema::create('receipt_challans', function (Blueprint $table) {
             $table->id()->autoIncrement();
             $table->unsignedBigInteger('package_buy_id');
+            $table->string('purchase_invoice_no');
             $table->string('receipt_invoice_no');
             $table->string('receipt_challan_invoice_no');
             $table->unsignedBigInteger('vehicale_id');

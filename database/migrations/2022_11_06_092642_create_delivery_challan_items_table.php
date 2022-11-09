@@ -16,12 +16,12 @@ class CreateDeliveryChallanItemsTable extends Migration
         Schema::create('delivery_challan_items', function (Blueprint $table) {
             $table->id()->autoIncrement();
             $table->unsignedBigInteger('package_buy_id');
-            $table->unsignedBigInteger('delivery_id');
+            $table->string('delivery_invoice_no');
             $table->unsignedBigInteger('delivery_challan_id');
+            $table->string('delivery_challan_invoice_no');
             $table->unsignedBigInteger('delivery_item_id');
             $table->timestamps();
             $table->foreign('package_buy_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreign('delivery_id')->references('id')->on('deliveries')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('delivery_challan_id')->references('id')->on('delivery_challans')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('delivery_item_id')->references('id')->on('delivery_items')->onUpdate('cascade')->onDelete('cascade');
         });
