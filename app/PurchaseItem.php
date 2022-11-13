@@ -29,4 +29,7 @@ class PurchaseItem extends Model
     public function unit(){
         return $this->belongsTo(Unit::class,'unit_id','id')->select('id','name');
     }
+    public function receipt_challan_item(){
+        return $this->hasMany(ReceiptChallanItem::class,'purchase_invoice_no','purchase_invoice_no');
+    }
 }

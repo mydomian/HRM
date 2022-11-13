@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class DeliveryChallan extends Model
 {
     protected $fillable = [
-        'package_buy_id','sale_invoice_no','delivery_invoice_no', 'delivery_challan_invoice_no','vehicale_id', 'challan_details','challan_date','document',
+        'package_buy_id','sale_invoice_no','delivery_invoice_no','total_qty','total_receipt','total_pending', 'delivery_challan_invoice_no','vehicale_id', 'challan_details','challan_date','document',
         'status'
     ];
     protected $casts = [
@@ -19,6 +19,9 @@ class DeliveryChallan extends Model
         'vehicale_id' => 'integer',
         'challan_date' => 'date',
         'challan_details' => 'longtext',
+        'total_qty'=>'biginteger',
+        'total_receipt'=>'biginteger',
+        'total_pending'=>'biginteger',
         'document'=>'string',
         'status' => 'enum',
     ];

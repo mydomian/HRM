@@ -266,6 +266,7 @@ Route::post('/delivery-delete',[ApiController::class,'DeliveryDelete']);
 Route::post('/update-delivery',[ApiController::class,'UpdateDelivery']);
 Route::post('/pending-delivery',[ApiController::class,'PendingDelivery']);
 Route::post('/delivery-invoice',[ApiController::class,'DeliveryInovoice']);
+Route::post('/add-delivery',[ApiController::class,'DeliveryAdd']);
 //delivery challan
 Route::post('/create-delivery-challan',[ApiController::class,'CreateDeliveryChallan']);
 Route::post('/delivery-challan-lists',[ApiController::class,'ListsDeliveryChallan']);

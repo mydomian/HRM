@@ -21,6 +21,9 @@ class CreateDeliveryChallansTable extends Migration
             $table->string('delivery_challan_invoice_no');
             $table->unsignedBigInteger('vehicale_id');
             $table->longText('challan_details');
+            $table->bigInteger('total_qty');
+            $table->bigInteger('total_receipt');
+            $table->bigInteger('total_pending');
             $table->date('challan_date');
             $table->string('document');
             $table->enum('status',['pending', 'accept'])->default('pending');
