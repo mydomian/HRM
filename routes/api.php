@@ -273,3 +273,6 @@ Route::post('/delivery-challan-lists',[ApiController::class,'ListsDeliveryChalla
 Route::post('/delivery-challan-details',[ApiController::class,'DeliveryChallanDetails']);
 Route::post('/update-delivery-challan',[ApiController::class,'DeliveryChallanUpdate']);
 Route::post('/delivery-challan-delete',[ApiController::class,'DeliveryChallanDelete']);
+//stock
+Route::post('/stock-lists',[ApiController::class,'StockLists']);
+Route::post('/stock-details',[ApiController::class,'StockDetails']);

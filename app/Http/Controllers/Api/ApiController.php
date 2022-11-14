@@ -49,6 +49,8 @@ use App\SaleChallanItem;
 use App\SaleItem;
 use App\SaleQuotation;
 use App\SaleQuotationItem;
+use App\Stock;
+use App\StockHistory;
 use App\Thana;
 use App\Union;
 use App\Unit;
@@ -1206,6 +1208,14 @@ class ApiController extends Controller
                     $product->our_price = $request['our_price'];
                     // $product->khat_acc_id = $request['khat_acc_id'];
                     $product->save();
+                    //stock table
+                    $stock = new Stock;
+                    $stock->package_buy_id = $user['package_buy_id'];
+                    $stock->product_id = $product->id;
+                    $stock->sale_price = $request['our_price'];
+                    $stock->purchase_price = $request['supplier_price'];
+                    $stock->save();
+
                     if($product){
                         return response()->json([
                             'status'=>true,
@@ -5477,6 +5487,22 @@ class ApiController extends Controller
                     $pur_items->rate = $rate;
                     $pur_items->amount = $amount;
                     $pur_items->save();
+                    //stock
+                    $stock = Stock::where('product_id',$product_id)->first();
+                    $now = $stock['stock_now'] + $qty;
+                    $stock->stock_old = $stock['stock_now'];
+                    $stock->stock_now = $now;
+                    $stock->date = date('Y-m-d');
+                    $stock->save();
+                    //stock history
+                    $history = new StockHistory;
+                    $history->package_buy_id = $user['package_buy_id'];
+                    $history->stock_id = $stock->id;
+                    $history->product_id = $product_id;
+                    $history->stock = $qty;
+                    $history->stock_type = 'in';
+                    $history->date = date('Y-m-d');
+                    $history->save();
                 }
                 if($purchase && $pur_items){
                     return response()->json([
@@ -5551,6 +5577,7 @@ class ApiController extends Controller
     }
     //UpdatePurchase
     public function UpdatePurchase(Request $request){
+
         $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
         if($user){
             if($user['usepackage']['status'] == 'active'){
@@ -5645,6 +5672,25 @@ class ApiController extends Controller
                         $pur_itmes->amount = $value->amount;
                     }
                     $pur_itmes->save();
+
+// //stock
+// $product = Product::where('id',$value->product_id)->first();
+// $stock = Stock::where('product_id',$value->product_id)->first();
+// if(isset($value->qty)){
+//     $stock->stock_old = $stock['stock_now'];
+//     $stock->stock_now = $stock['stock_now'] + $value->qty;
+// }
+// $stock->sale_price = $product['our_price'];
+// $stock->purchase_price = $product['supplier_price'];
+// $stock->save();
+// //stock history
+// $history = StockHistory::where('stock_id',$stock['id'])->first();
+// $history->product_id = $value->product_id;
+// if(isset($value->qty)){
+//     $history->stock = $value->qty;
+// }
+// $history->save();
+
                 }
                 if($purchase && $pur_itmes){
                     return response()->json([
@@ -5761,6 +5807,21 @@ class ApiController extends Controller
                     $sale_items->rate = $rate;
                     $sale_items->amount = $amount;
                     $sale_items->save();
+                    //stock
+                    $stock = Stock::where('product_id',$product_id)->first();
+                    $now = $stock['stock_now'] - $qty;
+                    $stock->stock_now = $now;
+                    $stock->date = date('Y-m-d');
+                    $stock->save();
+                    //stock history
+                    $history = new StockHistory;
+                    $history->package_buy_id = $user['package_buy_id'];
+                    $history->stock_id = $stock->id;
+                    $history->product_id = $product_id;
+                    $history->stock = $qty;
+                    $history->stock_type = 'out';
+                    $history->date = date('Y-m-d');
+                    $history->save();
                 }
                 if($sale && $sale_items){
                     return response()->json([
@@ -6428,13 +6489,10 @@ class ApiController extends Controller
     }
     //ReceiptChallanDetails
     public function ReceiptChallanDetails(Request $request){
-
-
         $receipt_challan = ReceiptChallan::with('vehicale')->where('receipt_challan_invoice_no',$request['receipt_challan_invoice_no'])->select('id','purchase_invoice_no','receipt_invoice_no','receipt_challan_invoice_no','vehicale_id','challan_details','total_qty','total_receipt','total_pending','challan_date','document','status')->get();
         $customer_id = Purchase::where('challan_invoice_no',$request['receipt_challan_invoice_no'])->select('id','acc_cus_sup_id')->first();
         $customer = AccCustomerSupplier::where('id',$customer_id['acc_cus_sup_id'])->select('id','acc_name','email','phone','address','acc_opening_balance','acc_hold_balance','profile_image')->first();
         $items = ReceiptChallanItem::with('product','unit')->where('receipt_challan_invoice_no',$request['receipt_challan_invoice_no'])->select('id','unit_id','product_id','avg_qty','bag','qty','rate','amount','order','receipt','pending')->get();
-
         if($receipt_challan && $items){
             return response()->json([
                 'status'=>true,
@@ -6647,7 +6705,6 @@ class ApiController extends Controller
     }
     //UpdateDelivery
     public function UpdateDelivery(Request $request){
-
         $items = json_decode($request->items);
         $delivery = Delivery::where('delivery_invoice_no',$request['delivery_invoice_no'])->first();
         if(isset($request['ware_house_id'])){
@@ -6686,7 +6743,6 @@ class ApiController extends Controller
                 $sale_item->pending = $value->pending;
             }
             $sale_item->save();
-
             //delivery history
             $delivery_his = DeliveryHistory::where('delivery_item_id',$value->id)->first();
             if(isset($value->order)){
@@ -6782,9 +6838,7 @@ class ApiController extends Controller
                 $items = json_decode($request['items']);
                 //sale_invoice_no
                 $sale_invoice_no = Sale::where('delivery_invoice_no',$request['delivery_invoice_no'])->select('sale_invoice_no')->first();
-
                 $delivery = Delivery::where('delivery_invoice_no',$request['delivery_invoice_no'])->first();
-
                 $delivery_challan = new DeliveryChallan;
                 $delivery_challan->package_buy_id = $user['package_buy_id'];
                 $delivery_challan->sale_invoice_no = $sale_invoice_no['sale_invoice_no'];
@@ -7003,5 +7057,51 @@ class ApiController extends Controller
             'message'=>"Delivery Added Successfully",
         ],200);
     }
+    //StockLists
+    public function StockLists(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $stock = Stock::with('product')->where(['package_buy_id'=>$user['package_buy_id']])->select('id','product_id','stock_now','stock_old','sale_price','purchase_price','production_price','production_qty','date')->orderBy('id','DESC')->paginate(15);
+                if($stock){
+                    return response()->json([
+                        'status'=>true,
+                        'lists'=>$stock,
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Stock List Not Found",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //StockDetails
+    public function StockDetails(Request $request){
+        $history = StockHistory::with('product')->where('stock_id',$request['stock_id'])->select('id','product_id','stock','stock_type','date')->get();
+        if($history){
+            return response()->json([
+                'status'=>true,
+                'lists'=>$history,
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Stock  Details Not Found",
+            ],200);
+        }
+    }
 }
+
 
