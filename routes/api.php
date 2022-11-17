@@ -203,7 +203,7 @@ Route::post('/bank-branch',[ApiController::class,"BankBranch"]);
 Route::post('/update-bank-branch',[ApiController::class,"UpdateBankBranch"]);
 Route::post('/delete-bank-branch',[ApiController::class,"DeleteBankBranch"]);
 Route::get('/single-bank-branch/{bank_branch_id}',[ApiController::class,"SingleBankBranch"]);
-//bank branch
+//bank designation
 Route::post('/create-designation',[ApiController::class,"CreateDesignation"]);
 Route::post('/designation-lists',[ApiController::class,"DesignationLists"]);
 Route::post('/designation',[ApiController::class,"Designation"]);
@@ -248,7 +248,6 @@ Route::post('/receipt-details',[ApiController::class,"ReceiptDetails"]);
 Route::post('/update-receipt',[ApiController::class,"ReceiptUpdate"]);
 Route::post('/receipt-delete',[ApiController::class,"ReceiptDelete"]);
 Route::post('/pending-receipt',[ApiController::class,"PendingReceipt"]);
-Route::post('/due-receipt',[ApiController::class,"DueReceipt"]);
 Route::post('/receipt-invoice',[ApiController::class,"ReceiptInvoice"]);
 Route::post('/add-receipt',[ApiController::class,"ReceiptAdd"]);
 //receipt challan
@@ -275,4 +274,7 @@ Route::post('/update-delivery-challan',[ApiController::class,'DeliveryChallanUpd
 Route::post('/delivery-challan-delete',[ApiController::class,'DeliveryChallanDelete']);
 //stock
 Route::post('/stock-lists',[ApiController::class,'StockLists']);
+Route::post('/alert-stock-lists',[ApiController::class,'AlertStockLists']);
 Route::post('/stock-details',[ApiController::class,'StockDetails']);
+//stock transfer
+Route::post('/create-stock-transfer',[ApiController::class,'CreateStockTransfer']);

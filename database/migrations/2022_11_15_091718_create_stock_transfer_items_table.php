@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateStockHistoriesTable extends Migration
+class CreateStockTransferItemsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,17 +13,15 @@ class CreateStockHistoriesTable extends Migration
      */
     public function up()
     {
-        Schema::create('stock_histories', function (Blueprint $table) {
+        Schema::create('stock_transfer_items', function (Blueprint $table) {
             $table->id()->autoIncrement();
             $table->unsignedBigInteger('package_buy_id');
-            $table->unsignedBigInteger('stock_id');
+            $table->unsignedBigInteger('stock_transfer_id');
             $table->unsignedBigInteger('product_id');
-            $table->bigInteger('stock');
-            $table->enum('stock_type',['in', 'out','transfer']);
-            $table->date('date');
+            $table->bigInteger('qty');
             $table->timestamps();
             $table->foreign('package_buy_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreign('stock_id')->references('id')->on('stocks')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('stock_transfer_id')->references('id')->on('stock_transfers')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('product_id')->references('id')->on('products')->onUpdate('cascade')->onDelete('cascade');
         });
     }
@@ -35,8 +33,6 @@ class CreateStockHistoriesTable extends Migration
      */
     public function down()
     {
-        Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('stock_histories');
-        Schema::enableForeignKeyConstraints();
+        Schema::dropIfExists('stock_transfer_items');
     }
 }

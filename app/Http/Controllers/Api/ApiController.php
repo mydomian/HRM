@@ -51,6 +51,8 @@ use App\SaleQuotation;
 use App\SaleQuotationItem;
 use App\Stock;
 use App\StockHistory;
+use App\StockTransfer;
+use App\StockTransferItem;
 use App\Thana;
 use App\Union;
 use App\Unit;
@@ -1208,14 +1210,6 @@ class ApiController extends Controller
                     $product->our_price = $request['our_price'];
                     // $product->khat_acc_id = $request['khat_acc_id'];
                     $product->save();
-                    //stock table
-                    $stock = new Stock;
-                    $stock->package_buy_id = $user['package_buy_id'];
-                    $stock->product_id = $product->id;
-                    $stock->sale_price = $request['our_price'];
-                    $stock->purchase_price = $request['supplier_price'];
-                    $stock->save();
-
                     if($product){
                         return response()->json([
                             'status'=>true,
@@ -5487,22 +5481,6 @@ class ApiController extends Controller
                     $pur_items->rate = $rate;
                     $pur_items->amount = $amount;
                     $pur_items->save();
-                    //stock
-                    $stock = Stock::where('product_id',$product_id)->first();
-                    $now = $stock['stock_now'] + $qty;
-                    $stock->stock_old = $stock['stock_now'];
-                    $stock->stock_now = $now;
-                    $stock->date = date('Y-m-d');
-                    $stock->save();
-                    //stock history
-                    $history = new StockHistory;
-                    $history->package_buy_id = $user['package_buy_id'];
-                    $history->stock_id = $stock->id;
-                    $history->product_id = $product_id;
-                    $history->stock = $qty;
-                    $history->stock_type = 'in';
-                    $history->date = date('Y-m-d');
-                    $history->save();
                 }
                 if($purchase && $pur_items){
                     return response()->json([
@@ -5673,24 +5651,6 @@ class ApiController extends Controller
                     }
                     $pur_itmes->save();
 
-// //stock
-// $product = Product::where('id',$value->product_id)->first();
-// $stock = Stock::where('product_id',$value->product_id)->first();
-// if(isset($value->qty)){
-//     $stock->stock_old = $stock['stock_now'];
-//     $stock->stock_now = $stock['stock_now'] + $value->qty;
-// }
-// $stock->sale_price = $product['our_price'];
-// $stock->purchase_price = $product['supplier_price'];
-// $stock->save();
-// //stock history
-// $history = StockHistory::where('stock_id',$stock['id'])->first();
-// $history->product_id = $value->product_id;
-// if(isset($value->qty)){
-//     $history->stock = $value->qty;
-// }
-// $history->save();
-
                 }
                 if($purchase && $pur_itmes){
                     return response()->json([
@@ -5807,21 +5767,6 @@ class ApiController extends Controller
                     $sale_items->rate = $rate;
                     $sale_items->amount = $amount;
                     $sale_items->save();
-                    //stock
-                    $stock = Stock::where('product_id',$product_id)->first();
-                    $now = $stock['stock_now'] - $qty;
-                    $stock->stock_now = $now;
-                    $stock->date = date('Y-m-d');
-                    $stock->save();
-                    //stock history
-                    $history = new StockHistory;
-                    $history->package_buy_id = $user['package_buy_id'];
-                    $history->stock_id = $stock->id;
-                    $history->product_id = $product_id;
-                    $history->stock = $qty;
-                    $history->stock_type = 'out';
-                    $history->date = date('Y-m-d');
-                    $history->save();
                 }
                 if($sale && $sale_items){
                     return response()->json([
@@ -6090,7 +6035,6 @@ class ApiController extends Controller
                     $receipt_his->receipt = $receipt;
                     $receipt_his->pending = $pending;
                     $receipt_his->save();
-
                 }
                 //purchase module update in receipt invoice no
                 $purchase = Purchase::findOrFail($request['purchase_id']);
@@ -6247,6 +6191,7 @@ class ApiController extends Controller
             $history->receipt = $value->add;
             $history->pending = $items->order - $value->add;
             $history->save();
+
         }
 
         return response()->json([
@@ -6339,17 +6284,7 @@ class ApiController extends Controller
             ],200);
         }
     }
-    //DueReceipt
-    public function DueReceipt(Request $request){
-        $items = json_decode($request['items']);
-        $receipt = Receipt::where('id',$request['id'])->first();
-        $receipt->ware_house_id = $request['ware_house_id'];
-        $request->vehicale_id = $request['vehicale_id'];
-        $request->vehicale_id = $request['vehicale_id'];
-        $request->receipt_details = $request['receipt_details'];
-        $request->total_qty = array_sum(array_column($items, 'order'));
-        $request->total_receipt = array_sum(array_column($items, 'receipt'));
-    }
+
     //ReceiptDelete
     public function ReceiptDelete(Request $request){
         $receipt = Receipt::where('id',$request['id'])->delete();
@@ -6427,6 +6362,38 @@ class ApiController extends Controller
                     $receipt_item->receipt = $itm['receipt'];
                     $receipt_item->pending = $itm['pending'];
                     $receipt_item->save();
+                    //stock
+                    $product = Product::where('id',$itm['receipt_item']['product_id'])->first();
+                    $stock = Stock::where('product_id',$itm['receipt_item']['product_id'])->where('warehouse_id',$receipt['ware_house_id'])->first();
+                    if($stock){
+                        $stock->stock_old = $stock['stock_now'];
+                        $stock->stock_now = $stock['stock_now'] + $itm['receipt'];
+                        $stock->date = date('Y-m-d');
+                        $stock->stock_type = 'in';
+                        $stock->save();
+                    }else{
+                        $stock = new Stock;
+                        $stock->package_buy_id = $user['package_buy_id'];
+                        $stock->product_id = $itm['receipt_item']['product_id'];
+                        $stock->warehouse_id = $receipt['ware_house_id'];
+                        $stock->stock_now = $itm['receipt_item']['qty'];
+                        $stock->stock_old = $itm['receipt_item']['qty'];
+                        $stock->sale_price = $product['our_price'];
+                        $stock->purchase_price = $product['supplier_price'];
+                        $stock->production_price = null;
+                        $stock->production_qty = null;
+                        $stock->date = date('Y-m-d');
+                        $stock->save();
+                    }
+                    //stock history
+                    $stock_history = new StockHistory;
+                    $stock_history->package_buy_id = $user['package_buy_id'];
+                    $stock_history->stock_id = $stock->id;
+                    $stock_history->product_id = $itm['receipt_item']['product_id'];
+                    $stock_history->stock = $itm['receipt'];
+                    $stock_history->date = date('Y-m-d');
+                    $stock_history->stock_type = 'in';
+                    $stock_history->save();
                 }
                 //challan update in purchase table with challan invoice no
                 $purchase_id = Receipt::where('receipt_invoice_no',$request['receipt_invoice_no'])->select('purchase_id')->first();
@@ -6839,6 +6806,7 @@ class ApiController extends Controller
                 //sale_invoice_no
                 $sale_invoice_no = Sale::where('delivery_invoice_no',$request['delivery_invoice_no'])->select('sale_invoice_no')->first();
                 $delivery = Delivery::where('delivery_invoice_no',$request['delivery_invoice_no'])->first();
+
                 $delivery_challan = new DeliveryChallan;
                 $delivery_challan->package_buy_id = $user['package_buy_id'];
                 $delivery_challan->sale_invoice_no = $sale_invoice_no['sale_invoice_no'];
@@ -6877,6 +6845,22 @@ class ApiController extends Controller
                     $delivery_item->receipt = $itm['receipt'];
                     $delivery_item->pending = $itm['pending'];
                     $delivery_item->save();
+                    //stock
+                    $stock = Stock::where('product_id',$itm['delivery_item']['product_id'])->where('warehouse_id',$delivery['ware_house_id'])->first();
+                    if($stock){
+                        $stock->stock_old = $stock['stock_now'];
+                        $stock->stock_now = $stock['stock_now'] - $itm['receipt'];
+                        $stock->save();
+                    }
+                    //stock history
+                    $stock_history = new StockHistory;
+                    $stock_history->package_buy_id = $user['package_buy_id'];
+                    $stock_history->stock_id = $stock->id;
+                    $stock_history->product_id = $itm['delivery_item']['product_id'];
+                    $stock_history->stock = $itm['receipt'];
+                    $stock_history->date = date('Y-m-d');
+                    $stock_history->stock_type = 'out';
+                    $stock_history->save();
                 }
                 //sale table update with delivery challan invoice
                 $sale_id = Delivery::where('delivery_invoice_no',$request['delivery_invoice_no'])->select('sale_id')->first();
@@ -6957,7 +6941,6 @@ class ApiController extends Controller
             ],200);
         }
     }
-
     //DeliveryChallanUpdate
     public function DeliveryChallanUpdate(Request $request){
         $delivery_challan = DeliveryChallan::where('delivery_challan_invoice_no',$request['delivery_challan_invoice_no'])->first();
@@ -7062,7 +7045,10 @@ class ApiController extends Controller
         $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
         if($user){
             if($user['usepackage']['status'] == 'active'){
-                $stock = Stock::with('product')->where(['package_buy_id'=>$user['package_buy_id']])->select('id','product_id','stock_now','stock_old','sale_price','purchase_price','production_price','production_qty','date')->orderBy('id','DESC')->paginate(15);
+                $stock = Stock::with('product')->where(['package_buy_id'=>$user['package_buy_id']])->select('id','product_id','warehouse_id','stock_now','stock_old','sale_price','purchase_price','production_price','production_qty','date')->orderBy('id','DESC')->paginate(15);
+
+
+
                 if($stock){
                     return response()->json([
                         'status'=>true,
@@ -7102,6 +7088,120 @@ class ApiController extends Controller
             ],200);
         }
     }
+    //AlertStockLists
+    public function AlertStockLists(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $stock = Stock::with('product')->where('stock_now','<',5)->where(['package_buy_id'=>$user['package_buy_id']])->select('id','product_id','stock_now','stock_old','sale_price','purchase_price','production_price','production_qty','date')->orderBy('id','DESC')->paginate(15);
+                if($stock){
+                    return response()->json([
+                        'status'=>true,
+                        'lists'=>$stock,
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Alert Stock List Not Found",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+
+    }
+    //CreateStockTransfer
+    public function CreateStockTransfer(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $validator = Validator::make($request->all(), [
+                    'from_warehouse_id'=>'required',
+                    'to_warehouse_id'=>'required',
+                    'items'=>'required'
+                ]);
+                if ($validator->fails()) {
+                    return response()->json(['errors'=>$validator->errors()], 400);
+                }
+               $items = json_decode($request['items']);
+               $total_item = sizeof($items);
+               //stock transfer
+               $stock_tran = new StockTransfer;
+               $stock_tran->package_buy_id = $user['package_buy_id'];
+               $stock_tran->from_warehouse_id = $request['from_warehouse_id'];
+               $stock_tran->to_warehouse_id = $request['to_warehouse_id'];
+               $stock_tran->total_item = $total_item;
+               $stock_tran->date = date('Y-m-d');
+               $stock_tran->save();
+                foreach($items as $value){
+                    $stock = Stock::where('product_id',$value->product_id)->where('warehouse_id',$request['from_warehouse_id'])->first();
+                    if($stock['stock_now'] > 0){
+                        //from stock table update
+                        $stock->stock_old = $stock['stock_now'];
+                        $stock->stock_now = $stock['stock_now'] - $value->qty;
+                        $stock->save();
+                        //to stock table update
+                        $to_stock = Stock::where('product_id',$value->product_id)->where('warehouse_id',$request['to_warehouse_id'])->first();
+                        $to_stock->stock_old = $to_stock['stock_now'];
+                        $to_stock->stock_now = $to_stock['stock_now'] + $value->qty;
+                        $to_stock->save();
+                        //stock history
+                        $stock_history = new StockHistory;
+                        $stock_history->package_buy_id = $user['package_buy_id'];
+                        $stock_history->stock_id = $stock['id'];
+                        $stock_history->product_id = $stock['product_id'];
+                        $stock_history->stock = $value->qty;
+                        $stock_history->stock_type = 'transfer';
+                        $stock_history->date = date('Y-m-d');
+                        $stock_history->save();
+                        //stock transfer item
+                        $stock_trn_his = new StockTransferItem;
+                        $stock_trn_his->package_buy_id = $user['package_buy_id'];
+                        $stock_trn_his->stock_transfer_id = $stock_tran->id;
+                        $stock_trn_his->product_id = $value->product_id;
+                        $stock_trn_his->qty = $value->qty;
+                        $stock_trn_his->save();
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>$value->product_id."Not Available On Stock",
+                        ],200);
+                    }
+                }
+                if($stock_tran && $stock_trn_his){
+                    return response()->json([
+                        'status'=>true,
+                        'message'=>"Stock Transfer Successfully",
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Something Is Wrong To Stock Transfer",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+
 }
 
 

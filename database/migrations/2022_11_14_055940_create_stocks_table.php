@@ -17,6 +17,7 @@ class CreateStocksTable extends Migration
             $table->id()->autoIncrement();
             $table->unsignedBigInteger('package_buy_id');
             $table->unsignedBigInteger('product_id');
+            $table->unsignedBigInteger('warehouse_id')->nullable();
             $table->bigInteger('stock_now')->nullable();
             $table->bigInteger('stock_old')->nullable();
             $table->bigInteger('sale_price')->nullable();
@@ -27,6 +28,7 @@ class CreateStocksTable extends Migration
             $table->timestamps();
             $table->foreign('package_buy_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('product_id')->references('id')->on('products')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('warehouse_id')->references('id')->on('ware_houses')->onUpdate('cascade')->onDelete('cascade');
 
         });
     }
