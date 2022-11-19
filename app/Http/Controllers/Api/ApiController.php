@@ -5678,6 +5678,8 @@ class ApiController extends Controller
     }
     //PurchaseDelete
     public function PurchaseDelete(Request $request){
+        $purchase_invoice = Purchase::where('id',$request['id'])->select('purchase_invoice_no')->first();
+        $purchase_challan = ReceiptChallan::where('purchase_invoice_no',$purchase_invoice['purchase_invoice_no'])->delete();
         $purchase = Purchase::where('id',$request['id'])->delete();
         if($purchase){
             return response()->json([
@@ -5965,7 +5967,9 @@ class ApiController extends Controller
     }
     //SaleDelete
     public function SaleDelete(Request $request){
-        $sale = Sale::where('id',$request['sale_id'])->delete();
+        $sale_invoice = Sale::where('id',$request['id'])->select('sale_invoice_no')->first();
+        $sale_challan = DeliveryChallan::where('sale_invoice_no',$sale_invoice['sale_invoice_no'])->delete();
+        $sale = Sale::where('id',$request['id'])->delete();
         if($sale){
             return response()->json([
                 'status'=>true,
@@ -7244,5 +7248,4 @@ class ApiController extends Controller
             ],200);
         }
     }
-
 }
