@@ -278,3 +278,5 @@ Route::post('/alert-stock-lists',[ApiController::class,'AlertStockLists']);
 Route::post('/stock-details',[ApiController::class,'StockDetails']);
 //stock transfer
 Route::post('/create-stock-transfer',[ApiController::class,'CreateStockTransfer']);
+Route::post('/stock-transfer-lists',[ApiController::class,'StockTransferLists']);
+Route::post('/stock-transfer-details',[ApiController::class,'StockTransferDetails']);

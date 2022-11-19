@@ -7045,10 +7045,8 @@ class ApiController extends Controller
         $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
         if($user){
             if($user['usepackage']['status'] == 'active'){
-                $stock = Stock::with('product')->where(['package_buy_id'=>$user['package_buy_id']])->select('id','product_id','warehouse_id','stock_now','stock_old','sale_price','purchase_price','production_price','production_qty','date')->orderBy('id','DESC')->paginate(15);
-
-
-
+                $warehouse = WareHouse::where(['package_buy_id'=>$user['package_buy_id']])->select('id')->get();
+                $stock = Stock::with('product','warehouse')->where(['package_buy_id'=>$user['package_buy_id']])->whereIn('id',$warehouse)->select('id','product_id','warehouse_id','stock_now','stock_old','sale_price','purchase_price','production_price','production_qty','date')->orderBy('id','DESC')->paginate(15);
                 if($stock){
                     return response()->json([
                         'status'=>true,
@@ -7075,25 +7073,25 @@ class ApiController extends Controller
     }
     //StockDetails
     public function StockDetails(Request $request){
-        $history = StockHistory::with('product')->where('stock_id',$request['stock_id'])->select('id','product_id','stock','stock_type','date')->get();
-        if($history){
+       $stock = Stock::with('product','warehouse','stock_history')->where('id',$request['id'])->select('id','product_id','warehouse_id','stock_now','stock_old','sale_price','purchase_price','production_price','production_qty','date')->first();
+       if($stock){
             return response()->json([
                 'status'=>true,
-                'lists'=>$history,
+                'lists'=>$stock,
             ],200);
-        }else{
+       }else{
             return response()->json([
                 'status'=>false,
-                'message'=>"Stock  Details Not Found",
+                'message'=>"Stock Details Not Found",
             ],200);
-        }
+       }
     }
     //AlertStockLists
     public function AlertStockLists(Request $request){
         $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
         if($user){
             if($user['usepackage']['status'] == 'active'){
-                $stock = Stock::with('product')->where('stock_now','<',5)->where(['package_buy_id'=>$user['package_buy_id']])->select('id','product_id','stock_now','stock_old','sale_price','purchase_price','production_price','production_qty','date')->orderBy('id','DESC')->paginate(15);
+                $stock = Stock::with('product','warehouse')->where('stock_now','<',5)->where(['package_buy_id'=>$user['package_buy_id']])->select('id','product_id','warehouse_id','stock_now','stock_old','sale_price','purchase_price','production_price','production_qty','date')->orderBy('id','DESC')->paginate(15);
                 if($stock){
                     return response()->json([
                         'status'=>true,
@@ -7201,7 +7199,50 @@ class ApiController extends Controller
             ],200);
         }
     }
+    //StockTransferLists
+    public function StockTransferLists(Request $request){
+        $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+        if($user){
+            if($user['usepackage']['status'] == 'active'){
+                $stock_transfer = StockTransfer::with('from_warehouse','to_warehouse')->where('package_buy_id',$user['package_buy_id'])->select('id','from_warehouse_id','to_warehouse_id','total_item','date')->get();
+                if($stock_transfer){
+                    return response()->json([
+                        'status'=>true,
+                        'lists'=>$stock_transfer
+                    ],200);
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Stock Transfer Lists Not Found",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Package Not Activated",
+                ],200);
+            }
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Invalid Token",
+            ],200);
+        }
+    }
+    //StockTransferDetails
+    public function StockTransferDetails(Request $request){
+        $stock_transfer = StockTransfer::with('from_warehouse','to_warehouse','transfer_item')->where('id',$request['id'])->select('id','from_warehouse_id','to_warehouse_id','total_item','date')->get();
+        if($stock_transfer){
+            return response()->json([
+                'status'=>true,
+                'lists'=>$stock_transfer,
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Stock Transfer Details Not Found",
+            ],200);
+        }
+    }
 
 }
-
-

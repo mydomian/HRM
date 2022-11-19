@@ -15,5 +15,9 @@ class StockTransferItem extends Model
         'product_id' => 'biginteger',
         'qty' => 'biginteger'
     ];
+    //product
+    public function product(){
+        return $this->belongsTo(Product::class,'product_id')->select('id','product_name','product_model');
+    }
 }
 

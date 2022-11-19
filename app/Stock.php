@@ -26,14 +26,16 @@ class Stock extends Model
     public function getDateAttribute($date){
         return Carbon::createFromFormat('Y-m-d', $date)->format('Y-m-d');
     }
-
-    // public function getStockNowAttribute(){
-
-    // }
     //product
     public function product(){
-
         return $this->belongsTo(Product::class,'product_id')->with('unit')->select('id','unit_id','product_name','product_model');
     }
-
+    //warehouse
+    public function warehouse(){
+        return $this->belongsTo(WareHouse::class,'warehouse_id')->select('id','name');
+    }
+    //stock history
+    public function stock_history(){
+        return $this->hasMany(StockHistory::class,'stock_id')->select('id','stock_id','stock','stock_type','date');
+    }
 }
