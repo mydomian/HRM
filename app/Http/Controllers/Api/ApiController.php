@@ -6044,7 +6044,6 @@ class ApiController extends Controller
                 $purchase = Purchase::findOrFail($request['purchase_id']);
                 $purchase->receipt_invoice_no = $receipt_invoice_no;
                 $purchase->save();
-
                 if($receipt && $receipt_item && $purchase){
                     return response()->json([
                         'status'=>true,
@@ -6175,7 +6174,6 @@ class ApiController extends Controller
             $receipt->total_pending = $total_pending;
             $receipt->save();
         }
-
         //item updating
         foreach($items as $value){
             $items = ReceiptItem::where('id',$value->id)->first();
@@ -6195,18 +6193,14 @@ class ApiController extends Controller
             $history->receipt = $value->add;
             $history->pending = $items->order - $value->add;
             $history->save();
-
         }
-
         return response()->json([
             'status'=>true,
             'message'=>"Receipt Added Successfully",
         ],200);
-
     }
     //ReceiptUpdate
     public function ReceiptUpdate(Request $request){
-
         $items = json_decode($request['items']);
         $receipt = Receipt::where('receipt_invoice_no',$request['receipt_invoice_no'])->first();
         if(isset($request['ware_house_id'])){
@@ -6288,9 +6282,10 @@ class ApiController extends Controller
             ],200);
         }
     }
-
     //ReceiptDelete
     public function ReceiptDelete(Request $request){
+        $receipt = Receipt::where('id',$request['id'])->select('receipt_invoice_no')->first();
+        $receipt_challan = ReceiptChallan::where('receipt_invoice_no',$receipt['receipt_invoice_no'])->delete();
         $receipt = Receipt::where('id',$request['id'])->delete();
         if($receipt){
             return response()->json([
@@ -6373,7 +6368,6 @@ class ApiController extends Controller
                         $stock->stock_old = $stock['stock_now'];
                         $stock->stock_now = $stock['stock_now'] + $itm['receipt'];
                         $stock->date = date('Y-m-d');
-                        $stock->stock_type = 'in';
                         $stock->save();
                     }else{
                         $stock = new Stock;
@@ -6478,7 +6472,6 @@ class ApiController extends Controller
             ],200);
         }
     }
-
     //ReceiptChallanDelete
     public function ReceiptChallanDelete(Request $request){
         $receipt_challan = ReceiptChallan::where('id',$request['id'])->delete();
@@ -6661,6 +6654,8 @@ class ApiController extends Controller
     }
     //DeliveryDelete
     public function DeliveryDelete(Request $request){
+        $delivery = Delivery::where('id',$request['id'])->select('delivery_invoice_no')->first();
+        $delivery_challan = DeliveryChallan::where('delivery_invoice_no',$delivery['delivery_invoice_no'])->delete();
         $delivery = Delivery::where('id',$request['id'])->delete();
         if($delivery){
             return response()->json([
