@@ -235,12 +235,14 @@ Route::post('/update-purchase',[ApiController::class,"UpdatePurchase"]);
 Route::post('/purchase-lists',[ApiController::class,"PurchaseLists"]);
 Route::post('/purchase-details',[ApiController::class,"PurchaseDetails"]);
 Route::post('/delete-purchase',[ApiController::class,"PurchaseDelete"]);
+Route::post('/transfer-purchase-quotation',[ApiController::class,"TransferPurchaseQuotation"]);
 //sale
 Route::post('/create-sale',[ApiController::class,"Sale"]);
 Route::post('/update-sale',[ApiController::class,"UpdateSale"]);
 Route::post('/sale-lists',[ApiController::class,"SaleLists"]);
 Route::post('/sale-details',[ApiController::class,"SaleDetails"]);
 Route::post('/delete-sale',[ApiController::class,"SaleDelete"]);
+Route::post('/transfer-sale-quotation',[ApiController::class,"TransferSaleQuotation"]);
 //receipt
 Route::post('/create-receipt',[ApiController::class,"CreateReceipt"]);
 Route::post('/receipt-lists',[ApiController::class,"ReceiptLists"]);

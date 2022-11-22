@@ -6,7 +6,6 @@
 <script src="https://cdn.datatables.net/1.12.1/js/dataTables.bootstrap4.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.3.0/js/dataTables.responsive.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.3.0/js/responsive.bootstrap4.min.js"></script>
-
 <script src="{{ url('admin/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ url('admin/vendor/just-validate/js/just-validate.min.js') }}"></script>
 <script src="{{ url('admin/vendor/chart.js/Chart.min.js') }}"></script>
@@ -14,10 +13,8 @@
 <script src="{{ url('admin/js/charts-home.js') }}"></script>
 <!-- Main File-->
 <script src="{{ url('admin/js/front.js') }}"></script>
-
 <script>
 function injectSvgSprite(path) {
-
    var ajax = new XMLHttpRequest();
    ajax.open("GET", path, true);
    ajax.send();
@@ -136,12 +133,10 @@ injectSvgSprite('https://bootstraptemple.com/files/icons/orion-svg-sprite.svg');
                 url: "/admin/role-edit/"+recordid,
                 cache: false,
                 success: function(data){
-
                     document.getElementById("role_id").value = data.id;
                     document.getElementById("role_name").value = data.name;
                     document.getElementById("role_email").value = data.email;
                     document.getElementById("role_phone").value = data.phone;
-
                 }
             });
         });
@@ -158,7 +153,6 @@ injectSvgSprite('https://bootstraptemple.com/files/icons/orion-svg-sprite.svg');
                     document.getElementById("start_date").value = data.start_date;
                     document.getElementById("end_date").value = data.end_date;
                     document.getElementById("database_name").value = data.database_name;
-
                 }
             });
         });

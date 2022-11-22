@@ -44,8 +44,6 @@ use App\ReceiptChallanItem;
 use App\ReceiptHistory;
 use App\ReceiptItem;
 use App\Sale;
-use App\SaleChallan;
-use App\SaleChallanItem;
 use App\SaleItem;
 use App\SaleQuotation;
 use App\SaleQuotationItem;
@@ -7114,7 +7112,6 @@ class ApiController extends Controller
                 'message'=>"Invalid Token",
             ],200);
         }
-
     }
     //CreateStockTransfer
     public function CreateStockTransfer(Request $request){
@@ -7243,4 +7240,109 @@ class ApiController extends Controller
             ],200);
         }
     }
+    //TransferSaleQuotation
+    public function TransferSaleQuotation(Request $request){
+        $quotation = SaleQuotation::where('id',$request['sale_quotation_id'])->first();
+        $sale = new Sale;
+        $sale->package_buy_id = $quotation['package_buy_id'];
+        $sale->acc_cus_sup_id  = $quotation['acc_cus_sup_id'];
+        $sale->sale_invoice_no  = date('y').date('m').date('d').date('i').date('s');
+        $sale->product_order_by_id  = $quotation['product_order_by_id'];
+        $sale->sale_date  = date('Y-m-d');
+        $sale->sale_details  = $quotation['quotation_sale_details'];
+        $sale->total_qty  = $quotation['total_qty'];
+        $sale->total_sale_amount  = $quotation['total_sale_amount'];
+        $percent = (($quotation['total_tax_amount'])/$quotation['total_sale_amount']*100);
+        $sale->tax_amount  = $percent;
+        $sale->total_tax_amount  = $quotation['total_tax_amount'];
+        $sale->service_charge  = $quotation['service_charge'];
+        $sale->shipping_cost  = $quotation['shipping_cost'];
+        $sale->grand_total  = $quotation['grand_total'];
+        $sale->paid_amount  = $quotation['paid_amount'];
+        $sale->due_amount  = $quotation['due_amount'];
+        $sale->payment_method_id   = $request['payment_method_id'];
+        $sale->document = $quotation['document'];
+        $sale->save();
+        //items
+        $quotation_item = SaleQuotationItem::where('sale_quotation_id',$request['sale_quotation_id'])->get();
+        foreach($quotation_item as $item){
+            $quotation_item = SaleQuotationItem::where('id',$item['id'])->first();
+            $sale_item = new SaleItem;
+            $sale_item->package_buy_id  = $quotation_item['package_buy_id'];
+            $sale_item->sale_id = $sale->id;
+            $sale_item->unit_id = $quotation_item->unit_id;
+            $sale_item->sale_invoice_no = $sale->sale_invoice_no;
+            $sale_item->product_id  = $quotation_item->product_id;
+            $sale_item->avg_qty  = $quotation_item->avg_qty;
+            $sale_item->bag  = $quotation_item->bag;
+            $sale_item->qty  = $quotation_item->qty;
+            $sale_item->rate  = $quotation_item->rate;
+            $sale_item->amount  = $quotation_item->amount;
+            $sale_item->save();
+        }
+        if($sale && $sale_item){
+            return response()->json([
+                'status'=>true,
+                'lists'=>"Successfully Transfer To Sale",
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Something Is Wrong To Transfer Sale",
+            ],200);
+        }
+    }
+    //TransferPurchaseQuotation
+    public function TransferPurchaseQuotation(Request $request){
+        $quotation = PurchaseQuotation::where('id',$request['purchase_quotation_id'])->first();
+        $purchase = new Purchase;
+        $purchase->package_buy_id = $quotation['package_buy_id'];
+        $purchase->acc_cus_sup_id  = $quotation['acc_cus_sup_id'];
+        $purchase->purchase_invoice_no  = date('y').date('m').date('d').date('i').date('s');
+        $purchase->product_order_by_id  = $quotation['product_order_by_id'];
+        $purchase->purchase_date  = date('Y-m-d');
+        $purchase->purchase_details  = $quotation['quotation_purchase_details'];
+        $purchase->total_qty  = $quotation['total_qty'];
+        $purchase->total_purchase_amount  = $quotation['total_purchase_amount'];
+        $percent = (($quotation['total_tax_amount'])/$quotation['total_purchase_amount']*100);
+        $purchase->tax_amount  = $percent;
+        $purchase->total_tax_amount  = $quotation['total_tax_amount'];
+        $purchase->service_charge  = $quotation['service_charge'];
+        $purchase->shipping_cost  = $quotation['shipping_cost'];
+        $purchase->grand_total  = $quotation['grand_total'];
+        $purchase->paid_amount  = $quotation['paid_amount'];
+        $purchase->due_amount  = $quotation['due_amount'];
+        $purchase->payment_method_id   = $request['payment_method_id'];
+        $purchase->document = $quotation['document'];
+        $purchase->save();
+        //items
+        $quotation_item = PurchaseQuotationItem::where('purchase_quotation_id',$request['purchase_quotation_id'])->get();
+        foreach($quotation_item as $item){
+            $quotation_item = PurchaseQuotationItem::where('id',$item['id'])->first();
+            $purchase_item = new PurchaseItem;
+            $purchase_item->package_buy_id  = $quotation_item['package_buy_id'];
+            $purchase_item->purchase_id = $purchase->id;
+            $purchase_item->unit_id = $quotation_item->unit_id;
+            $purchase_item->purchase_invoice_no = $purchase->purchase_invoice_no;
+            $purchase_item->product_id  = $quotation_item->product_id;
+            $purchase_item->avg_qty  = $quotation_item->avg_qty;
+            $purchase_item->bag  = $quotation_item->bag;
+            $purchase_item->qty  = $quotation_item->qty;
+            $purchase_item->rate  = $quotation_item->rate;
+            $purchase_item->amount  = $quotation_item->amount;
+            $purchase_item->save();
+        }
+        if($purchase && $purchase_item){
+            return response()->json([
+                'status'=>true,
+                'lists'=>"Successfully Transfer To Purchase",
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>false,
+                'message'=>"Something Is Wrong To Transfer Purchase",
+            ],200);
+        }
+    }
+
 }

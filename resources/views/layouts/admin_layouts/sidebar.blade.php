@@ -44,27 +44,5 @@
               <li><a class="sidebar-link" href="#">Page</a></li>
             </ul>
           </li>
-          <li class="sidebar-item"><a class="sidebar-link" href="login.html">
-                  <svg class="svg-icon svg-icon-sm svg-icon-heavy">
-                    <use xlink:href="#disable-1"> </use>
-                  </svg><span>Login page </span></a></li>
-    </ul><span class="text-uppercase text-gray-600 text-xs mx-3 px-2 heading mb-2">Extras</span>
-    <ul class="list-unstyled">
-          <li class="sidebar-item"><a class="sidebar-link" href="#">
-                  <svg class="svg-icon svg-icon-sm svg-icon-heavy">
-                    <use xlink:href="#imac-screen-1"> </use>
-                  </svg><span>Demo </span></a></li>
-          <li class="sidebar-item"><a class="sidebar-link" href="#">
-                  <svg class="svg-icon svg-icon-sm svg-icon-heavy">
-                    <use xlink:href="#chart-1"> </use>
-                  </svg><span>Demo </span></a></li>
-          <li class="sidebar-item"><a class="sidebar-link" href="#">
-                  <svg class="svg-icon svg-icon-sm svg-icon-heavy">
-                    <use xlink:href="#quality-1"> </use>
-                  </svg><span>Demo </span></a></li>
-          <li class="sidebar-item"><a class="sidebar-link" href="#">
-                  <svg class="svg-icon svg-icon-sm svg-icon-heavy">
-                    <use xlink:href="#security-shield-1"> </use>
-                  </svg><span>Demo </span></a></li>
     </ul>
   </nav>
