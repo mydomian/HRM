@@ -26,6 +26,7 @@ Route::post('/brand-lists',[ApiController::class,"BrandLists"]);
 Route::post('/brand',[ApiController::class,"Brand"]);
 Route::post('/update-brand',[ApiController::class,"UpdateBrand"]);
 Route::post('/delete-brand',[ApiController::class,"DeleteBrand"]);
+Route::post('/brand-search',[ApiController::class,"BrandSearch"]);
 Route::get('/single-brand/{brand_id}',[ApiController::class,"SingelBrand"]);
 //category
 Route::post('/create-category',[ApiController::class,"CreateCategory"]);
@@ -33,6 +34,7 @@ Route::post('/category-lists',[ApiController::class,"CategoryLists"]);
 Route::post('/category',[ApiController::class,"Category"]);
 Route::post('/update-category',[ApiController::class,"UpdateCategory"]);
 Route::post('/delete-category',[ApiController::class,"DeleteCategory"]);
+Route::post('/category-search',[ApiController::class,"CategorySearch"]);
 Route::get('/single-category/{category_id}',[ApiController::class,"SingelCategory"]);
 //unit
 Route::post('/create-unit',[ApiController::class,"CreateUnit"]);
@@ -40,6 +42,7 @@ Route::post('/unit-lists',[ApiController::class,"UnitLists"]);
 Route::post('/unit',[ApiController::class,"Unit"]);
 Route::post('/update-unit',[ApiController::class,"UpdateUnit"]);
 Route::post('/delete-unit',[ApiController::class,"DeleteUnit"]);
+Route::post('/unit-search',[ApiController::class,"UnitSearch"]);
 Route::get('/single-unit/{unit_id}',[ApiController::class,"SingelUnit"]);
 //lot gallary
 Route::post('/create-lot-gallary',[ApiController::class,"CreateLotGallary"]);
@@ -47,6 +50,7 @@ Route::post('/lot-gallary-lists',[ApiController::class,"LotGallaryLists"]);
 Route::post('/lot-gallary',[ApiController::class,"LotGallary"]);
 Route::post('/update-lot-gallary',[ApiController::class,"UpdateLotGallary"]);
 Route::post('/delete-lot-gallary',[ApiController::class,"DeleteLotGallary"]);
+Route::post('/lot-gallary-search',[ApiController::class,"LotGallarySearch"]);
 Route::get('/single-lot-gallary/{lot_gallary_id}',[ApiController::class,"SingleLotGallary"]);
 //product order by
 Route::post('/create-product-order-by',[ApiController::class,"CreateProductOrderBy"]);
@@ -54,6 +58,7 @@ Route::post('/product-order-by-lists',[ApiController::class,"ProductOrderByLists
 Route::post('/product-order-by',[ApiController::class,"ProductOrderBy"]);
 Route::post('/update-product-order-by',[ApiController::class,"UpdateProductOrderBy"]);
 Route::post('/delete-product-order-by',[ApiController::class,"DeleteProductOrderBy"]);
+Route::post('/product-order-by-search',[ApiController::class,"ProductOrderBySearch"]);
 Route::get('/single-product-order-by/{product_order_by_id}',[ApiController::class,"SingleProductOrderBy"]);
 //customer & supplier account
 Route::post('create-customer-supplier-account',[ApiController::class,"CreateCusSupAcc"]);
@@ -77,6 +82,7 @@ Route::post('/warehouse-lists',[ApiController::class,"WarehouseLists"]);
 Route::post('/warehouse',[ApiController::class,"Warehouse"]);
 Route::post('/update-warehouse',[ApiController::class,"UpdateWarehouse"]);
 Route::post('/delete-warehouse',[ApiController::class,"DeleteWarehouse"]);
+Route::post('/warehouse-search',[ApiController::class,"WarehouseSearch"]);
 Route::get('/single-warehouse/{warehouse_id}',[ApiController::class,"SingleWareHouse"]);
 //thana
 Route::post('/create-thana',[ApiController::class,"CreateThana"]);
@@ -84,6 +90,7 @@ Route::post('/thana-lists',[ApiController::class,"ThanaLists"]);
 Route::post('/thana',[ApiController::class,"Thana"]);
 Route::post('/update-thana',[ApiController::class,"UpdateThana"]);
 Route::post('/delete-thana',[ApiController::class,"DeleteThana"]);
+Route::post('/thana-search',[ApiController::class,"ThanaSearch"]);
 Route::get('/single-thana/{thana_id}',[ApiController::class,"SingleThana"]);
 //city
 Route::post('/create-city',[ApiController::class,"CreateCity"]);
@@ -91,6 +98,7 @@ Route::post('/city-lists',[ApiController::class,"CityLists"]);
 Route::post('/city',[ApiController::class,"City"]);
 Route::post('/update-city',[ApiController::class,"UpdateCity"]);
 Route::post('/delete-city',[ApiController::class,"DeleteCity"]);
+Route::post('/city-search',[ApiController::class,"CitySearch"]);
 Route::get('/single-city/{city_id}',[ApiController::class,"SingleCity"]);
 //district
 Route::post('/create-district',[ApiController::class,"CreateDistrict"]);
@@ -112,6 +120,7 @@ Route::post('/inc-exp-acc-type-lists',[ApiController::class,"IncExpAccTypeLists"
 Route::post('/inc-exp-acc-type',[ApiController::class,"IncExpAccType"]);
 Route::post('/update-inc-exp-acc-type',[ApiController::class,"UpdateIncExpAccType"]);
 Route::post('/delete-inc-exp-acc-type',[ApiController::class,"DeleteIncExpAccType"]);
+Route::post('/inc-exp-acc-type-search',[ApiController::class,"IncExpAccTypeSearch"]);
 Route::get('/single-inc-exp-acc-type/{inc_exp_acc_type_id}',[ApiController::class,"SingleIncExpAccType"]);
 //inc-exp-pay-method
 Route::post('/create-inc-exp-pay-method',[ApiController::class,"CreateIncExpPayMethod"]);
@@ -139,6 +148,7 @@ Route::post('/acc-area-lists',[ApiController::class,"AccAreaLists"]);
 Route::post('/acc-area',[ApiController::class,"AccArea"]);
 Route::post('/update-acc-area',[ApiController::class,"UpdateAccArea"]);
 Route::post('/delete-acc-area',[ApiController::class,"DeleteAccArea"]);
+Route::post('/account-area-search',[ApiController::class,"AccAreaSearch"]);
 Route::get('/single-acc-area/{acc_area_id}',[ApiController::class,"SingleAccArea"]);
 //account category
 Route::post('/create-acc-category',[ApiController::class,"CreateAccCategory"]);
@@ -146,6 +156,7 @@ Route::post('/acc-category-lists',[ApiController::class,"AccCategoryLists"]);
 Route::post('/acc-category',[ApiController::class,"AccCategory"]);
 Route::post('/update-acc-category',[ApiController::class,"UpdateAccCategory"]);
 Route::post('/delete-acc-category',[ApiController::class,"DeleteAccCategory"]);
+Route::post('/account-category-search',[ApiController::class,"AccCategorySearch"]);
 Route::get('/single-acc-category/{acc_category_id}',[ApiController::class,"SingleAccCategory"]);
 //account type
 Route::post('/create-acc-type',[ApiController::class,"CreateAccType"]);
@@ -153,6 +164,7 @@ Route::post('/acc-type-lists',[ApiController::class,"AccTypeLists"]);
 Route::post('/acc-type',[ApiController::class,"AccType"]);
 Route::post('/update-acc-type',[ApiController::class,"UpdateAccType"]);
 Route::post('/delete-acc-type',[ApiController::class,"DeleteAccType"]);
+Route::post('/account-type-search',[ApiController::class,"AccountTypeSearch"]);
 Route::get('/single-acc-type/{acc_type_id}',[ApiController::class,"SingleAccType"]);
 //bank account category
 Route::post('/create-bank-acc-category',[ApiController::class,"CreateBankAccCategory"]);
@@ -160,6 +172,7 @@ Route::post('/bank-acc-category-lists',[ApiController::class,"BankAccCategoryLis
 Route::post('/bank-acc-category',[ApiController::class,"BankAccCategory"]);
 Route::post('/update-bank-acc-category',[ApiController::class,"UpdateBankAccCategory"]);
 Route::post('/delete-bank-acc-category',[ApiController::class,"DeleteBankAccCategory"]);
+Route::post('/bank-acc-caegory-search',[ApiController::class,"BankAccountCategory"]);
 Route::get('/single-bank-acc-category/{bank_acc_category_id}',[ApiController::class,"SingleBankAccCategory"]);
 //cash counter
 Route::post('/create-cash-counter',[ApiController::class,"CreateCashCounter"]);
@@ -167,6 +180,7 @@ Route::post('/cash-counter-lists',[ApiController::class,"CashCounterLists"]);
 Route::post('/cash-counter',[ApiController::class,"CashCounter"]);
 Route::post('/update-cash-counter',[ApiController::class,"UpdateCashCounter"]);
 Route::post('/delete-cash-counter',[ApiController::class,"DeleteCashCounter"]);
+Route::post('/cash-counter-search',[ApiController::class,"CashCounterSearch"]);
 Route::get('/single-cash-counter/{cash_counter_id}',[ApiController::class,"SingleCashCounter"]);
 //vehicale
 Route::post('/create-vehicale',[ApiController::class,"CreateVehicale"]);
@@ -174,6 +188,7 @@ Route::post('/vehicale-lists',[ApiController::class,"VehicaleLists"]);
 Route::post('/vehicale',[ApiController::class,"Vehicale"]);
 Route::post('/update-vehicale',[ApiController::class,"UpdateVehicale"]);
 Route::post('/delete-vehicale',[ApiController::class,"DeleteVehicale"]);
+Route::post('/vehicale-type-search',[ApiController::class,"VehicaleTypeSearch"]);
 Route::get('/single-vehicale/{vehicale_id}',[ApiController::class,"SingleVehicale"]);
 //vehicaletype
 Route::post('/create-vehicale-type',[ApiController::class,"CreateVehicaleType"]);
@@ -189,12 +204,13 @@ Route::post('/driver',[ApiController::class,"Driver"]);
 Route::post('/update-driver',[ApiController::class,"UpdateDriver"]);
 Route::post('/delete-driver',[ApiController::class,"DeleteDriver"]);
 Route::get('/single-driver/{driver_id}',[ApiController::class,"SingleDriver"]);
-//bank account category
+//bank account
 Route::post('/create-bank',[ApiController::class,"CreateBank"]);
 Route::post('/bank-lists',[ApiController::class,"BankLists"]);
 Route::post('/bank',[ApiController::class,"Bank"]);
 Route::post('/update-bank',[ApiController::class,"UpdateBank"]);
 Route::post('/delete-bank',[ApiController::class,"DeleteBank"]);
+Route::post('/bank-search',[ApiController::class,"BankSearch"]);
 Route::get('/single-bank/{bank_id}',[ApiController::class,"SingleBank"]);
 //bank branch
 Route::post('/create-bank-branch',[ApiController::class,"CreateBankBranch"]);
@@ -202,6 +218,7 @@ Route::post('/bank-branch-lists',[ApiController::class,"BankBranchLists"]);
 Route::post('/bank-branch',[ApiController::class,"BankBranch"]);
 Route::post('/update-bank-branch',[ApiController::class,"UpdateBankBranch"]);
 Route::post('/delete-bank-branch',[ApiController::class,"DeleteBankBranch"]);
+Route::post('/bank-branch-search',[ApiController::class,"BrankBranchSearch"]);
 Route::get('/single-bank-branch/{bank_branch_id}',[ApiController::class,"SingleBankBranch"]);
 //bank designation
 Route::post('/create-designation',[ApiController::class,"CreateDesignation"]);
@@ -209,6 +226,7 @@ Route::post('/designation-lists',[ApiController::class,"DesignationLists"]);
 Route::post('/designation',[ApiController::class,"Designation"]);
 Route::post('/update-designation',[ApiController::class,"UpdateDesignation"]);
 Route::post('/delete-designation',[ApiController::class,"DeleteDesignation"]);
+Route::post('/designation-search',[ApiController::class,"DesignationSearch"]);
 Route::get('/single-designation/{designation_id}',[ApiController::class,"SingleDesignation"]);
 //bank account type
 Route::post('/create-bank-acc-type',[ApiController::class,"CreateBankAccountType"]);
@@ -216,6 +234,7 @@ Route::post('/bank-acc-type-lists',[ApiController::class,"BankAccountTypeLists"]
 Route::post('/bank-acc-type',[ApiController::class,"BankAccountType"]);
 Route::post('/update-bank-acc-type',[ApiController::class,"UpdateBankAccountType"]);
 Route::post('/delete-bank-acc-type',[ApiController::class,"DeleteBankAccountType"]);
+Route::post('/bank-acc-type-search',[ApiController::class,"BankAccTypeSearch"]);
 Route::get('/single-bank-acc-type/{bank_acc_type_id}',[ApiController::class,"SingleBankAccountType"]);
 //sale quotation
 Route::post('/create-sale-quotation',[ApiController::class,"SaleQuotation"]);

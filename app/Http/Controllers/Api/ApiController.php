@@ -329,6 +329,38 @@ class ApiController extends Controller
             ],200);
         }
     }
+    //BrandSearch
+    public function BrandSearch(Request $request){
+        if($request->isMethod('post')){
+            $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+            if($user){
+                if($user['usepackage']['status'] == 'active'){
+                    $brand = Brand::where('name', 'LIKE', '%' . $request['search'] . '%')->select('id','name')->orderBy('id','DESC')->get();
+                    if($brand){
+                        return response()->json([
+                            'status'=>true,
+                            'lists'=> $brand,
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>"Search Result Not Found",
+                        ],200);
+                    }
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Package Not Activated",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Invalid Token",
+                ],200);
+            }
+        }
+    }
     //CreateCategory
     public function CreateCategory(Request $request){
         if($request->isMethod('post')){
@@ -483,6 +515,38 @@ class ApiController extends Controller
                 'status'=>false,
                 'message'=>"Not Found",
             ],200);
+        }
+    }
+    //CategorySearch
+    public function CategorySearch(Request $request){
+        if($request->isMethod('post')){
+            $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+            if($user){
+                if($user['usepackage']['status'] == 'active'){
+                    $category = Category::where('name', 'LIKE', '%' . $request['search'] . '%')->select('id','name')->orderBy('id','DESC')->get();
+                    if($category){
+                        return response()->json([
+                            'status'=>true,
+                            'lists'=> $category,
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>"Search Result Not Found",
+                        ],200);
+                    }
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Package Not Activated",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Invalid Token",
+                ],200);
+            }
         }
     }
     //CreateUnit
@@ -641,6 +705,38 @@ class ApiController extends Controller
             ],200);
         }
     }
+    //UnitSearch
+    public function UnitSearch(Request $request){
+        if($request->isMethod('post')){
+            $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+            if($user){
+                if($user['usepackage']['status'] == 'active'){
+                    $unit = Unit::where('name', 'LIKE', '%' . $request['search'] . '%')->select('id','name')->orderBy('id','DESC')->get();
+                    if($unit){
+                        return response()->json([
+                            'status'=>true,
+                            'lists'=> $unit,
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>"Search Result Not Found",
+                        ],200);
+                    }
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Package Not Activated",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Invalid Token",
+                ],200);
+            }
+        }
+    }
     //CreateLotGallary
     public function CreateLotGallary(Request $request){
         if($request->isMethod('post')){
@@ -797,7 +893,38 @@ class ApiController extends Controller
             ],200);
         }
     }
-
+    //LotGallarySearch
+    public function LotGallarySearch(Request $request){
+        if($request->isMethod('post')){
+            $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+            if($user){
+                if($user['usepackage']['status'] == 'active'){
+                    $lot_gallary = LotGallary::where('name', 'LIKE', '%' . $request['search'] . '%')->select('id','name')->orderBy('id','DESC')->get();
+                    if($lot_gallary){
+                        return response()->json([
+                            'status'=>true,
+                            'lists'=> $lot_gallary,
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>"Search Result Not Found",
+                        ],200);
+                    }
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Package Not Activated",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Invalid Token",
+                ],200);
+            }
+        }
+    }
     //CreateProductOrderBy
     public function CreateProductOrderBy(Request $request){
         if($request->isMethod('post')){
@@ -954,7 +1081,38 @@ class ApiController extends Controller
             ],200);
         }
     }
-
+    //ProductOrderBySearch
+    public function ProductOrderBySearch(Request $request){
+        if($request->isMethod('post')){
+            $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+            if($user){
+                if($user['usepackage']['status'] == 'active'){
+                    $product_order_by = ProductOrderBy::where('name', 'LIKE', '%' . $request['search'] . '%')->select('id','name')->orderBy('id','DESC')->get();
+                    if($product_order_by){
+                        return response()->json([
+                            'status'=>true,
+                            'lists'=> $product_order_by,
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>"Search Result Not Found",
+                        ],200);
+                    }
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Package Not Activated",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Invalid Token",
+                ],200);
+            }
+        }
+    }
     //CreateCusSupAcc
     public function CreateCusSupAcc(Request $request){
         if($request->isMethod('post')){
@@ -1576,6 +1734,38 @@ class ApiController extends Controller
             ],200);
         }
     }
+    //WarehouseSearch
+    public function WarehouseSearch(Request $request){
+        if($request->isMethod('post')){
+            $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+            if($user){
+                if($user['usepackage']['status'] == 'active'){
+                    $warehouse = WareHouse::where('name', 'LIKE', '%' . $request['search'] . '%')->select('id','name')->orderBy('id','DESC')->get();
+                    if($warehouse){
+                        return response()->json([
+                            'status'=>true,
+                            'lists'=> $warehouse,
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>"Search Result Not Found",
+                        ],200);
+                    }
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Package Not Activated",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Invalid Token",
+                ],200);
+            }
+        }
+    }
     //CreateThana
     public function CreateThana(Request $request){
 
@@ -1741,6 +1931,38 @@ class ApiController extends Controller
             ],200);
         }
     }
+    //ThanaSearch
+    public function ThanaSearch(Request $request){
+        if($request->isMethod('post')){
+            $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+            if($user){
+                if($user['usepackage']['status'] == 'active'){
+                    $thana = Thana::where('name', 'LIKE', '%' . $request['search'] . '%')->select('id','name')->orderBy('id','DESC')->get();
+                    if($thana){
+                        return response()->json([
+                            'status'=>true,
+                            'lists'=> $thana,
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>"Search Result Not Found",
+                        ],200);
+                    }
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Package Not Activated",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Invalid Token",
+                ],200);
+            }
+        }
+    }
      //CreateCity
      public function CreateCity(Request $request){
         if($request->isMethod('post')){
@@ -1897,6 +2119,38 @@ class ApiController extends Controller
                 'status'=>false,
                 'message'=>"Not Found",
             ],200);
+        }
+    }
+    //CitySearch
+    public function CitySearch(Request $request){
+        if($request->isMethod('post')){
+            $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+            if($user){
+                if($user['usepackage']['status'] == 'active'){
+                    $city = City::where('name', 'LIKE', '%' . $request['search'] . '%')->select('id','name')->orderBy('id','DESC')->get();
+                    if($city){
+                        return response()->json([
+                            'status'=>true,
+                            'lists'=> $city,
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>"Search Result Not Found",
+                        ],200);
+                    }
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Package Not Activated",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Invalid Token",
+                ],200);
+            }
         }
     }
     //CreateDistrict
@@ -2396,6 +2650,38 @@ class ApiController extends Controller
                 'status'=>false,
                 'message'=>"Not Found",
             ],200);
+        }
+    }
+    //IncExpAccTypeSearch
+    public function IncExpAccTypeSearch(Request $request){
+        if($request->isMethod('post')){
+            $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+            if($user){
+                if($user['usepackage']['status'] == 'active'){
+                    $inc_exp_acc_type_search = IncomeExpenseAccType::where('name', 'LIKE', '%' . $request['search'] . '%')->select('id','name')->orderBy('id','DESC')->get();
+                    if($inc_exp_acc_type_search){
+                        return response()->json([
+                            'status'=>true,
+                            'lists'=> $inc_exp_acc_type_search,
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>"Search Result Not Found",
+                        ],200);
+                    }
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Package Not Activated",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Invalid Token",
+                ],200);
+            }
         }
     }
     //CreateIncExpPayMethod
@@ -3022,6 +3308,38 @@ class ApiController extends Controller
             ],200);
         }
     }
+    //AccAreaSearch
+    public function AccAreaSearch(Request $request){
+        if($request->isMethod('post')){
+            $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+            if($user){
+                if($user['usepackage']['status'] == 'active'){
+                    $acc_area = AccArea::where('name', 'LIKE', '%' . $request['search'] . '%')->select('id','name')->orderBy('id','DESC')->get();
+                    if($acc_area){
+                        return response()->json([
+                            'status'=>true,
+                            'lists'=> $acc_area,
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>"Search Result Not Found",
+                        ],200);
+                    }
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Package Not Activated",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Invalid Token",
+                ],200);
+            }
+        }
+    }
      //CreateAccCategory
      public function CreateAccCategory(Request $request){
         if($request->isMethod('post')){
@@ -3179,6 +3497,38 @@ class ApiController extends Controller
             ],200);
         }
     }
+    //AccCategorySearch
+    public function AccCategorySearch(Request $request){
+        if($request->isMethod('post')){
+            $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+            if($user){
+                if($user['usepackage']['status'] == 'active'){
+                    $acc_category = AccCategory::where('name', 'LIKE', '%' . $request['search'] . '%')->select('id','name')->orderBy('id','DESC')->get();
+                    if($acc_category){
+                        return response()->json([
+                            'status'=>true,
+                            'lists'=> $acc_category,
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>"Search Result Not Found",
+                        ],200);
+                    }
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Package Not Activated",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Invalid Token",
+                ],200);
+            }
+        }
+    }
     //CreateAccType
     public function CreateAccType(Request $request){
         if($request->isMethod('post')){
@@ -3334,6 +3684,38 @@ class ApiController extends Controller
                 'status'=>false,
                 'message'=>"Not Found",
             ],200);
+        }
+    }
+    //AccountTypeSearch
+    public function AccountTypeSearch(Request $request){
+        if($request->isMethod('post')){
+            $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+            if($user){
+                if($user['usepackage']['status'] == 'active'){
+                    $acc_type = AccType::where('name', 'LIKE', '%' . $request['search'] . '%')->select('id','name')->orderBy('id','DESC')->get();
+                    if($acc_type){
+                        return response()->json([
+                            'status'=>true,
+                            'lists'=> $acc_type,
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>"Search Result Not Found",
+                        ],200);
+                    }
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Package Not Activated",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Invalid Token",
+                ],200);
+            }
         }
     }
     //CreateBankAccCategory
@@ -3649,6 +4031,38 @@ class ApiController extends Controller
             ],200);
         }
     }
+    //CashCounterSearch
+    public function CashCounterSearch(Request $request){
+        if($request->isMethod('post')){
+            $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+            if($user){
+                if($user['usepackage']['status'] == 'active'){
+                    $cash_counter = CashCounter::where('name', 'LIKE', '%' . $request['search'] . '%')->select('id','name')->orderBy('id','DESC')->get();
+                    if($cash_counter){
+                        return response()->json([
+                            'status'=>true,
+                            'lists'=> $cash_counter,
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>"Search Result Not Found",
+                        ],200);
+                    }
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Package Not Activated",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Invalid Token",
+                ],200);
+            }
+        }
+    }
     //CreateVehicale
     public function CreateVehicale(Request $request){
 
@@ -3861,6 +4275,38 @@ class ApiController extends Controller
                 'status'=>false,
                 'message'=>"Not Found",
             ],200);
+        }
+    }
+    //VehicaleTypeSearch
+    public function VehicaleTypeSearch(Request $request){
+        if($request->isMethod('post')){
+            $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+            if($user){
+                if($user['usepackage']['status'] == 'active'){
+                    $vehicale_type = VehicaleType::where('name', 'LIKE', '%' . $request['search'] . '%')->select('id','name')->orderBy('id','DESC')->get();
+                    if($vehicale_type){
+                        return response()->json([
+                            'status'=>true,
+                            'lists'=> $vehicale_type,
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>"Search Result Not Found",
+                        ],200);
+                    }
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Package Not Activated",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Invalid Token",
+                ],200);
+            }
         }
     }
     //CreateDriver
@@ -4378,6 +4824,38 @@ class ApiController extends Controller
             ],200);
         }
     }
+    //BankSearch
+    public function BankSearch(Request $request){
+        if($request->isMethod('post')){
+            $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+            if($user){
+                if($user['usepackage']['status'] == 'active'){
+                    $bank = Bank::where('name', 'LIKE', '%' . $request['search'] . '%')->select('id','name')->orderBy('id','DESC')->get();
+                    if($bank){
+                        return response()->json([
+                            'status'=>true,
+                            'lists'=> $bank,
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>"Search Result Not Found",
+                        ],200);
+                    }
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Package Not Activated",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Invalid Token",
+                ],200);
+            }
+        }
+    }
     //CreateBankBranch
     public function CreateBankBranch(Request $request){
         if($request->isMethod('post')){
@@ -4449,6 +4927,38 @@ class ApiController extends Controller
                 'status'=>false,
                 'message'=>"Invalid Token",
             ],200);
+        }
+    }
+    //BankAccountCategory
+    public function BankAccountCategory(Request $request){
+        if($request->isMethod('post')){
+            $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+            if($user){
+                if($user['usepackage']['status'] == 'active'){
+                    $bank_acc_cat = BankAccCategory::where('name', 'LIKE', '%' . $request['search'] . '%')->select('id','name')->orderBy('id','DESC')->get();
+                    if($bank_acc_cat){
+                        return response()->json([
+                            'status'=>true,
+                            'lists'=> $bank_acc_cat,
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>"Search Result Not Found",
+                        ],200);
+                    }
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Package Not Activated",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Invalid Token",
+                ],200);
+            }
         }
     }
     //BankBranch
@@ -4538,6 +5048,38 @@ class ApiController extends Controller
                 'status'=>false,
                 'message'=>"Not Found",
             ],200);
+        }
+    }
+    //BrankBranchSearch
+    public function BrankBranchSearch(Request $request){
+        if($request->isMethod('post')){
+            $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+            if($user){
+                if($user['usepackage']['status'] == 'active'){
+                    $bank_branch = BankBranch::where('name', 'LIKE', '%' . $request['search'] . '%')->select('id','name')->orderBy('id','DESC')->get();
+                    if($bank_branch){
+                        return response()->json([
+                            'status'=>true,
+                            'lists'=> $bank_branch,
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>"Search Result Not Found",
+                        ],200);
+                    }
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Package Not Activated",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Invalid Token",
+                ],200);
+            }
         }
     }
     //CreateDesignation
@@ -4698,6 +5240,38 @@ class ApiController extends Controller
             ],200);
         }
     }
+    //DesignationSearch
+    public function DesignationSearch(Request $request){
+        if($request->isMethod('post')){
+            $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+            if($user){
+                if($user['usepackage']['status'] == 'active'){
+                    $designation = Designation::where('name', 'LIKE', '%' . $request['search'] . '%')->select('id','name')->orderBy('id','DESC')->get();
+                    if($designation){
+                        return response()->json([
+                            'status'=>true,
+                            'lists'=> $designation,
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>"Search Result Not Found",
+                        ],200);
+                    }
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Package Not Activated",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Invalid Token",
+                ],200);
+            }
+        }
+    }
     //CreateBankAccountType
     public function CreateBankAccountType(Request $request){
         if($request->isMethod('post')){
@@ -4853,6 +5427,38 @@ class ApiController extends Controller
                 'status'=>false,
                 'message'=>"Not Found",
             ],200);
+        }
+    }
+    //BankAccTypeSearch
+    public function BankAccTypeSearch(Request $request){
+        if($request->isMethod('post')){
+            $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+            if($user){
+                if($user['usepackage']['status'] == 'active'){
+                    $bank_acc_type = BankAccType::where('name', 'LIKE', '%' . $request['search'] . '%')->select('id','name')->orderBy('id','DESC')->get();
+                    if($bank_acc_type){
+                        return response()->json([
+                            'status'=>true,
+                            'lists'=> $bank_acc_type,
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>"Search Result Not Found",
+                        ],200);
+                    }
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Package Not Activated",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Invalid Token",
+                ],200);
+            }
         }
     }
     //sale quotation
