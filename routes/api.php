@@ -106,6 +106,7 @@ Route::post('/district-lists',[ApiController::class,"DistrictLists"]);
 Route::post('/district',[ApiController::class,"District"]);
 Route::post('/update-district',[ApiController::class,"UpdateDistrict"]);
 Route::post('/delete-district',[ApiController::class,"DeleteDistrict"]);
+Route::post('/district-search',[ApiController::class,"DistrictSearch"]);
 Route::get('/single-district/{district_id}',[ApiController::class,"SingleDistrict"]);
 //union
 Route::post('/create-union',[ApiController::class,"CreateUnion"]);
@@ -113,6 +114,7 @@ Route::post('/union-lists',[ApiController::class,"UnionLists"]);
 Route::post('/union',[ApiController::class,"Union"]);
 Route::post('/update-union',[ApiController::class,"UpdateUnion"]);
 Route::post('/delete-union',[ApiController::class,"DeleteUnion"]);
+Route::post('/union-search',[ApiController::class,"UnionSearch"]);
 Route::get('/single-union/{union_id}',[ApiController::class,"SingleUnion"]);
 //inc-exp-acc-type
 Route::post('/create-inc-exp-acc-type',[ApiController::class,"CreateIncExpAccType"]);
@@ -128,12 +130,14 @@ Route::post('/inc-exp-pay-method-lists',[ApiController::class,"IncExpPayMethodLi
 Route::post('/inc-exp-pay-method',[ApiController::class,"IncExpPayMethod"]);
 Route::post('/update-inc-exp-pay-method',[ApiController::class,"UpdateIncExpPayMethod"]);
 Route::post('/delete-inc-exp-pay-method',[ApiController::class,"DeleteIncExpPayMethod"]);
+Route::post('/inc-exp-acc-pay-method-search',[ApiController::class,"IncExpPayMethodSearch"]);
 //production-type
 Route::post('/create-production-type',[ApiController::class,"CreateProductionType"]);
 Route::post('/production-type-lists',[ApiController::class,"ProductionTypeLists"]);
 Route::post('/production-type',[ApiController::class,"ProductionType"]);
 Route::post('/update-production-type',[ApiController::class,"UpdateProductionType"]);
 Route::post('/delete-production-type',[ApiController::class,"DeleteProductionType"]);
+Route::post('/production-type-search',[ApiController::class,"ProductionTypeSearch"]);
 Route::get('/single-production-type/{production_type_id}',[ApiController::class,"SingleProductionType"]);
 //paymentmethod
 Route::post('/create-payment-method',[ApiController::class,"CreatePaymentMethod"]);
@@ -141,6 +145,7 @@ Route::post('/payment-method-lists',[ApiController::class,"PaymentMethodLists"])
 Route::post('/payment-method',[ApiController::class,"PaymentMethod"]);
 Route::post('/update-payment-method',[ApiController::class,"UpdatePaymentMethod"]);
 Route::post('/delete-payment-method',[ApiController::class,"DeletePaymentMethod"]);
+Route::post('/payment-method-search',[ApiController::class,"PaymentMethodSearch"]);
 Route::get('/single-payment-method/{payment_method_id}',[ApiController::class,"SinglePaymentMethod"]);
 //account area
 Route::post('/create-acc-area',[ApiController::class,"CreateAccArea"]);

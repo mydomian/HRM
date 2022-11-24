@@ -2317,6 +2317,38 @@ class ApiController extends Controller
             ],200);
         }
     }
+    //DistrictSearch
+    public function DistrictSearch(Request $request){
+        if($request->isMethod('post')){
+            $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+            if($user){
+                if($user['usepackage']['status'] == 'active'){
+                    $district_search = District::where('name', 'LIKE', '%' . $request['search'] . '%')->select('id','name')->orderBy('id','DESC')->get();
+                    if($district_search){
+                        return response()->json([
+                            'status'=>true,
+                            'lists'=> $district_search,
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>"Search Result Not Found",
+                        ],200);
+                    }
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Package Not Activated",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Invalid Token",
+                ],200);
+            }
+        }
+    }
     //CreateUnion
     public function CreateUnion(Request $request){
 
@@ -2429,7 +2461,6 @@ class ApiController extends Controller
     }
     //UpdateUnion
     public function UpdateUnion(Request $request){
-
         $validator = Validator::make($request->all(), [
             'city_id'=>'required',
             'district_id'=>'required',
@@ -2488,6 +2519,38 @@ class ApiController extends Controller
                 'status'=>false,
                 'message'=>"Not Found",
             ],200);
+        }
+    }
+    //UnionSearch
+    public function UnionSearch(Request $request){
+        if($request->isMethod('post')){
+            $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+            if($user){
+                if($user['usepackage']['status'] == 'active'){
+                    $union_search = Union::where('name', 'LIKE', '%' . $request['search'] . '%')->select('id','name')->orderBy('id','DESC')->get();
+                    if($union_search){
+                        return response()->json([
+                            'status'=>true,
+                            'lists'=> $union_search,
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>"Search Result Not Found",
+                        ],200);
+                    }
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Package Not Activated",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Invalid Token",
+                ],200);
+            }
         }
     }
     //CreateIncExpAccType
@@ -2813,7 +2876,6 @@ class ApiController extends Controller
     }
     //DeleteIncExpPayMethod
     public function DeleteIncExpPayMethod(Request $request){
-
         $inc_exp_pay_method = IncomeExpensePaymentMethodType::findOrFail($request['id']);
         $inc_exp_pay_method->delete();
         if($inc_exp_pay_method){
@@ -2826,6 +2888,38 @@ class ApiController extends Controller
                 'status'=>false,
                 'message'=>"Something Is Worng To Delete",
             ],200);
+        }
+    }
+    //IncExpPayMethodSearch
+    public function IncExpPayMethodSearch(Request $request){
+        if($request->isMethod('post')){
+            $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+            if($user){
+                if($user['usepackage']['status'] == 'active'){
+                    $inc_exp_acc_type = IncomeExpensePaymentMethodType::where('name', 'LIKE', '%' . $request['search'] . '%')->select('id','name')->orderBy('id','DESC')->get();
+                    if($inc_exp_acc_type){
+                        return response()->json([
+                            'status'=>true,
+                            'lists'=> $inc_exp_acc_type,
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>"Search Result Not Found",
+                        ],200);
+                    }
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Package Not Activated",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Invalid Token",
+                ],200);
+            }
         }
     }
     //CreateProductionType
@@ -2990,6 +3084,38 @@ class ApiController extends Controller
             ],200);
         }
     }
+    //ProductionTypeSearch
+    public function ProductionTypeSearch(Request $request){
+        if($request->isMethod('post')){
+            $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+            if($user){
+                if($user['usepackage']['status'] == 'active'){
+                    $production_type = ProductionType::where('name', 'LIKE', '%' . $request['search'] . '%')->select('id','name')->orderBy('id','DESC')->get();
+                    if($production_type){
+                        return response()->json([
+                            'status'=>true,
+                            'lists'=> $production_type,
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>"Search Result Not Found",
+                        ],200);
+                    }
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Package Not Activated",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Invalid Token",
+                ],200);
+            }
+        }
+    }
     //CreatePaymentMethod
     public function CreatePaymentMethod(Request $request){
 
@@ -3096,7 +3222,6 @@ class ApiController extends Controller
     }
     //UpdatePaymentMethod
     public function UpdatePaymentMethod(Request $request){
-
         $validator = Validator::make($request->all(), [
             'id'=>'required',
             'name'=>'required',
@@ -3104,7 +3229,6 @@ class ApiController extends Controller
         if ($validator->fails()) {
             return response()->json(['errors'=>$validator->errors()], 400);
         }
-
         $payment_method = PaymentMethod::findOrFail($request['id']);
         $payment_method->name = $request['name'];
         $payment_method->save();
@@ -3150,6 +3274,38 @@ class ApiController extends Controller
                 'status'=>false,
                 'message'=>"Not Found",
             ],200);
+        }
+    }
+    //PaymentMethodSearch
+    public function PaymentMethodSearch(Request $request){
+        if($request->isMethod('post')){
+            $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+            if($user){
+                if($user['usepackage']['status'] == 'active'){
+                    $payment_method = PaymentMethod::where('name', 'LIKE', '%' . $request['search'] . '%')->select('id','name')->orderBy('id','DESC')->get();
+                    if($payment_method){
+                        return response()->json([
+                            'status'=>true,
+                            'lists'=> $payment_method,
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>"Search Result Not Found",
+                        ],200);
+                    }
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Package Not Activated",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Invalid Token",
+                ],200);
+            }
         }
     }
     //CreateAccArea
