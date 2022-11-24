@@ -75,6 +75,7 @@ Route::post('disable-product',[ApiController::class,"DisableProduct"]);
 Route::post('enable-product',[ApiController::class,"EnableProduct"]);
 Route::post('disable-product',[ApiController::class,"DisableProduct"]);
 Route::post('delete-product',[ApiController::class,"DeleteProduct"]);
+Route::post('product-search',[ApiController::class,"ProductSearch"]);
 Route::get('/single-product/{product_id}',[ApiController::class,"SingleProduct"]);
 //warehouse
 Route::post('/create-warehouse',[ApiController::class,"CreateWarehouse"]);

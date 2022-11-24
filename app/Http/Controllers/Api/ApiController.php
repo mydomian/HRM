@@ -1576,6 +1576,38 @@ class ApiController extends Controller
             ],200);
         }
     }
+    //ProductSearch
+    public function ProductSearch(Request $request){
+        if($request->isMethod('post')){
+            $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
+            if($user){
+                if($user['usepackage']['status'] == 'active'){
+                    $product = Product::where('product_name', 'LIKE', '%' . $request['search'] . '%')->orderBy('id','DESC')->get();
+                    if($product){
+                        return response()->json([
+                            'status'=>true,
+                            'lists'=> $product,
+                        ],200);
+                    }else{
+                        return response()->json([
+                            'status'=>false,
+                            'message'=>"Search Result Not Found",
+                        ],200);
+                    }
+                }else{
+                    return response()->json([
+                        'status'=>false,
+                        'message'=>"Package Not Activated",
+                    ],200);
+                }
+            }else{
+                return response()->json([
+                    'status'=>false,
+                    'message'=>"Invalid Token",
+                ],200);
+            }
+        }
+    }
     //CreateWareHouse
     public function CreateWareHouse(Request $request){
         if($request->isMethod('post')){
@@ -2659,7 +2691,6 @@ class ApiController extends Controller
     }
     //UpdateIncExpAccType
     public function UpdateIncExpAccType(Request $request){
-
         $validator = Validator::make($request->all(), [
             'id'=>'required',
             'name'=>'required',
@@ -2667,7 +2698,6 @@ class ApiController extends Controller
         if ($validator->fails()) {
             return response()->json(['errors'=>$validator->errors()], 400);
         }
-
         $inc_exp_acc_type = IncomeExpenseAccType::findOrFail($request['id']);
         $inc_exp_acc_type->name = $request['name'];
         $inc_exp_acc_type->save();
@@ -2924,7 +2954,6 @@ class ApiController extends Controller
     }
     //CreateProductionType
     public function CreateProductionType(Request $request){
-
         if($request->isMethod('post')){
             $user = User::with('usepackage')->where('rememberToken',$request['rememberToken'])->first();
             if($user){
